@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import subprocess
 from ModelBuilder import model_instance_from_config
 import json
+
 """
 NOTE: adjust the directory of myscript
 """
