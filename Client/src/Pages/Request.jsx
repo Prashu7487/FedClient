@@ -1,16 +1,36 @@
 import React, { useState } from "react";
 import DataInfo from "../components/OnRequestPage/DataInfo";
 import ModelInfo from "../components/OnRequestPage/ModelInfo";
+import MultiLayerPerceptron from "../components/OnRequestPage/MultiLayerPerceptron";
 import { useGlobalData } from "../GlobalContext";
 
 export default function App() {
   const [formData, setFormData] = useState({
     orgName: "",
     dataInfo: {},
+    modelName:"",
     modelInfo: {},
   });
 
+  // Models
+  const availableModels = {
+    'multiLayerPerceptron': {
+      label: 'Multi Layer Perceptron',
+      component: <MultiLayerPerceptron formData={formData} setFormData={setFormData}/>,
+    },
+  };
+
+  // React States
+  const [selectedModel,setSelectedModel] = useState("")
   const { globalData, setGlobalData } = useGlobalData();
+
+
+  
+  // Handlers
+
+  const handleSelectModel = (e)=>{
+    setSelectedModel(e.target.value)
+  }
 
   const handleOrgNameChange = (event) => {
     setFormData({ ...formData, orgName: event.target.value });
@@ -95,12 +115,29 @@ export default function App() {
         />
       </div>
       <DataInfo onDataInfoChange={handleDataInfoChange} />
-      <ModelInfo onModelInfoChange={handleModelInfoChange} />
+      {/* <ModelInfo onModelInfoChange={handleModelInfoChange} /> */}
+      
+      
+      <h4>Model Info:</h4>
+      {/* Dropdown for selecting the model */}
+      <div className="select-model">
+        <select className="form-select" value={selectedModel} onChange={handleSelectModel}>
+          <option value="selectModel">Select your model</option>
+          {Object.keys(availableModels).map((model_value)=>(
+            <option key="model_value" value={model_value}>{availableModels[model_value].label}</option>
+          ))}
+        </select>
+      </div>
+
+
+      {selectedModel?availableModels[selectedModel].component:<></>}
       <div>
         <button type="submit" className="btn btn-primary me-5">
           Request
         </button>
       </div>
+
+
     </form>
   );
 }

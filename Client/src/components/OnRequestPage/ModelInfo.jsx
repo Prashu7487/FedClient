@@ -17,6 +17,9 @@ const modelConfigs = {
     label: "Min Samples Split",
     type: "number",
   },
+  "Multi Layer Perceptron":{
+    
+  }
   // Add more models and their configurations here
 };
 
@@ -53,7 +56,7 @@ const ModelInfo = ({ onModelInfoChange }) => {
           value={selectedModel}
           onChange={handleModelChange}
         >
-          <option value="">Choose...</option>
+          <option value="">Choose Model</option>
           {Object.keys(modelConfigs).map((model) => (
             <option key={model} value={model}>
               {model}
