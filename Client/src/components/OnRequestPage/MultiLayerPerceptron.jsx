@@ -1,58 +1,9 @@
 import React from "react";
 import { useState } from "react";
+import { Controller, useFieldArray } from "react-hook-form";
 
-/*
-const [formData, setFormData] = useState({
-  lossFunction: "selectLossFunction",
-  optimizer: "selectOptimizer",
-  inputLayer: {
-    feature: "",
-    type: "",
-    activationFunction: "select-activation",
-  },
-  intermediateLayers: [],
-  outputLayer: {
-    type: "",
-    activationFunction: "select-activation",
-  },
-});
-*/
+const MultiLayerPerceptron = ({control,register}) => {
 
-const MultiLayerPerceptron = ({formData,setFormData}) => {
-  
-  
-    // States
-    const [lossFunction, setLossFunction] = useState("")
-    const [optimizer, setOptimizer] = useState("")
-    const [activationFunction, setActivationFunction] = useState("")
-    const [countIntermediateLayer, setCountIntermediateLayer] = useState("")
-    const [modelInfo, setModelInfo] = useState({
-        lossFunction: "selectLossFunction",
-        optimizer: "selectOptimizer",
-        inputLayer: {
-          feature: "",
-          type: "",
-          activationFunction: "select-activation",
-        },
-        intermediateLayers: [],
-        outputLayer: {
-          type: "",
-          activationFunction: "select-activation",
-        },
-      });
-
-  const handleFormData = (model_info) => {
-    setFormData({
-        ...formData,
-        modelInfo: model_info
-    })
-    console.log(formData)
-  }
-  const handleModelInfo = (e) => {
-    
-  }
-
-  
   const lossFunctions = {
     mse: "Mean Squared Error",
     mae: "Mean Absolute Error",
@@ -92,6 +43,57 @@ const MultiLayerPerceptron = ({formData,setFormData}) => {
     exponential: "Exponential",
     linear: "Linear",
   };
+  
+  
+  const countIntermediateLayer = 0;
+    // States
+    const [mlpInfo, setMLPInfo] = useState({
+        lossFunction: "selectLossFunction",
+        optimizer: "selectOptimizer",
+        inputLayer: {
+          feature: "",
+          type: "",
+          activationFunction: "select-activation",
+        },
+        intermediateLayers: [],
+        outputLayer: {
+          type: "",
+          activationFunction: "select-activation",
+        },
+      });
+
+
+  const handleFormData = (model_info) => {
+    setFormData({
+        ...formData,
+        modelInfo: model_info
+    })
+    console.log(formData)
+  }
+  const handleModelInfo = (e) => {
+    const { name, value } = e.target;
+    const updatedModelInfo = {
+      ...mlpInfo,
+      // inputLayer:{...inputLayer,feature=}
+      [name]: value
+    }
+    setMLPInfo(updatedModelInfo)        // Javascript does not updates even by setModelInfo due to the asynchronous nature of state updates in React. When you call setModelInfo, the update to modelInfo doesn't happen immediately. Instead, it gets scheduled, and the state remains the same during the current execution context, which is why the console log shows the old state.
+    // handleFormData(updatedModelInfo)
+  }
+
+  const handleInputLayer = (e)=>{
+    
+  }
+
+  const onSubmit = (data) => {
+    console.log('Form Submitted',data)
+  }
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "modelInfo.intermediateLayer"
+  });
+
 
   return (
     <div>
@@ -105,9 +107,8 @@ const MultiLayerPerceptron = ({formData,setFormData}) => {
         <div className="select-loss-function">
           <select
             className="form-select"
-            value={formData.modelInfo.lossFunction}
-            name="lossFunction"
-            onChange={handleInputChange}
+            id= "lossFunction"
+            {...register("modelInfo.lossFunction")}
           >
             <option value="selectLossFunction">
               Select your Loss Function
@@ -131,8 +132,7 @@ const MultiLayerPerceptron = ({formData,setFormData}) => {
         <div className="select-Optimizer-function">
           <select
             className="form-select"
-            value={optimizer}
-            onChange={(e) => setOptimizer(e.target.value)}
+            {...register("modelInfo.optimizer")}
           >
             <option value="selectOptimizer">
               Select your Optimizer Function
@@ -154,17 +154,18 @@ const MultiLayerPerceptron = ({formData,setFormData}) => {
           aria-label="Feature"
           className="form-control"
           placeholder="Input_Shape of Dataset"
+          {...register("modelInfo.inputLayer.inputShape")}
         />
         <input
           type="text"
           aria-label="Type"
           className="form-control"
           placeholder="Number of Nodes"
+          {...register("modelInfo.inputLayer.numNodes")}
         />
         <select
           className="form-select"
-          value={activationFunction}
-          onChange={(e) => setActivationFunction(e.target.value)}
+          {...register("modelInfo.inputLayer.activationFunction")}
         >
           <option value="select-activation">Activation Function</option>
           {Object.keys(activationFunctions).map((activation_key) => (
@@ -174,20 +175,23 @@ const MultiLayerPerceptron = ({formData,setFormData}) => {
           ))}
         </select>
       </div>
+
+      
       <h4>Intermediate Layer:</h4>
-      {Array.from({ length: countIntermediateLayer }, () => (
-        <div className="input-group mb-3">
+      <div id="parent-template-div">
+        {fields.map((field,index) => (
+          <div key={field.id} className="input-group mb-3">
           <span className="input-group-text">Column Name and Type</span>
           <input
             type="text"
             aria-label="Type"
             className="form-control"
             placeholder="Number of Nodes"
+            {...register(`modelInfo.intermediateLayer.${index}.featureName`)}
           />
           <select
             className="form-select"
-            value={activationFunction}
-            onChange={(e) => setActivationFunction(e.target.value)}
+            {...register(`modelInfo.intermediateLayer.${index}.activationFunction`)}
           >
             <option value="select-activation">Activation Function</option>
             {Object.keys(activationFunctions).map((activation_key) => (
@@ -196,33 +200,19 @@ const MultiLayerPerceptron = ({formData,setFormData}) => {
               </option>
             ))}
           </select>
-        </div>
-      ))}
-
-      {/* Add a button here for adding more layers */}
-      <div className="row">
-        <div className="col-auto mb-3">
           <button
-            className="btn btn-primary"
-            onClick={() =>
-              setCountIntermediateLayer(countIntermediateLayer + 1)
-            }
-          >
-            Add Intermediate Layer
-          </button>
+              className="btn btn-outline-danger"
+              type="button"
+              onClick={() => remove(index)}
+            >
+              Remove
+            </button>
         </div>
-        <div className="col-auto mb-3">
-          <button
-            className="btn btn-primary"
-            onClick={() =>
-              setCountIntermediateLayer(countIntermediateLayer - 1)
-            }
-            disabled={countIntermediateLayer === 1} // Disable if there's only 1 layer
-          >
-            Remove Last Intermediate Layer
-          </button>
-        </div>
+        ))}
       </div>
+      <button type="button" className="btn btn-primary" onClick={()=> append()} >
+        Add
+      </button>
 
       <h4>Output Layer:</h4>
       <div className="input-group mb-3">
@@ -232,11 +222,11 @@ const MultiLayerPerceptron = ({formData,setFormData}) => {
           aria-label="Type"
           className="form-control"
           placeholder="Number of Nodes"
+          {...register("modelInfo.outputLayer.numNodes")}
         />
         <select
           className="form-select"
-          value={activationFunction}
-          onChange={(e) => setActivationFunction(e.target.value)}
+          {...register("modelInfo.outputLayer.activationFunction")}
         >
           <option value="select-activation">Activation Function</option>
           {Object.keys(activationFunctions).map((activation_key) => (
@@ -246,7 +236,6 @@ const MultiLayerPerceptron = ({formData,setFormData}) => {
           ))}
         </select>
       </div>
-
     </div>
   );
 };

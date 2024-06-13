@@ -1,22 +1,29 @@
 import React, { useState } from "react";
 import DataInfo from "../components/OnRequestPage/DataInfo";
-import ModelInfo from "../components/OnRequestPage/ModelInfo";
 import MultiLayerPerceptron from "../components/OnRequestPage/MultiLayerPerceptron";
 import { useGlobalData } from "../GlobalContext";
+import { useForm } from "react-hook-form";
+
+
 
 export default function App() {
+
+  const form = useForm();
+  const {register, control , handleSubmit} = form
+
+  const [modelInfo,setModelInfo] = useState({})
   const [formData, setFormData] = useState({
     orgName: "",
     dataInfo: {},
     modelName:"",
-    modelInfo: {},
+    modelInfo: modelInfo,
   });
 
   // Models
   const availableModels = {
     'multiLayerPerceptron': {
       label: 'Multi Layer Perceptron',
-      component: <MultiLayerPerceptron formData={formData} setFormData={setFormData}/>,
+      component: <MultiLayerPerceptron control={control} register={register}/>,
     },
   };
 
@@ -44,84 +51,84 @@ export default function App() {
     setFormData({ ...formData, modelInfo });
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
+  // const handleSubmit = (event) => {
+  //   event.preventDefault(); // Prevent the default form submission behavior
 
-    // Check if the orgName is provided
-    if (!formData.orgName.trim()) {
-      alert("Org Name is required");
-      return;
-    }
+  //   // Check if the orgName is provided
+  //   if (!formData.orgName.trim()) {
+  //     alert("Org Name is required");
+  //     return;
+  //   }
 
-    const newRequestData = {
-      RequestId: Date.now(), // Ideally, use a UUID for better uniqueness
-      OrgName: formData.orgName,
-      Status: "Requested",
-      Model: formData.modelInfo,
-      Data: formData.dataInfo,
-    };
+  //   const newRequestData = {
+  //     RequestId: Date.now(), // Ideally, use a UUID for better uniqueness
+  //     OrgName: formData.orgName,
+  //     Status: "Requested",
+  //     Model: formData.modelInfo,
+  //     Data: formData.dataInfo,
+  //   };
 
-    const postData = async (url, data) => {
-      console.log("Data in Request", JSON.stringify(data));
-      try {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
+  //   const postData = async (url, data) => {
+  //     console.log("Data in Request", JSON.stringify(data));
+  //     try {
+  //       const res = await fetch(url, {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify(data),
+  //       });
 
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
+  //       if (!res.ok) {
+  //         throw new Error(`HTTP error! Status: ${res.status}`);
+  //       }
 
-        const result = await res.json();
-        console.log("Response from server:", result);
-      } catch (err) {
-        console.log("Error in sending Client Reg Data:", err);
-      }
-    };
+  //       const result = await res.json();
+  //       console.log("Response from server:", result);
+  //     } catch (err) {
+  //       console.log("Error in sending Client Reg Data:", err);
+  //     }
+  //   };
 
-    postData("http://localhost:8000/request_training", newRequestData);
+  //   postData("http://localhost:8000/request_training", newRequestData);
 
-    setGlobalData((prevGlobalData) => ({
-      ...prevGlobalData,
-      CurrentModels: [...prevGlobalData.CurrentModels, newRequestData],
-    }));
+  //   setGlobalData((prevGlobalData) => ({
+  //     ...prevGlobalData,
+  //     CurrentModels: [...prevGlobalData.CurrentModels, newRequestData],
+  //   }));
 
-    // Rresetting the form data (Optional)
-    setFormData({
-      orgName: "",
-      dataInfo: {},
-      modelInfo: {},
-    });
+  //   // Rresetting the form data (Optional)
+  //   setFormData({
+  //     orgName: "",
+  //     dataInfo: {},
+  //     modelInfo: {},
+  //   });
 
-    // Log the form data (for debugging purposes)
-    console.log("Form Data:", formData);
-  };
+  //   // Log the form data (for debugging purposes)
+  //   console.log("Form Data:", formData);
+  // };
+  const onSubmit = (data) =>{
+    console.log("Form has been submitted",data)
+  }
 
   return (
-    <form id="Request-form" className="row g-3" onSubmit={handleSubmit}>
+    <form id="Request-form" className="row g-3" onSubmit={handleSubmit(onSubmit)}>
       <div className="container mt-3">
         <h4>Org Name:</h4>
         <input
           type="text"
-          id="orgName"
+          id="organisationName"
           className="form-control"
           placeholder="e.g. XYZ"
-          value={formData.orgName}
-          onChange={handleOrgNameChange}
+          {...register("organisationName")}
         />
       </div>
-      <DataInfo onDataInfoChange={handleDataInfoChange} />
-      {/* <ModelInfo onModelInfoChange={handleModelInfoChange} /> */}
-      
+      <DataInfo control={control} register={register}/>
       
       <h4>Model Info:</h4>
       {/* Dropdown for selecting the model */}
       <div className="select-model">
-        <select className="form-select" value={selectedModel} onChange={handleSelectModel}>
+        <select className="form-select" {...register("modelName")} onChange={(e)=> setSelectedModel(e.target.value)}>
           <option value="selectModel">Select your model</option>
           {Object.keys(availableModels).map((model_value)=>(
             <option key="model_value" value={model_value}>{availableModels[model_value].label}</option>
