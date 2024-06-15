@@ -4,7 +4,7 @@ import { useFieldArray, Controller } from "react-hook-form";
 export default function DataInfo({ control ,register}) {
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "datasetInfo.featureList"
+    name: "dataset_info.feature_list"
   });
 
   return (
@@ -20,7 +20,7 @@ export default function DataInfo({ control ,register}) {
           aria-label="About Dataset"
           className="form-control"
           placeholder="Name, purpose, etc.."
-          {...register(`datasetInfo.aboutDataset`)}
+          {...register(`dataset_info.about_dataset`)}
         />
       </div>
 
@@ -29,10 +29,10 @@ export default function DataInfo({ control ,register}) {
         {fields.map((field,index) => (
           <ul key={field.id} className="input-group mb-3">
             <span className="input-group-text">Column Name and Type</span>
-            <input {...register(`datasetInfo.featureList.${index}.featureName`)} />
+            <input {...register(`dataset_info.feature_list.${index}.feature_name`)} />
             <Controller
               render={({ field }) => <input {...field} />}
-              name={`datasetInfo.featureList.${index}.typeOfFeature`}
+              name={`dataset_info.feature_list.${index}.type_Of_feature`}
               control={control}
             />
             <button
@@ -47,7 +47,7 @@ export default function DataInfo({ control ,register}) {
       </div>
 
       <button type="button" className="btn btn-primary" onClick={()=> append()} >
-        Add
+        Add Feature
       </button>
     </div>
   );

@@ -3,6 +3,7 @@ import DataInfo from "../components/OnRequestPage/DataInfo";
 import MultiLayerPerceptron from "../components/OnRequestPage/MultiLayerPerceptron";
 import { useGlobalData } from "../GlobalContext";
 import { useForm } from "react-hook-form";
+import axios from 'axios';
 
 
 
@@ -50,6 +51,8 @@ export default function App() {
   const handleModelInfoChange = (modelInfo) => {
     setFormData({ ...formData, modelInfo });
   };
+
+  // Message : Prashant Remove all below commented that you dont want.
 
   // const handleSubmit = (event) => {
   //   event.preventDefault(); // Prevent the default form submission behavior
@@ -107,8 +110,9 @@ export default function App() {
   //   // Log the form data (for debugging purposes)
   //   console.log("Form Data:", formData);
   // };
-  const onSubmit = (data) =>{
-    console.log("Form has been submitted",data)
+  const onSubmit = async (formData) =>{
+    const res = await axios.post('http://localhost:8000/request-federated-learning',formData)
+    console.log(res.data.data)
   }
 
   return (
@@ -120,7 +124,7 @@ export default function App() {
           id="organisationName"
           className="form-control"
           placeholder="e.g. XYZ"
-          {...register("organisationName")}
+          {...register("organisation_name")}
         />
       </div>
       <DataInfo control={control} register={register}/>
@@ -128,7 +132,7 @@ export default function App() {
       <h4>Model Info:</h4>
       {/* Dropdown for selecting the model */}
       <div className="select-model">
-        <select className="form-select" {...register("modelName")} onChange={(e)=> setSelectedModel(e.target.value)}>
+        <select className="form-select" {...register("model_name")} onChange={(e)=> setSelectedModel(e.target.value)}>
           <option value="selectModel">Select your model</option>
           {Object.keys(availableModels).map((model_value)=>(
             <option key="model_value" value={model_value}>{availableModels[model_value].label}</option>
