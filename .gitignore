@@ -1,4 +1,5 @@
 *.log
+/log
 Client/npm-debug.log*
 Client/yarn-debug.log*
 Client/yarn-error.log*
@@ -21,6 +22,6 @@ Client/*.local
 *.sln
 *.sw?
 
-PrivateServer/__pycache__
-PrivateServer/data
-PrivateServer/Extradata
+PrivateServer/__pycache__/
+PrivateServer/data/
+PrivateServer/Extradata/
