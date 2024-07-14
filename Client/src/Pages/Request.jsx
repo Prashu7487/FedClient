@@ -5,13 +5,11 @@ import { useGlobalData } from "../GlobalContext";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
-export default function App() {
+export default function Request({clientToken,setSessions}) {
   // React States
   const [selectedModel, setSelectedModel] = useState("");
   const { GlobalData, setGlobalData } = useGlobalData();
-
   const { register, control, handleSubmit } = useForm();
-  const postURL = "http://localhost:8000/request-federated-learning";
 
   // Models
   const availableModels = {
@@ -27,9 +25,14 @@ export default function App() {
     //   return;
     // }
 
-    console.log("Form data:", formData);
+    const requestData = {
+      'fed_info': formData,
+      'client_token' : clientToken
+    }
     try {
-      const res = await axios.post(postURL, formData);
+      const postURL = "http://localhost:8000/create-federated-session";
+      const res = await axios.post(postURL, requestData);
+      // We dont need to store this here this can be fetch from server side
       const newRequestData = {
         RequestId: `${GlobalData.Client.ClientID}${Date.now()}`,
         OrgName: formData.organisation_name,
@@ -39,6 +42,11 @@ export default function App() {
       };
 
       if (res.status === 200) {
+        // Client Background Task --> Save the session token in the use State have to implement logic in backend
+        
+        const session_token = res.data.session_token;
+        setSessions(prevList => [...prevList,session_token]);
+        alert("Federated Learning Request is accepted!");
         setGlobalData((prevGlobalData) => ({
           ...prevGlobalData,
           CurrentModels: [...prevGlobalData.CurrentModels, newRequestData],
@@ -52,47 +60,52 @@ export default function App() {
   };
 
   return (
-    <form
-      id="Request-form"
-      className="row g-3"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <div className="container mt-3">
-        <h4>Org Name:</h4>
-        <input
-          type="text"
-          id="organisationName"
-          className="form-control"
-          placeholder="e.g. XYZ"
-          {...register("organisation_name")}
-        />
-      </div>
-      <h4>Data:</h4>
-      <DataInfo control={control} register={register} />
-
-      <h4>Model:</h4>
-      {/* Dropdown for selecting the model */}
-      <div className="select-model">
-        <select
-          className="form-select"
-          {...register("model_name")}
-          onChange={(e) => setSelectedModel(e.target.value)}
-        >
-          <option value="selectModel">Select your model</option>
-          {Object.keys(availableModels).map((model_value) => (
-            <option key="model_value" value={model_value}>
-              {availableModels[model_value].label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {selectedModel ? availableModels[selectedModel].component : <></>}
-      <div>
-        <button type="submit" className="btn btn-primary me-5">
-          Request
-        </button>
-      </div>
-    </form>
+    <>
+      {clientToken ? (
+        <form id="Request-form" className="row g-3" onSubmit={handleSubmit(onSubmit)}>
+          <div className="container mt-3">
+            <h4>Org Name:</h4>
+            <input
+              type="text"
+              id="organisationName"
+              className="form-control"
+              placeholder="e.g. XYZ"
+              {...register("organisation_name")}
+            />
+          </div>
+          
+          <h4>Data:</h4>
+          <DataInfo control={control} register={register} />
+          
+          <h4>Model:</h4>
+          {/* Dropdown for selecting the model */}
+          <div className="select-model">
+            <select
+              className="form-select"
+              {...register("model_name")}
+              onChange={(e) => setSelectedModel(e.target.value)}
+            >
+              <option value="selectModel">Select your model</option>
+              {Object.keys(availableModels).map((model_value) => (
+                <option key={model_value} value={model_value}>
+                  {availableModels[model_value].label}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          {selectedModel ? availableModels[selectedModel].component : <></>}
+          
+          <div>
+            <button type="submit" className="btn btn-primary me-5">
+              Request
+            </button>
+          </div>
+        </form>
+      ) : (
+        <p>LogIn First</p>
+      )}
+    </>
+    
   );
 }
