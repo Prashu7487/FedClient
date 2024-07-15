@@ -8,6 +8,7 @@ import Error from "./Pages/Error";
 import NavBar from "./components/OnWholeApp/NavBar";
 import MyDataProvider from "./GlobalContext";
 import EventsAction from "./EventsActions";
+import { useState } from "react";
 
 /*
       A global file namely GlobalContext.jsx is defined to maintain the global Data Provider,
@@ -16,6 +17,8 @@ import EventsAction from "./EventsActions";
 */
 
 export default function App() {
+  const [clientToken, setClientToken] = useState("");
+  const [sessions,setSessions] = useState([])
   return (
     <>
       <MyDataProvider>
@@ -31,12 +34,12 @@ export default function App() {
         >
           <Routes>
             <Route path="/" exact element={<Home />} />
-            <Route path="/Register" element={<Register />} />
-            <Route path="/Request" element={<Request />} />
-            <Route path="/TrainingStatus" element={<TrainingStatus />} />
+            <Route path="/Register" element={<Register setClientToken={setClientToken}/>} />
+            <Route path="/Request" element={<Request clientToken={clientToken} setSessions={setSessions}/>} />
+            <Route path="/TrainingStatus" element={<TrainingStatus sessions={sessions}/>} />
             <Route
-              path="/TrainingStatus/details/:id"
-              element={<TrainingDetails />}
+              path="/TrainingStatus/details/:sessionId"
+              element={<TrainingDetails clientToken={clientToken}/>}
             />
             <Route path="/*" element={<Error />} />
           </Routes>

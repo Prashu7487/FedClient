@@ -1,8 +1,9 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useGlobalData } from "../GlobalContext";
+import axios from "axios";
 
-export default function Register() {
+export default function Register({setClientToken}) {
   const { GlobalData, setGlobalData } = useGlobalData();
   const {
     register,
@@ -10,63 +11,32 @@ export default function Register() {
     formState: { errors },
   } = useForm();
 
-  const connectionURL = "http://localhost:8000/events";
   const regURL = "http://localhost:8000/sign-in";
 
-  const onSubmit = (formData) => {
-    if (GlobalData.ConnectionObject) {
-      console.log("Already registered..");
-      return;
-    }
+  const onSubmit = async (formData) => {
+    // if (GlobalData.ConnectionObject) {
+    //   console.log("Already registered..");
+    //   return;
+    // }
 
     const clientData = {
       name: formData.clientName,
       data_path: formData.data_path,
       password: formData.password,
     };
-
-    let eventSource = null;
-    console.log("SSE connection Request Sent");
     try {
-      const stream_url = connectionURL;
-      eventSource = new EventSource(stream_url);
-    } catch (err) {
-      console.log("The error occurred while SSE connection is:", err);
-    }
-
-    const postData = async (url, data) => {
-      console.log("Data in POST", JSON.stringify(data)); //comment this
-      try {
-        const res = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        });
-
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-
-        const result = await res.json();
-        setGlobalData({
-          ...GlobalData,
-          Client: {
-            ClientID: result.ClientID,
-            ClientName: clientData.name,
-            DataPath: clientData.data_path,
-            Password: clientData.password,
-          },
-          ConnectionObject: eventSource,
-        });
-        console.log("Response from server:", result);
-      } catch (err) {
-        console.log("Error in sending Client Reg Data:", err);
+      const res = await axios.post(regURL, clientData);
+      if (res.status === 200) {
+        const clientToken = res.data["client_token"]
+        
+        setClientToken(clientToken)
+        alert(res.data.message)
+      } else {
+        console.error("Failed to submit the request:", res);
       }
-    };
-
-    postData(regURL, clientData);
+    } catch (error) {
+      console.error("Error submitting the request:", error);
+    }
   };
 
   const handleDeregistration = (event) => {
