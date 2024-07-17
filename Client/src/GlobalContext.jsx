@@ -34,7 +34,7 @@ export default function MyDataProvider({ children }) {
           feature_list: {
             0: { feature_name: "age", type_Of_feature: "int" },
             1: { feature_name: "height", type_Of_feature: "int" },
-            2: { feature_name: "had_sex", type_Of_feature: "bool" },
+            2: { feature_name: "unknown", type_Of_feature: "bool" },
             3: { feature_name: "gender", type_Of_feature: "bool" },
           },
         },

@@ -13,12 +13,12 @@ import { useState } from "react";
 /*
       A global file namely GlobalContext.jsx is defined to maintain the global Data Provider,
       the same file contains custom implementation of DataProvider and useContext function...
-      Just make sure to import the function from GlobalContext.jsx before using them.
+      ,make sure to import the function from GlobalContext.jsx before using them.
 */
 
 export default function App() {
   const [clientToken, setClientToken] = useState("");
-  const [sessions,setSessions] = useState([])
+  const [sessions, setSessions] = useState([]);
   return (
     <>
       <MyDataProvider>
@@ -34,12 +34,23 @@ export default function App() {
         >
           <Routes>
             <Route path="/" exact element={<Home />} />
-            <Route path="/Register" element={<Register setClientToken={setClientToken}/>} />
-            <Route path="/Request" element={<Request clientToken={clientToken} setSessions={setSessions}/>} />
-            <Route path="/TrainingStatus" element={<TrainingStatus sessions={sessions}/>} />
+            <Route
+              path="/Register"
+              element={<Register setClientToken={setClientToken} />}
+            />
+            <Route
+              path="/Request"
+              element={
+                <Request clientToken={clientToken} setSessions={setSessions} />
+              }
+            />
+            <Route
+              path="/TrainingStatus"
+              element={<TrainingStatus sessions={sessions} />}
+            />
             <Route
               path="/TrainingStatus/details/:sessionId"
-              element={<TrainingDetails clientToken={clientToken}/>}
+              element={<TrainingDetails clientToken={clientToken} />}
             />
             <Route path="/*" element={<Error />} />
           </Routes>

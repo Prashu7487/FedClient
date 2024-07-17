@@ -1,36 +1,40 @@
 import React, { useState } from "react";
 import DataInfo from "../components/OnRequestPage/DataInfo";
 import MultiLayerPerceptron from "../components/OnRequestPage/MultiLayerPerceptron";
+import CNN from "../components/OnRequestPage/CNN";
 import { useGlobalData } from "../GlobalContext";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
-export default function Request({clientToken,setSessions}) {
+// Required URLs
+const requestURL = "http://localhost:8000/create-federated-session";
+
+export default function Request({ clientToken, setSessions }) {
   // React States
   const [selectedModel, setSelectedModel] = useState("");
   const { GlobalData, setGlobalData } = useGlobalData();
   const { register, control, handleSubmit } = useForm();
 
-  // Models
+  // Avail Models
   const availableModels = {
     multiLayerPerceptron: {
       label: "Multi Layer Perceptron",
       component: <MultiLayerPerceptron control={control} register={register} />,
     },
+    CNN: {
+      label: "CNN",
+      component: <CNN control={control} register={register} />,
+    },
   };
 
   const onSubmit = async (formData) => {
-    // if (!GlobalData.ConnectionObject) {
-    //   alert("Please register first!");
-    //   return;
-    // }
-
     const requestData = {
-      'fed_info': formData,
-      'client_token' : clientToken
-    }
+      fed_info: formData,
+      client_token: clientToken,
+    };
+
     try {
-      const postURL = "http://localhost:8000/create-federated-session";
+      const postURL = requestURL;
       const res = await axios.post(postURL, requestData);
       // We dont need to store this here this can be fetch from server side
       const newRequestData = {
@@ -43,9 +47,9 @@ export default function Request({clientToken,setSessions}) {
 
       if (res.status === 200) {
         // Client Background Task --> Save the session token in the use State have to implement logic in backend
-        
+
         const session_token = res.data.session_token;
-        setSessions(prevList => [...prevList,session_token]);
+        setSessions((prevList) => [...prevList, session_token]);
         alert("Federated Learning Request is accepted!");
         setGlobalData((prevGlobalData) => ({
           ...prevGlobalData,
@@ -62,7 +66,11 @@ export default function Request({clientToken,setSessions}) {
   return (
     <>
       {clientToken ? (
-        <form id="Request-form" className="row g-3" onSubmit={handleSubmit(onSubmit)}>
+        <form
+          id="Request-form"
+          className="row g-3"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <div className="container mt-3">
             <h4>Org Name:</h4>
             <input
@@ -73,10 +81,10 @@ export default function Request({clientToken,setSessions}) {
               {...register("organisation_name")}
             />
           </div>
-          
+
           <h4>Data:</h4>
           <DataInfo control={control} register={register} />
-          
+
           <h4>Model:</h4>
           {/* Dropdown for selecting the model */}
           <div className="select-model">
@@ -93,9 +101,9 @@ export default function Request({clientToken,setSessions}) {
               ))}
             </select>
           </div>
-          
+
           {selectedModel ? availableModels[selectedModel].component : <></>}
-          
+
           <div>
             <button type="submit" className="btn btn-primary me-5">
               Request
@@ -103,9 +111,8 @@ export default function Request({clientToken,setSessions}) {
           </div>
         </form>
       ) : (
-        <p>LogIn First</p>
+        <p>!!LogIn First!!</p>
       )}
     </>
-    
   );
 }
