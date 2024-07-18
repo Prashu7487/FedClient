@@ -3,12 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 import subprocess
 import json
 import os
-"""
-NOTE: adjust the directory of training_script
-"""
 
 
-# NOne -> null and False-> false is a big big issue...**************
+"""
+  Dataset link: https://drive.google.com/drive/folders/11fclSnlnfEvgYukFkUk9ienmv7SzHmv2?usp=drive_link
+  Please download respective client datasets and adjust the paths accordingly (preferably keep in PrivateServer\data directory).
+
+  NOTE: adjust the directory of training_script
+"""
+
+# NOne -> null, and False-> false is a big big issue...for common error
 
 """ 
     These paths can be directly accessed in the training_script, but this setting allows more freedom in general setting...

@@ -5,11 +5,6 @@ import os
 from ModelBuilder import model_instance_from_config
 import numpy as np
 
-"""
-  Dataset link: https://drive.google.com/drive/folders/11fclSnlnfEvgYukFkUk9ienmv7SzHmv2?usp=drive_link
-  Please download respective client datasets and adjust the paths accordingly.
-
-"""
 
 def receive_global_parameters(url):
     try:
