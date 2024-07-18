@@ -35,6 +35,7 @@ if __name__ == "__main__":
     # print(model_path)
     with open(model_path, 'r') as json_file:
         modelConfig = json.load(json_file)
+        
     print(modelConfig)
     model = model_instance_from_config(modelConfig)
     print(type(model))
@@ -46,8 +47,6 @@ if __name__ == "__main__":
     Y_path = sys.argv[3]
     Y = np.load(Y_path)
     # print(Y.shape)
-
-    print("prediction is:",model.predict(X))
 
     global_parameters = receive_global_parameters(get_url)
     global_parameters = dict(global_parameters) #see if works without it

@@ -25,15 +25,31 @@ export default function DataInfo({ control, register }) {
       {/* Parent Div (where cloned elements will be inserted) */}
       <div id="parent-template-div">
         {fields.map((field, index) => (
-          <ul key={field.id} className="input-group mb-3">
+          <div key={field.id} className="input-group mb-3">
             <span className="input-group-text">Column Name and Type</span>
-            <input
-              {...register(`dataset_info.feature_list.${index}.feature_name`)}
+            <Controller
+              render={({ field }) => (
+                <input
+                  {...field}
+                  className="form-control"
+                  placeholder="Feature Name"
+                />
+              )}
+              name={`dataset_info.feature_list.${index}.feature_name`}
+              control={control}
+              defaultValue=""
             />
             <Controller
-              render={({ field }) => <input {...field} />}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  className="form-control"
+                  placeholder="Type of Feature"
+                />
+              )}
               name={`dataset_info.feature_list.${index}.type_Of_feature`}
               control={control}
+              defaultValue=""
             />
             <button
               className="btn btn-outline-danger"
@@ -42,14 +58,14 @@ export default function DataInfo({ control, register }) {
             >
               Remove
             </button>
-          </ul>
+          </div>
         ))}
       </div>
 
       <button
         type="button"
         className="btn btn-primary"
-        onClick={() => append()}
+        onClick={() => append({ feature_name: "", type_Of_feature: "" })}
       >
         Add Feature
       </button>

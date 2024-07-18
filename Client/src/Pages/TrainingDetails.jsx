@@ -38,9 +38,9 @@ const RenderData = ({ data, level = 0 }) => {
   }
 };
 
-export default function TrainingDetails({clientToken}) {
+export default function TrainingDetails({ clientToken }) {
   const { sessionId } = useParams();
-  const [federatedSessionData, setFederatedSessionData] = useState({})
+  const [federatedSessionData, setFederatedSessionData] = useState({});
 
   const { register, handleSubmit } = useForm();
   // Finding the training object of the id in the URL path
@@ -51,12 +51,15 @@ export default function TrainingDetails({clientToken}) {
   // if (!training) {
   //   return <Error />;
   // }
-  
+
   const fetchFederatedSessionData = async (clientId) => {
     const url = `http://localhost:8000/get-federated-session/${sessionId}`;
+    console.log("Session:", sessionId);
+    console.log("clientid:", clientId);
+
     try {
       const params = {
-        client_id: clientId
+        client_id: clientId,
       };
       const res = await axios.get(url, { params });
       console.log(res.data);
@@ -67,10 +70,8 @@ export default function TrainingDetails({clientToken}) {
   };
 
   useEffect(() => {
-    
     fetchFederatedSessionData(clientToken);
-  }, [clientToken])
-  
+  }, [clientToken]);
 
   // Function to determine status badge color
   const getStatusBadgeClass = (status) => {
@@ -85,40 +86,38 @@ export default function TrainingDetails({clientToken}) {
   };
 
   const onSubmit = async (data) => {
-    console.log(data.decision)
+    console.log(data.decision);
     const requestData = {
-      'client_id': clientToken,
-      'session_id' : sessionId,
-      'decision' : data.decision=='accepted'?1:0
-    }
-    console.log(requestData.decision,typeof(requestData.decision))
-    try{
+      client_id: clientToken,
+      session_id: sessionId,
+      decision: data.decision == "accepted" ? 1 : 0,
+    };
+    console.log(requestData.decision, typeof requestData.decision);
+    try {
       const postURL = "http://localhost:8000/submit-client-federated-response";
-      console.log(requestData)
+      console.log(requestData);
       const res = await axios.post(postURL, requestData);
       if (res.status === 200) {
         // Client Background Task --> Save the session token in the use State have to implement logic in backend
         console.log(res.data);
-        fetchFederatedSessionData(clientToken)
+        fetchFederatedSessionData(clientToken);
       } else {
         console.error("Failed to submit the request:", res);
       }
-    }
-    catch(error){
+    } catch (error) {
       console.error("Error submitting the request:", error);
     }
-    
-  }
+  };
 
-  return (
-    clientToken ? (
-      <div className="container mt-4">
-        <div className="card">
-          <div className="card-header text-center bg-primary text-white">
-            <h3>Training Details</h3>
-          </div>
-          <div className="card-body">
-            {federatedSessionData && Object.entries(federatedSessionData).map(([key, value]) => (
+  return clientToken ? (
+    <div className="container mt-4">
+      <div className="card">
+        <div className="card-header text-center bg-primary text-white">
+          <h3>Training Details</h3>
+        </div>
+        <div className="card-body">
+          {federatedSessionData &&
+            Object.entries(federatedSessionData).map(([key, value]) => (
               <div key={key} className="mb-3">
                 <h5 className="text-primary border-bottom pb-2">{key}</h5>
                 {key.toLowerCase() === "training_status" ? (
@@ -128,11 +127,19 @@ export default function TrainingDetails({clientToken}) {
                     {value === 1 ? (
                       <form onSubmit={handleSubmit(onSubmit)}>
                         <label>
-                          <input type="radio" value="accepted" {...register("decision", { required: true })} />
+                          <input
+                            type="radio"
+                            value="accepted"
+                            {...register("decision", { required: true })}
+                          />
                           Accept
                         </label>
                         <label>
-                          <input type="radio" value="rejected" {...register("decision", { required: true })} />
+                          <input
+                            type="radio"
+                            value="rejected"
+                            {...register("decision", { required: true })}
+                          />
                           Reject
                         </label>
                         <br />
@@ -145,11 +152,10 @@ export default function TrainingDetails({clientToken}) {
                 )}
               </div>
             ))}
-          </div>
         </div>
       </div>
-    ) : (
-      <>LogInFirst</>
-    )
+    </div>
+  ) : (
+    <>LogInFirst</>
   );
 }

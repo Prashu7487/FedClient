@@ -10,8 +10,8 @@ NOTE: adjust the directory of myscript
 
 # NOne -> null and False-> false is a big big issue...**************
 model_path = "model_config.json"
-train_X_path = "data\client_1_data_X.npy"
-train_Y_path =  "data\client_1_data_Y.npy"
+train_X_path = "data\X_train.npy"
+train_Y_path =  "data\Y_train.npy"
 
 app = FastAPI()
 app.add_middleware(
@@ -35,7 +35,7 @@ def initiate_model(modelConfig: dict):
 @app.get("/execute-round")
 def run_script():
     # Run the script using subprocess
-    result = subprocess.run(["python", "PrivateServer/myscript.py",model_path,train_X_path,train_Y_path], capture_output=True, text=True)
+    result = subprocess.run(["python", "PrivateServer/traning_script.py",model_path,train_X_path,train_Y_path], capture_output=True, text=True)
     return {"stdout": result.stdout, "stderr": result.stderr, "returncode": result.returncode}
 
 

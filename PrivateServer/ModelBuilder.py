@@ -2,18 +2,20 @@ from CustomModels.LandMarkSVM import LandMarkSVM
 from CustomModels.CustomSVM import CustomSVM
 from CustomModels.LinearRegression import LinearRegression
 from CustomModels.MultiLayerPerceptron import MultiLayerPerceptron
+from CustomModels.CustomCNN import CustomCNN
+
 import json
 
 model_classes = {
         "LandMarkSVM": LandMarkSVM,
         "CustomSVM": CustomSVM,
         "Linear_Regression": LinearRegression,
-        "multiLayerPerceptron":MultiLayerPerceptron
+        "multiLayerPerceptron":MultiLayerPerceptron,
+        "CNN": CustomCNN
         # Add other models here if necessary
     }
 
 def model_instance_from_config(modelConfig):
-    print("model config received in Modelbuilder are:",modelConfig)
     model_name = modelConfig["model_name"]
     config = modelConfig["model_info"]
 

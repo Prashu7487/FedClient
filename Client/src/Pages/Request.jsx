@@ -9,6 +9,31 @@ import axios from "axios";
 // Required URLs
 const requestURL = "http://localhost:8000/create-federated-session";
 
+/*
+==================================================
+Form schema:
+ {fed_info: {obj}, client_token: string}
+==================================================
+
+==================================================
+fed_info schema:
+{
+  dataset_info : 
+  {
+    about_dataset : string,
+    feature_list: 
+    {
+      0: {feature_name: 'col1', type_Of_feature: 'int'}
+      1: {feature_name: 'col2', type_Of_feature: 'array of shape (256,256)'}
+    }
+  }
+  model_info : { obj, structure depends on individual model itself}
+  model_name: "string"
+  organisation_name: "string"
+}
+==================================================
+
+*/
 export default function Request({ clientToken, setSessions }) {
   // React States
   const [selectedModel, setSelectedModel] = useState("");
@@ -32,7 +57,7 @@ export default function Request({ clientToken, setSessions }) {
       fed_info: formData,
       client_token: clientToken,
     };
-
+    console.log("sending in request:", requestData);
     try {
       const postURL = requestURL;
       const res = await axios.post(postURL, requestData);
@@ -41,7 +66,7 @@ export default function Request({ clientToken, setSessions }) {
         RequestId: `${GlobalData.Client.ClientID}${Date.now()}`,
         OrgName: formData.organisation_name,
         Status: "Requested",
-        Model: { MLP: formData.model_info },
+        Model: formData.model_info,
         Data: formData.dataset_info,
       };
 
@@ -63,6 +88,7 @@ export default function Request({ clientToken, setSessions }) {
     }
   };
 
+  // clientToken = "something";
   return (
     <>
       {clientToken ? (
