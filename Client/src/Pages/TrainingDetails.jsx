@@ -39,6 +39,7 @@ const RenderData = ({ data, level = 0 }) => {
 };
 
 export default function TrainingDetails({ clientToken }) {
+  const [config, setConfig] = useState(null); // delete later, just to test training
   const { sessionId } = useParams();
   const [federatedSessionData, setFederatedSessionData] = useState({});
 
@@ -52,10 +53,37 @@ export default function TrainingDetails({ clientToken }) {
   //   return <Error />;
   // }
 
+  // ============================================================================
+  /* Code to be used to trigger training... "config" state is also associated with this, delete that too while deleting this*/
+  const train_model = async (config) => {
+    console.log(config);
+    const model_send_url = "http://localhost:9000/initiate-model";
+    const training_start_url = "http://localhost:9000/execute-round";
+
+    const res = await axios.post(model_send_url, config.data.federated_info);
+    if (res.status === 200) {
+      console.log(res.data.message);
+    } else {
+      console.error("Failed to send model config to private server", res);
+    }
+
+    const training_verbose = await axios.get(training_start_url);
+    if (training_verbose.status === 200) {
+      console.log("output:", training_verbose.data.stdout);
+      console.log("stderr:", training_verbose.data.stderr);
+      console.log("returncode:", training_verbose.data.returncode);
+    } else {
+      console.error("Failed to start the execution on the private server", res);
+    }
+  };
+
+  const handleButtonClick = () => {
+    train_model(config);
+  };
+  // ==========================================================================
+
   const fetchFederatedSessionData = async (clientId) => {
     const url = `http://localhost:8000/get-federated-session/${sessionId}`;
-    console.log("Session:", sessionId);
-    console.log("clientid:", clientId);
 
     try {
       const params = {
@@ -64,6 +92,7 @@ export default function TrainingDetails({ clientToken }) {
       const res = await axios.get(url, { params });
       console.log(res.data);
       setFederatedSessionData(res.data);
+      setConfig(res); // to be deleted
     } catch (error) {
       console.log("Error Fetching Data", error);
     }
@@ -154,6 +183,7 @@ export default function TrainingDetails({ clientToken }) {
             ))}
         </div>
       </div>
+      <button onClick={handleButtonClick}>Train</button>
     </div>
   ) : (
     <>LogInFirst</>

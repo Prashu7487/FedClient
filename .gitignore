@@ -25,3 +25,8 @@ Client/*.local
 PrivateServer/__pycache__/
 PrivateServer/data/
 PrivateServer/Extradata/
+PrivateServer/X_train.npy
+PrivateServer/Y_train.npy
+X_train.npy
+Y_train.npy
+model_config.json

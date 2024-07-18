@@ -24,7 +24,7 @@ def model_instance_from_config(modelConfig):
     if not model_class:
         raise ValueError(f"Unknown model: {model_name}")
 
-    model_instance = model_class(**config)
+    model_instance = model_class(config) ## removed **config
     
     return model_instance
 

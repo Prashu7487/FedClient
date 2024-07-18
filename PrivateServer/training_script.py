@@ -1,9 +1,15 @@
 import requests
 import sys
 import json
+import os
 from ModelBuilder import model_instance_from_config
 import numpy as np
 
+"""
+  Dataset link: https://drive.google.com/drive/folders/11fclSnlnfEvgYukFkUk9ienmv7SzHmv2?usp=drive_link
+  Please download respective client datasets and adjust the paths accordingly.
+
+"""
 
 def receive_global_parameters(url):
     try:
@@ -32,32 +38,33 @@ if __name__ == "__main__":
     post_url = "http://localhost:8000/receive-parameters"
 
     model_path = sys.argv[1]
-    # print(model_path)
     with open(model_path, 'r') as json_file:
         modelConfig = json.load(json_file)
         
-    print(modelConfig)
     model = model_instance_from_config(modelConfig)
-    print(type(model))
+    print("model built successifully")
 
     X_path = sys.argv[2]
     X = np.load(X_path)
-    # print(X.shape)
 
     Y_path = sys.argv[3]
     Y = np.load(Y_path)
     # print(Y.shape)
 
-    global_parameters = receive_global_parameters(get_url)
-    global_parameters = dict(global_parameters) #see if works without it
-    if global_parameters:
-        print("Received global weights")
+    # =======================================================
+    #  uncomment when end points implemented
+    # =======================================================
 
-    if(global_parameters.is_first==0):
-        model.update_parameters(global_parameters.parameter)
+    # global_parameters = receive_global_parameters(get_url)
+    # global_parameters = dict(global_parameters) #see if works without it
+    # if global_parameters:
+    #     print("Received global weights")
+
+    # if(global_parameters.is_first==0):
+    #     model.update_parameters(global_parameters.parameter)
     model.fit(X,Y)
     payload = {"client_parameters":model.get_parameters(),"client_id":1}
-
-    posted_data = send_updated_parameters(post_url, payload)
-    if posted_data:
-        print("updated parameters sent")
+    print("successify executed")
+    # posted_data = send_updated_parameters(post_url, payload)
+    # if posted_data:
+    #     print("updated parameters sent")

@@ -56,9 +56,9 @@ class CustomCNN:
         except Exception as e:
             handle_error(e)
 
-    def fit(self, X, y, epochs=10, batch_size=32, validation_split=0.2):
+    def fit(self, X, y, epochs=1, batch_size=32):
         try:
-            return self.model.fit(X, y, epochs=epochs, batch_size=batch_size, validation_split=validation_split)
+            return self.model.fit(X, y, epochs=epochs, batch_size=batch_size)
         except Exception as e:
             handle_error(e)
 

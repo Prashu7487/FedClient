@@ -88,7 +88,6 @@ export default function Request({ clientToken, setSessions }) {
     }
   };
 
-  // clientToken = "something";
   return (
     <>
       {clientToken ? (

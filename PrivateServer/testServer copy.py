@@ -4,27 +4,16 @@ import subprocess
 import json
 import os
 """
-NOTE: adjust the directory of training_script
+NOTE: adjust the directory of myscript
 """
 
 
 # NOne -> null and False-> false is a big big issue...**************
-
-""" 
-    These paths can be directly accessed in the training_script, but this setting allows more freedom in general setting...
-    for e.g. if dataset path is changed then client should not modify in actual training_script.
-"""
-
-""" NOTE: changing path requires restarting of the server for obvious reasons"""
-
 model_path = "model_config.json"
-# (put data in PrivateServer\data)
-train_X_path = r"PrivateServer\data\X_train.npy"
-train_Y_path = r"PrivateServer\data\Y_train.npy"
-
-# OR with this one (put data in FedClient)
-# train_X_path = "X_train.npy"
-# train_Y_path = "Y_train.npy"
+# train_X_path = os.path.join("data", "X_train.npy")
+# train_Y_path = os.path.join("data", "Y_train.npy")
+train_X_path = "X_train.npy"
+train_Y_path = "Y_train.npy"
 
 app = FastAPI()
 app.add_middleware(
@@ -41,19 +30,20 @@ def initiate_model(modelConfig: dict):
         json.dump(modelConfig, json_file, indent=4)
     return {"message": "model configuration saved"}
 
+# 
+# using multiprocessing.Array or multiprocessing.shared_memory in Python
+# whereever communication is happening...look again to reduce overhead
 
 @app.get("/execute-round")
 def run_script():
     # Run the script using subprocess
-    print(train_X_path)
-    result = subprocess.run(["python", "PrivateServer/training_script.py",model_path,train_X_path,train_Y_path], capture_output=True, text=True)
+    result = subprocess.run(["python", "PrivateServer/traning_script.py",model_path,train_X_path,train_Y_path], capture_output=True, text=True)
     return {"stdout": result.stdout, "stderr": result.stderr, "returncode": result.returncode}
 
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="localhost", port=9000)
-
 
 # http://localhost:9000/initiate-model
 # http://localhost:9000/execute-round
