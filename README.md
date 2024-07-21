@@ -1,2 +1,2 @@
 # FedClient
-Repo for simulation FedClient
+A client-side application for federated learning...
