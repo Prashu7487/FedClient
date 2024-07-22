@@ -20,6 +20,7 @@ class CustomCNN:
 
         try:
             input_shape = eval(config['input_shape'])
+            print("From CustomCnn", config)
 
             # Adding layers to the model
             for i in range(len(config['layers'])):
@@ -49,7 +50,7 @@ class CustomCNN:
             output_layer = config['output_layer']
             self.model.add(Dense(int(output_layer['num_nodes']), activation=output_layer['activation_function']))
 
-            self.model.compile(loss=config['loss'], optimizer=config['optimizer'])
+            self.model.compile(loss=config['loss'], optimizer=config['optimizer'],metrics=['accuracy'])
 
         except Exception as e:
             handle_error(e)
