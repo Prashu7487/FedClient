@@ -3,15 +3,15 @@ import { useForm } from "react-hook-form";
 import { useGlobalData } from "../GlobalContext";
 import axios from "axios";
 
-export default function Register({ setClientToken, setSocket }) {
+const register_client_URL = "http://localhost:8000/sign-in";
+
+export default function Register({ clientToken, setClientToken, setSocket }) {
   const { GlobalData, setGlobalData } = useGlobalData();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-
-  const regURL = "http://localhost:8000/sign-in";
 
   const onSubmit = async (formData) => {
     if (clientToken) {
@@ -25,7 +25,7 @@ export default function Register({ setClientToken, setSocket }) {
       password: formData.password,
     };
     try {
-      const res = await axios.post(regURL, clientData);
+      const res = await axios.post(register_client_URL, clientData);
       if (res.status === 200) {
         const clientToken = res.data["client_token"];
 
@@ -65,6 +65,7 @@ export default function Register({ setClientToken, setSocket }) {
     console.log("Deregistered:", GlobalData.ConnectionObject == null);
   };
 
+  // registration form
   return (
     <form
       id="Registration-form"

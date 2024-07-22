@@ -39,6 +39,7 @@ export default function App() {
               path="/Register"
               element={
                 <Register
+                  clientToken={clientToken}
                   setClientToken={setClientToken}
                   setSocket={setSocket}
                 />

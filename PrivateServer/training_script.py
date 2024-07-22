@@ -38,7 +38,7 @@ def send_updated_parameters(url, client_parameter,session_id,client_id):
     # receive global parameters (gets list that is compatible to serialize and send from server) from the central server,
     # .. and update it using update_parameters methd of model (if not first parameter, which is empty)
     # train the model (using fit mthd)
-    # obtain new trained parameters using get_parameters methd (this return a list, compatible to serialize and send)
+    # obtain new trained parameters using get_parameters methd (this returns a list, compatible to serialize and send)
     # send updated params to the central server
     # =========================================================================================================================
 

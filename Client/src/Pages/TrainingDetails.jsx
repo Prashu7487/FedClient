@@ -11,6 +11,11 @@ import { useForm } from "react-hook-form";
 const get_training_endpoint = `http://localhost:8000/get-federated-session/${sessionId}`;
 const client_response_endpoint =
   "http://localhost:8000/submit-client-federated-response";
+const private_training_start_url = "http://localhost:9000/execute-round";
+const server_status_four_update_Url =
+  "http://localhost:8000/update-client-status-four";
+const private_server_model_initiate_url =
+  "http://localhost:9000/initiate-model";
 
 // Recursive component to render any type of data
 const RenderData = ({ data, level = 0 }) => {
@@ -48,37 +53,27 @@ export default function TrainingDetails({ clientToken, socket }) {
   const [federatedSessionData, setFederatedSessionData] = useState({});
 
   const { register, handleSubmit } = useForm();
-  // Finding the training object of the id in the URL path
-  // const training = GlobalData.CurrentModels.find(
-  //   (item) => item.RequestId === id
-  // );
-
-  // if (!training) {
-  //   return <Error />;
-  // }
 
   // ============================================================================
   /* Code to be used to trigger training... "config" state is also associated with this, delete that too while deleting this*/
   const setUpTraining = async (config) => {
     console.log(config);
-    const private_model_send_url = "http://localhost:9000/initiate-model";
 
     const data = {
       model_config: config,
       session_id: sessionId,
       client_id: clientToken,
     };
-    const res = await axios.post(private_model_send_url, data);
+    const res = await axios.post(private_server_model_initiate_url, data);
     if (res.status === 200) {
       console.log(res.data.message);
-      const serverUrl = "http://localhost:8000/update-client-status-four";
       console.log(typeof sessionId, typeof clientToken, typeof decision);
       const data = {
         client_id: clientToken,
         session_id: sessionId,
         decision: 1,
       };
-      const response = await axios.post(serverUrl, data);
+      const response = await axios.post(server_status_four_update_Url, data);
       if (response.status === 200) {
         console.log(response.message);
       } else {
@@ -91,7 +86,6 @@ export default function TrainingDetails({ clientToken, socket }) {
 
   const train_model = async (config) => {
     console.log(config);
-    const private_training_start_url = "http://localhost:9000/execute-round";
     const training_verbose = await axios.get(private_training_start_url);
     if (training_verbose.status === 200) {
       console.log("output:", training_verbose.data.stdout);
