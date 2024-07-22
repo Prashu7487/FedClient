@@ -36,7 +36,12 @@ export default function App() {
             <Route path="/" exact element={<Home />} />
             <Route
               path="/Register"
-              element={<Register setClientToken={setClientToken} />}
+              element={
+                <Register
+                  clientToken={clientToken}
+                  setClientToken={setClientToken}
+                />
+              }
             />
             <Route
               path="/Request"

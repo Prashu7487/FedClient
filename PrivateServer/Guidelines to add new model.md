@@ -1,7 +1,18 @@
 ## Creating Model Class
 
 1. Create model class with fit, get_parameters, update_parameters, predict methods
-2.
+2. get_parameters should return something like this (crucial to work aggreagation correctly):
+   {
+   'weights': [[weights_of_layer_i], [weights_of_layer_i+1],... [weights_of_layer_i+k]],
+   'biases' : [[bias_L1],...[bias_Lk]],
+   'Key3;: [value/values],
+   ..so on for all required keys
+   }
+
+   // for e.g. NN can have only 'weights' key as biases are included in that and nothing else is required
+
+3. update parameters will also get a "list" (exactly like return value of get_parameters) as argument,
+   it should convert it to numpy array and consume it to update model weights
 
 ---
 

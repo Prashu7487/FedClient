@@ -8,6 +8,10 @@ import { useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 
+const get_training_endpoint = `http://localhost:8000/get-federated-session/${sessionId}`;
+const client_response_endpoint =
+  "http://localhost:8000/submit-client-federated-response";
+
 // Recursive component to render any type of data
 const RenderData = ({ data, level = 0 }) => {
   if (typeof data === "object" && data !== null) {
@@ -54,13 +58,14 @@ export default function TrainingDetails({ clientToken }) {
   // }
 
   // ============================================================================
-  /* Code to be used to trigger training... "config" state is also associated with this, delete that too while deleting this*/
+  /* Code to be used to trigger training... "config" state ans setconfig
+   is also associated with this, delete that (and uses too) while deleting this */
   const train_model = async (config) => {
     console.log(config);
     const model_send_url = "http://localhost:9000/initiate-model";
     const training_start_url = "http://localhost:9000/execute-round";
 
-    const res = await axios.post(model_send_url, config.data.federated_info);
+    const res = await axios.post(model_send_url, config.data.federated_info); // config.data because of axios
     if (res.status === 200) {
       console.log(res.data.message);
     } else {
@@ -83,13 +88,11 @@ export default function TrainingDetails({ clientToken }) {
   // ==========================================================================
 
   const fetchFederatedSessionData = async (clientId) => {
-    const url = `http://localhost:8000/get-federated-session/${sessionId}`;
-
     try {
       const params = {
         client_id: clientId,
       };
-      const res = await axios.get(url, { params });
+      const res = await axios.get(get_training_endpoint, { params });
       console.log(res.data);
       setFederatedSessionData(res.data);
       setConfig(res); // to be deleted
@@ -123,9 +126,8 @@ export default function TrainingDetails({ clientToken }) {
     };
     console.log(requestData.decision, typeof requestData.decision);
     try {
-      const postURL = "http://localhost:8000/submit-client-federated-response";
       console.log(requestData);
-      const res = await axios.post(postURL, requestData);
+      const res = await axios.post(client_response_endpoint, requestData);
       if (res.status === 200) {
         // Client Background Task --> Save the session token in the use State have to implement logic in backend
         console.log(res.data);

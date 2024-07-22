@@ -29,8 +29,8 @@ def send_updated_parameters(url, payload):
 
 
 if __name__ == "__main__":
-    get_url = "http://localhost:8000/get-parameters"
-    post_url = "http://localhost:8000/receive-parameters"
+    get_parameters_endpoint = "http://localhost:8000/get-parameters"
+    post_parameters_endpoint = "http://localhost:8000/receive-parameters"
 
     model_path = sys.argv[1]
     with open(model_path, 'r') as json_file:
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     #  uncomment when end points implemented
     # =======================================================
 
-    # global_parameters = receive_global_parameters(get_url)
+    # global_parameters = receive_global_parameters(get_parameters_endpoint)
     # global_parameters = dict(global_parameters) #see if works without it
     # if global_parameters:
     #     print("Received global weights")
@@ -60,6 +60,6 @@ if __name__ == "__main__":
     model.fit(X,Y)
     payload = {"client_parameters":model.get_parameters(),"client_id":1}
     print("successify executed")
-    # posted_data = send_updated_parameters(post_url, payload)
+    # posted_data = send_updated_parameters(post_parameters_endpoint, payload)
     # if posted_data:
     #     print("updated parameters sent")

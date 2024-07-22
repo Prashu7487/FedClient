@@ -68,17 +68,17 @@ class CustomCNN:
 
     def get_parameters(self):
         try:
-            params = []
+            params = {'weights':[]}
             for i, layer in enumerate(self.model.layers):
                 layer_weights = layer.get_weights()
-                params.append(list(layer_weights))
+                params['weights'].append(list(layer_weights))
             return params
         except Exception as e:
             handle_error(e)
 
     def update_parameters(self, new_params):
         try:
-            for i, (layer, layer_params) in enumerate(zip(self.model.layers, new_params)):
+            for i, (layer, layer_params) in enumerate(zip(self.model.layers, new_params['weights'])):
                 layer.set_weights([tf.convert_to_tensor(w) for w in layer_params])
         except Exception as e:
             handle_error(e)

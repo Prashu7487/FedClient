@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useGlobalData } from "../GlobalContext";
 import axios from "axios";
 
-export default function Register({setClientToken}) {
+export default function Register({ clientToken, setClientToken }) {
   const { GlobalData, setGlobalData } = useGlobalData();
   const {
     register,
@@ -14,10 +14,10 @@ export default function Register({setClientToken}) {
   const regURL = "http://localhost:8000/sign-in";
 
   const onSubmit = async (formData) => {
-    // if (GlobalData.ConnectionObject) {
-    //   console.log("Already registered..");
-    //   return;
-    // }
+    if (clientToken) {
+      console.log("Already registered..");
+      return;
+    }
 
     const clientData = {
       name: formData.clientName,
@@ -27,10 +27,10 @@ export default function Register({setClientToken}) {
     try {
       const res = await axios.post(regURL, clientData);
       if (res.status === 200) {
-        const clientToken = res.data["client_token"]
-        
-        setClientToken(clientToken)
-        alert(res.data.message)
+        const clientToken = res.data["client_token"];
+
+        setClientToken(clientToken);
+        alert(res.data.message);
       } else {
         console.error("Failed to submit the request:", res);
       }
