@@ -19,6 +19,7 @@ import { useState } from "react";
 export default function App() {
   const [clientToken, setClientToken] = useState("");
   const [sessions, setSessions] = useState([]);
+  const [socket, setSocket] = useState(null);
   return (
     <>
       <MyDataProvider>
@@ -38,8 +39,8 @@ export default function App() {
               path="/Register"
               element={
                 <Register
-                  clientToken={clientToken}
                   setClientToken={setClientToken}
+                  setSocket={setSocket}
                 />
               }
             />
@@ -55,7 +56,9 @@ export default function App() {
             />
             <Route
               path="/TrainingStatus/details/:sessionId"
-              element={<TrainingDetails clientToken={clientToken} />}
+              element={
+                <TrainingDetails clientToken={clientToken} socket={socket} />
+              }
             />
             <Route path="/*" element={<Error />} />
           </Routes>

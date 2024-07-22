@@ -42,7 +42,7 @@ const RenderData = ({ data, level = 0 }) => {
   }
 };
 
-export default function TrainingDetails({ clientToken }) {
+export default function TrainingDetails({ clientToken, socket }) {
   const [config, setConfig] = useState(null); // delete later, just to test training
   const { sessionId } = useParams();
   const [federatedSessionData, setFederatedSessionData] = useState({});
@@ -58,21 +58,41 @@ export default function TrainingDetails({ clientToken }) {
   // }
 
   // ============================================================================
-  /* Code to be used to trigger training... "config" state ans setconfig
-   is also associated with this, delete that (and uses too) while deleting this */
-  const train_model = async (config) => {
+  /* Code to be used to trigger training... "config" state is also associated with this, delete that too while deleting this*/
+  const setUpTraining = async (config) => {
     console.log(config);
-    const model_send_url = "http://localhost:9000/initiate-model";
-    const training_start_url = "http://localhost:9000/execute-round";
+    const private_model_send_url = "http://localhost:9000/initiate-model";
 
-    const res = await axios.post(model_send_url, config.data.federated_info); // config.data because of axios
+    const data = {
+      model_config: config,
+      session_id: sessionId,
+      client_id: clientToken,
+    };
+    const res = await axios.post(private_model_send_url, data);
     if (res.status === 200) {
       console.log(res.data.message);
+      const serverUrl = "http://localhost:8000/update-client-status-four";
+      console.log(typeof sessionId, typeof clientToken, typeof decision);
+      const data = {
+        client_id: clientToken,
+        session_id: sessionId,
+        decision: 1,
+      };
+      const response = await axios.post(serverUrl, data);
+      if (response.status === 200) {
+        console.log(response.message);
+      } else {
+        console.error("Failed to update the client status", response);
+      }
     } else {
       console.error("Failed to send model config to private server", res);
     }
+  };
 
-    const training_verbose = await axios.get(training_start_url);
+  const train_model = async (config) => {
+    console.log(config);
+    const private_training_start_url = "http://localhost:9000/execute-round";
+    const training_verbose = await axios.get(private_training_start_url);
     if (training_verbose.status === 200) {
       console.log("output:", training_verbose.data.stdout);
       console.log("stderr:", training_verbose.data.stderr);
@@ -80,10 +100,6 @@ export default function TrainingDetails({ clientToken }) {
     } else {
       console.error("Failed to start the execution on the private server", res);
     }
-  };
-
-  const handleButtonClick = () => {
-    train_model(config);
   };
   // ==========================================================================
 
@@ -95,7 +111,7 @@ export default function TrainingDetails({ clientToken }) {
       const res = await axios.get(get_training_endpoint, { params });
       console.log(res.data);
       setFederatedSessionData(res.data);
-      setConfig(res); // to be deleted
+      // setConfig(res); // to be deleted
     } catch (error) {
       console.log("Error Fetching Data", error);
     }
@@ -103,6 +119,19 @@ export default function TrainingDetails({ clientToken }) {
 
   useEffect(() => {
     fetchFederatedSessionData(clientToken);
+    if (socket) {
+      socket.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        const modelConfig = message.data;
+        console.log("Config before initialising", message);
+        if (message.type === "get_model_parameters_start_background_process") {
+          setConfig(modelConfig);
+          setUpTraining(modelConfig); // Function to initialize training
+        } else if (message.type === "start_training") {
+          train_model(config);
+        }
+      };
+    }
   }, [clientToken]);
 
   // Function to determine status badge color
@@ -185,7 +214,6 @@ export default function TrainingDetails({ clientToken }) {
             ))}
         </div>
       </div>
-      <button onClick={handleButtonClick}>Train</button>
     </div>
   ) : (
     <>LogInFirst</>
