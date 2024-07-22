@@ -8,8 +8,7 @@ import { useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 
-const get_training_endpoint = `http://localhost:8000/get-federated-session/${sessionId}`;
-const client_response_endpoint =
+const client_fed_response_endpoint =
   "http://localhost:8000/submit-client-federated-response";
 const private_training_start_url = "http://localhost:9000/execute-round";
 const server_status_four_update_Url =
@@ -54,58 +53,58 @@ export default function TrainingDetails({ clientToken, socket }) {
 
   const { register, handleSubmit } = useForm();
 
-  // ============================================================================
-  /* Code to be used to trigger training... "config" state is also associated with this, delete that too while deleting this*/
-  const setUpTraining = async (config) => {
-    console.log(config);
+  // // ============================================================================
+  // /* Code to be used to trigger training... "config" state is also associated with this, delete that too while deleting this*/
+  // const setUpTraining = async (config) => {
+  //   console.log("config in setUpTraining: ", config);
 
-    const data = {
-      model_config: config,
-      session_id: sessionId,
-      client_id: clientToken,
-    };
-    const res = await axios.post(private_server_model_initiate_url, data);
-    if (res.status === 200) {
-      console.log(res.data.message);
-      console.log(typeof sessionId, typeof clientToken, typeof decision);
-      const data = {
-        client_id: clientToken,
-        session_id: sessionId,
-        decision: 1,
-      };
-      const response = await axios.post(server_status_four_update_Url, data);
-      if (response.status === 200) {
-        console.log(response.message);
-      } else {
-        console.error("Failed to update the client status", response);
-      }
-    } else {
-      console.error("Failed to send model config to private server", res);
-    }
-  };
+  //   const data = {
+  //     model_config: config,
+  //     session_id: sessionId,
+  //     client_id: clientToken,
+  //   };
+  //   const res = await axios.post(private_server_model_initiate_url, data);
+  //   if (res.status === 200) {
+  //     console.log(res.data.message);
+  //     // console.log(typeof sessionId, typeof clientToken, typeof decision); //**** reading decision before defn
+  //     const data = {
+  //       client_id: clientToken,
+  //       session_id: sessionId,
+  //       decision: 1,
+  //     };
+  //     const response = await axios.post(server_status_four_update_Url, data);
+  //     if (response.status === 200) {
+  //       console.log(response.message);
+  //     } else {
+  //       console.error("Failed to update the client status", response);
+  //     }
+  //   } else {
+  //     console.error("Failed to send model config to private server", res);
+  //   }
+  // };
 
-  const train_model = async (config) => {
-    console.log(config);
-    const training_verbose = await axios.get(private_training_start_url);
-    if (training_verbose.status === 200) {
-      console.log("output:", training_verbose.data.stdout);
-      console.log("stderr:", training_verbose.data.stderr);
-      console.log("returncode:", training_verbose.data.returncode);
-    } else {
-      console.error("Failed to start the execution on the private server", res);
-    }
-  };
+  // const train_model = async () => {
+  //   const training_verbose = await axios.get(private_training_start_url);
+  //   if (training_verbose.status === 200) {
+  //     console.log("output:", training_verbose.data.stdout);
+  //     console.log("stderr:", training_verbose.data.stderr);
+  //     console.log("returncode:", training_verbose.data.returncode);
+  //   } else {
+  //     console.error("Failed to start the execution on the private server", res);
+  //   }
+  // };
   // ==========================================================================
 
   const fetchFederatedSessionData = async (clientId) => {
+    const get_training_endpoint = `http://localhost:8000/get-federated-session/${sessionId}`;
     try {
       const params = {
         client_id: clientId,
       };
       const res = await axios.get(get_training_endpoint, { params });
-      console.log(res.data);
+      console.log("data fetched from server:", res.data);
       setFederatedSessionData(res.data);
-      // setConfig(res); // to be deleted
+      // setConfig(res.data); // to be deleted
     } catch (error) {
       console.log("Error Fetching Data", error);
     }
@@ -113,19 +112,19 @@ export default function TrainingDetails({ clientToken, socket }) {
 
   useEffect(() => {
     fetchFederatedSessionData(clientToken);
-    if (socket) {
-      socket.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        const modelConfig = message.data;
-        console.log("Config before initialising", message);
-        if (message.type === "get_model_parameters_start_background_process") {
-          setConfig(modelConfig);
-          setUpTraining(modelConfig); // Function to initialize training
-        } else if (message.type === "start_training") {
-          train_model(config);
-        }
-      };
-    }
+    // if (socket) {
+    //   socket.onmessage = (event) => {
+    //     const message = JSON.parse(event.data);
+    //     // const modelConfig = message.data;
+    //     console.log("Config before initialising: ", message);
+    //     if (message.type === "get_model_parameters_start_background_process") {
+    //       // setConfig(modelConfig);
+    //       setUpTraining(config); // Function to initialize training
+    //     } else if (message.type === "start_training") {
+    //       train_model(config);
+    //     }
+    //   };
+    // }
   }, [clientToken]);
 
   // Function to determine status badge color
@@ -150,7 +149,7 @@ export default function TrainingDetails({ clientToken, socket }) {
     console.log(requestData.decision, typeof requestData.decision);
     try {
       console.log(requestData);
-      const res = await axios.post(client_response_endpoint, requestData);
+      const res = await axios.post(client_fed_response_endpoint, requestData);
       if (res.status === 200) {
         // Client Background Task --> Save the session token in the use State have to implement logic in backend
         console.log(res.data);

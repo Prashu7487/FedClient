@@ -23,7 +23,7 @@ export default function App() {
   return (
     <>
       <MyDataProvider>
-        <EventsAction />
+        <EventsAction socket={socket} clientToken={clientToken} />
         <NavBar />
         <div
           style={{

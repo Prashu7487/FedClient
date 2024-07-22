@@ -10,7 +10,7 @@ def receive_global_parameters(url,session_id,client_id):
     try:
         params = {'session_id': session_id}
         response = requests.get(url+"/"+session_id)
-        print(response.text)
+        # print(response.text)
         response.raise_for_status()  # Raise an HTTPError for bad responses 
         data = response.json()  # Assuming the response is in JSON format
         return data
@@ -19,13 +19,12 @@ def receive_global_parameters(url,session_id,client_id):
         return None
 
 
-def send_updated_parameters(url, client_parameter,session_id,client_id):
+def send_updated_parameters(url, payload):
     try:
-        payload = {"client_parameters":client_parameter,"client_id":client_id,"session_id":session_id}
         response = requests.post(url, json=payload)
         response.raise_for_status()  # Raise an HTTPError for bad responses
         result = response.json()  # Assuming the response is in JSON format
-        print(result)
+        print("response of sending updated paramter to server:", result)
     except requests.exceptions.RequestException as e:
         print(f"Error posting data to {url}: {e}")
     
@@ -50,7 +49,7 @@ def main():
         post_url = "http://localhost:8000/receive-client-parameters"
 
         model_path = sys.argv[1]
-        with open(model_path, 'r') as json_file:
+        with open(model_path, 'r', encoding='utf-8') as json_file:
             modelInfo = json.load(json_file)
     
         session_id = modelInfo['session_id']
@@ -77,16 +76,22 @@ def main():
     
         if global_parameters:
             print("Received global weights")
+            print(global_parameters)
 
         if(global_parameters['is_first']==0):
-            model.update_parameters(global_parameters.parameter)
+            model.update_parameters(global_parameters['global_parameters']) 
     
         model.fit(X,Y)
 
         # Sending updated parameters to the server
-        updated_model_parameters = model.get_parameters()
+        updated_parameters = model.get_parameters()
+        payload = {
+            "session_id": session_id,
+            "client_id": client_id,
+            "client_parameter": updated_parameters
+        }
 
-        send_updated_parameters(post_url,session_id,client_id, updated_model_parameters)
+        send_updated_parameters(post_url, payload)
         print("Parameters sent to server")
         # =======================================================
     except Exception as e:

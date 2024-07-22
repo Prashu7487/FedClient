@@ -40,7 +40,7 @@ def initiate_model(modelConfig: dict):
 @app.get("/execute-round")
 def run_script():
     # Run the script using subprocess
-    result = subprocess.run(["python", training_script_path, model_path, train_X_path, train_Y_path], capture_output=True, text=True)
+    result = subprocess.run(["python", training_script_path, model_path, train_X_path, train_Y_path], capture_output=True, text=True, encoding='utf-8')
     return {"stdout": result.stdout, "stderr": result.stderr, "returncode": result.returncode}
 
 if __name__ == "__main__":

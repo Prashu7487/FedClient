@@ -1,7 +1,8 @@
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Flatten, Conv2D, Reshape, MaxPooling2D, AveragePooling2D
+from tensorflow.keras.layers import Input, Dense, Flatten, Conv2D, Reshape, MaxPooling2D, AveragePooling2D
 import logging
+import numpy as np
 
 # Setup basic logging configuration
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s %(levelname)s:%(message)s')
@@ -20,8 +21,7 @@ class CustomCNN:
 
         try:
             input_shape = eval(config['input_shape'])
-            print("From CustomCnn", config)
-
+            self.model.add(Input(shape=input_shape)) 
             # Adding layers to the model
             for i in range(len(config['layers'])):
                 layer = config['layers'][i]
@@ -37,20 +37,19 @@ class CustomCNN:
                         kernel_size=eval(layer['kernel_size']),
                         strides=eval(layer['stride']),
                         activation=layer['activation_function'],
-                        input_shape=input_shape if i == 0 else None
                     ))
                 elif layer_type == 'reshape':
                     self.model.add(Reshape(eval(layer['target_shape'])))
                 elif layer_type == 'pooling':
-                    if layer["pooling_type"]=="max":
+                    if layer["pooling_type"] == "max":
                         self.model.add(MaxPooling2D(pool_size=eval(layer['pool_size']), strides=eval(layer['stride'])))
-                    elif layer["pooling_type"]=="average":
+                    elif layer["pooling_type"] == "average":
                         self.model.add(AveragePooling2D(pool_size=eval(layer['pool_size']), strides=eval(layer['stride'])))
 
             output_layer = config['output_layer']
             self.model.add(Dense(int(output_layer['num_nodes']), activation=output_layer['activation_function']))
 
-            self.model.compile(loss=config['loss'], optimizer=config['optimizer'],metrics=['accuracy'])
+            self.model.compile(loss=config['loss'], optimizer=config['optimizer'], metrics=['accuracy'])
 
         except Exception as e:
             handle_error(e)
@@ -69,10 +68,11 @@ class CustomCNN:
 
     def get_parameters(self):
         try:
-            params = {'weights':[]}
+            params = {'weights': []}
             for i, layer in enumerate(self.model.layers):
                 layer_weights = layer.get_weights()
-                params['weights'].append(list(layer_weights))
+                # Convert each weight array to lists (can't do at once.)
+                params['weights'].append([w.tolist() for w in layer_weights])
             return params
         except Exception as e:
             handle_error(e)
@@ -80,6 +80,7 @@ class CustomCNN:
     def update_parameters(self, new_params):
         try:
             for i, (layer, layer_params) in enumerate(zip(self.model.layers, new_params['weights'])):
-                layer.set_weights([tf.convert_to_tensor(w) for w in layer_params])
+                # Convert lists back to numpy arrays
+                layer.set_weights([np.array(w) for w in layer_params])
         except Exception as e:
             handle_error(e)

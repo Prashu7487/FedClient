@@ -1,5 +1,8 @@
 ## Creating Model Class
 
+<!-- MUST DO: Only take model_config dict in the constrctor of model cls,
+everything req to create model should be in that dict only-->
+
 1. Create model class with fit, get_parameters, update_parameters, predict methods
 2. get_parameters should return something like this (crucial to work aggreagation correctly):
    {
@@ -13,6 +16,11 @@
 
 3. update parameters will also get a "list" (exactly like return value of get_parameters) as argument,
    it should convert it to numpy array and consume it to update model weights
+
+4. it is advised to take the params from get_parameters and see seperately if aggregate fun works for this .. then only keep it
+   in main code
+
+5. must test get_parameters, and update_parameters to work properly with each other and aggregate function
 
 ---
 

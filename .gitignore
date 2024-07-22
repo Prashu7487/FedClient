@@ -31,3 +31,4 @@ X_train.npy
 Y_train.npy
 model_config.json
 node_modules
+temp.py 
