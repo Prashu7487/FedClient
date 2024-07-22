@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useGlobalData } from "../GlobalContext";
 import axios from "axios";
 
-export default function Register({setClientToken}) {
+export default function Register({ setClientToken , setSocket }) {
   const { GlobalData, setGlobalData } = useGlobalData();
   const {
     register,
@@ -27,13 +27,24 @@ export default function Register({setClientToken}) {
     try {
       const res = await axios.post(regURL, clientData);
       if (res.status === 200) {
-        const clientToken = res.data["client_token"]
+        const clientToken = res.data["client_token"];
+
+        // Connect to websocket for this client Token
+        const wsURL = `ws://localhost:8000/ws/${clientToken}`;
+        const socket = new WebSocket(wsURL);
+
+        socket.onopen = function(event) {
+          console.log("Connected to WebSocket server.");
+          socket.send("Client connected with client_id: " + clientToken);  
+        };
         
-        setClientToken(clientToken)
-        alert(res.data.message)
+        setSocket(socket);
+        setClientToken(clientToken);
+        alert(res.data.message);
       } else {
         console.error("Failed to submit the request:", res);
       }
+
     } catch (error) {
       console.error("Error submitting the request:", error);
     }

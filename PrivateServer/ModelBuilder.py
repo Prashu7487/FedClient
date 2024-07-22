@@ -16,10 +16,11 @@ model_classes = {
     }
 
 def model_instance_from_config(modelConfig):
+    print(modelConfig)
     model_name = modelConfig["model_name"]
     config = modelConfig["model_info"]
 
-    model_class = model_classes[model_name]
+    model_class = model_classes[model_name]   # Model Class of selected model
     
     if not model_class:
         raise ValueError(f"Unknown model: {model_name}")

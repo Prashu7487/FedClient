@@ -21,10 +21,10 @@ import os
 
 """ NOTE: changing path requires restarting of the server for obvious reasons"""
 
-model_path = "model_config.json"
+model_config_path = "model_config.json"
 # (put data in PrivateServer\data)
-train_X_path = r"PrivateServer\data\X_train.npy"
-train_Y_path = r"PrivateServer\data\Y_train.npy"
+train_X_path = r".\data\X_train.npy"
+train_Y_path = r".\data\Y_train.npy"
 
 # OR with this one (put data in FedClient)
 # train_X_path = "X_train.npy"
@@ -50,7 +50,7 @@ def initiate_model(modelConfig: dict):
 def run_script():
     # Run the script using subprocess
     print(train_X_path)
-    result = subprocess.run(["python", "PrivateServer/training_script.py",model_path,train_X_path,train_Y_path], capture_output=True, text=True)
+    result = subprocess.run(["python", "./training_script.py",model_config_path,train_X_path,train_Y_path], capture_output=True, text=True)
     return {"stdout": result.stdout, "stderr": result.stderr, "returncode": result.returncode}
 
 
