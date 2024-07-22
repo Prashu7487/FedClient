@@ -11,8 +11,6 @@ def handle_error(error):
     error_message = f"An error occurred: {error}"
     logging.error(error_message)
     # to Add custom error handling logic here
-    # For example, 
-    # requests.post("https://your-error-reporting-service.com", data={"error": error_message})
 
 
 class CustomCNN:

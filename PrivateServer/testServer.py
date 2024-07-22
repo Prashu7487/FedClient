@@ -6,6 +6,10 @@ import os
 
 
 """
+  Don't start this server from terminal without specifying port (9000 or something unused) in the command,
+  otherwise by default 8000 port will conflict with federated server
+
+
   Dataset link: https://drive.google.com/drive/folders/11fclSnlnfEvgYukFkUk9ienmv7SzHmv2?usp=drive_link
   Please download respective client datasets and adjust the paths accordingly (preferably keep in PrivateServer\data directory).
 
@@ -26,9 +30,12 @@ model_config_path = "model_config.json"
 train_X_path = r".\data\X_train.npy"
 train_Y_path = r".\data\Y_train.npy"
 
+# train_X_path = r"PrivateServer\data\X_train.npy"
+# train_Y_path = r"PrivateServer\data\Y_train.npy"
+
 # OR with this one (put data in FedClient)
-# train_X_path = "X_train.npy"
-# train_Y_path = "Y_train.npy"
+train_X_path = r"D:\FedClient\X_train.npy" 
+train_Y_path = r"D:\FedClient\Y_train.npy"
 
 app = FastAPI()
 app.add_middleware(
@@ -48,9 +55,12 @@ def initiate_model(modelConfig: dict):
 
 @app.get("/execute-round")
 def run_script():
-    # Run the script using subprocess
+    # Run the script using subprocess "PrivateServer\training_script.py"
     print(train_X_path)
     result = subprocess.run(["python", "./training_script.py",model_config_path,train_X_path,train_Y_path], capture_output=True, text=True)
+    # print(os.getcwd())
+
+#     result = subprocess.run(["python", r"D:\FedClient\PrivateServer\training_script.py",model_path,train_X_path,train_Y_path], capture_output=True, text=True)
     return {"stdout": result.stdout, "stderr": result.stderr, "returncode": result.returncode}
 
 
@@ -63,4 +73,4 @@ if __name__ == "__main__":
 # http://localhost:9000/execute-round
 # 
 
-# don't start this server from terminal without specifying port (9000 or something unused) in the command
+
