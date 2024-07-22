@@ -30,6 +30,19 @@ def send_updated_parameters(url, client_parameter,session_id,client_id):
         print(f"Error posting data to {url}: {e}")
     
 
+    # =========================================================================================================================
+    ###################### Flow of the training (1 epoch by default) ##########################
+
+    # read model_config and build model using model builder
+    # Read dataset (from data folder in privateServer)
+    # receive global parameters (gets list that is compatible to serialize and send from server) from the central server,
+    # .. and update it using update_parameters methd of model (if not first parameter, which is empty)
+    # train the model (using fit mthd)
+    # obtain new trained parameters using get_parameters methd (this return a list, compatible to serialize and send)
+    # send updated params to the central server
+    # =========================================================================================================================
+
+
 def main():
     try:
 
@@ -72,13 +85,8 @@ def main():
 
         # Sending updated parameters to the server
         updated_model_parameters = model.get_parameters()
-        # Assuming updated_model_parameters is a list of lists or similar structure
-        for i, item in enumerate(updated_model_parameters):
-            for j, item2 in enumerate(item):
-                if isinstance(item2, np.ndarray):
-                    updated_model_parameters[i][j] = item2.tolist()
 
-        send_updated_parameters(post_url, updated_model_parameters,session_id,client_id)
+        send_updated_parameters(post_url,session_id,client_id, updated_model_parameters)
         print("Parameters sent to server")
         # =======================================================
     except Exception as e:
