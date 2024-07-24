@@ -16,19 +16,21 @@ model_classes = {
     }
 
 def model_instance_from_config(modelConfig):
-    print(modelConfig)
-    model_name = modelConfig["model_name"]
-    config = modelConfig["model_info"]
+    try:
+        model_name = modelConfig["model_name"]
+        config = modelConfig["model_info"]
 
-    model_class = model_classes[model_name]   # Model Class of selected model
-    
-    if not model_class:
-        raise ValueError(f"Unknown model: {model_name}")
+        model_class = model_classes[model_name]   # Model Class of selected model
 
-    model_instance = model_class(config) ## removed **config
-    
-    return model_instance
+        if not model_class:
+            raise ValueError(f"Unknown model: {model_name}")
 
+        model_instance = model_class(config) ## removed **config
+
+        return model_instance
+    except Exception as e:
+        print(f"Error creating model instance: {e}")
+        return None
 
 # model_instance = model_instance_from_config(modelConfig)
 # print(model_instance)

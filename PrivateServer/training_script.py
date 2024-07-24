@@ -76,7 +76,7 @@ def main():
     
         if global_parameters:
             print("Received global weights")
-            print(global_parameters)
+            # print(global_parameters)
 
         if(global_parameters['is_first']==0):
             model.update_parameters(global_parameters['global_parameters']) 

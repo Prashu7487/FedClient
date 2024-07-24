@@ -59,8 +59,7 @@ export default function Request({ clientToken, setSessions }) {
     };
     console.log("sending in request:", requestData);
     try {
-      const postURL = requestURL;
-      const res = await axios.post(postURL, requestData);
+      const res = await axios.post(requestURL, requestData);
       // We dont need to store this here this can be fetch from server side
       const newRequestData = {
         RequestId: `${GlobalData.Client.ClientID}${Date.now()}`,

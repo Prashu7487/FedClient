@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useFieldArray } from "react-hook-form";
 
+import TestMetricsMultiselect from "../OnWholeApp/helperFunctions";
+
 const activationFunctions = {
   relu: "ReLU",
   sigmoid: "Sigmoid",
@@ -390,6 +392,9 @@ const CNN = ({ control, register }) => {
           </option>
         ))}
       </select>
+
+      {/* select test metrices */}
+      <TestMetricsMultiselect register={register} />
     </div>
   );
 };
