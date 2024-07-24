@@ -54,3 +54,7 @@ Make sure you have the following installed (rest of the dependencies will be ins
 6. **Access the Application:**
    Client FE: http://localhost:5173/
    Client Private Server: http://127.0.0.1:9000/docs
+
+7. Datasets for federated Learning ( for 5 clients )
+
+https://drive.google.com/drive/folders/1kodF_hf66guEGsYqlEAKwYMj9bqSw3hZ?usp=sharing
