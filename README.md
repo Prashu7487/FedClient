@@ -1,3 +1,7 @@
+# FedClient
+
+- Application to simulate client in Federated Learning
+
 # Project Setup Guide
 
 This guide will help you set up the project environment, clone the repository, and to start the client and its private server.
@@ -22,9 +26,7 @@ Make sure you have the following installed (rest of the dependencies will be ins
     cd my-client-project
 ```
 
-2. **Create a New Environment for the Client**
-   (i) install pip and nvm on this env
-   (ii) install node
+2. **Create a New Environment for the Client and install node**
 
 ```bash
     nvm install node
@@ -37,8 +39,7 @@ Make sure you have the following installed (rest of the dependencies will be ins
     git clone [<repository_url>](https://github.com/Prashu7487/FedClient.git)
 ```
 
-4. **Install Dependencies:**
-   (i) navigate to project(client) directory
+4. **Install Dependencies by navigating to project(client) directory:**
 
 ```bash
     npm run setup
