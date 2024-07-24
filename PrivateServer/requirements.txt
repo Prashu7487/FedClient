@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+sse_starlette
+numpy
+schema
