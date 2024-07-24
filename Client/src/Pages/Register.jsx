@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useGlobalData } from "../GlobalContext";
 import axios from "axios";
 
-const register_client_URL = "http://localhost:8000/sign-in";
+const register_client_URL = process.env.REACT_APP_REGISTER_CLIENT_URL;
 
 export default function Register({ clientToken, setClientToken, setSocket }) {
   const { GlobalData, setGlobalData } = useGlobalData();

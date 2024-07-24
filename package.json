@@ -5,7 +5,12 @@
   "scripts": {
     "setup": "node setup.js",
     "start:client": "npm run dev --prefix ./Client",
+    "build:client": "npm run build --prefix ./Client",
+    "serve:client:prod": "serve -s ./Client/dist",
     "start:server": "uvicorn PrivateServer.testServer:app --port 9000",
     "start:all": "npm-run-all --parallel start:client start:server"
+  },
+  "dependencies": {
+    "serve": "^14.2.3"
   }
 }
