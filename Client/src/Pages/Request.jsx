@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 
 // Required URLs
-const requestURL = "http://localhost:8000/create-federated-session";
+const federatedSessionRequestURL = process.env.REACT_APP_REQUEST_FEDERATED_SESSION_URL;
 
 /*
 ==================================================
@@ -59,7 +59,7 @@ export default function Request({ clientToken, setSessions }) {
     };
     console.log("sending in request:", requestData);
     try {
-      const res = await axios.post(requestURL, requestData);
+      const res = await axios.post(federatedSessionRequestURL, requestData);
       // We dont need to store this here this can be fetch from server side
       const newRequestData = {
         RequestId: `${GlobalData.Client.ClientID}${Date.now()}`,
