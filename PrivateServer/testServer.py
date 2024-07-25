@@ -22,6 +22,12 @@ train_X_path = os.path.join(data_dir, "X_train.npy")
 train_Y_path = os.path.join(data_dir, "Y_train.npy")
 training_script_path = os.path.join(os.path.dirname(__file__), "training_script.py")
 
+# Get the environment (default to 'development' if not set)
+environment = os.getenv('ENVIRONMENT', 'development')
+
+# Determine the server argument
+server_argument = '--production' if environment == 'production' else '--development'
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -40,7 +46,7 @@ def initiate_model(modelConfig: dict):
 @app.get("/execute-round")
 def run_script():
     # Run the script using subprocess
-    result = subprocess.run(["python", training_script_path, model_path, train_X_path, train_Y_path], capture_output=True, text=True, encoding='utf-8')
+    result = subprocess.run(["python", training_script_path, model_path, train_X_path, train_Y_path, server_argument], capture_output=True, text=True, encoding='utf-8')
     return {"stdout": result.stdout, "stderr": result.stderr, "returncode": result.returncode}
 
 if __name__ == "__main__":

@@ -4,6 +4,8 @@ import { useGlobalData } from "../GlobalContext";
 import axios from "axios";
 import { useState } from "react";
 
+const getAllFederatedSessionsURL = process.env.REACT_APP_GET_ALL_FEDERATED_SESSIONS_URL;
+
 export default function TrainingStatus() {
   const navigate = useNavigate();
   const [federatedSession, setFederatedSession] = useState([]);
@@ -26,9 +28,8 @@ export default function TrainingStatus() {
         console.error("Error fetching data:", error);
       }
     }
-
-    const url = "http://localhost:8000/get-all-federated-sessions";
-    fetchData(url);
+    console.log(getAllFederatedSessionsURL)
+    fetchData(getAllFederatedSessionsURL);
   }, []);
 
   return (
