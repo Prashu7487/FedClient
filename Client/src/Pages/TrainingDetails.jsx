@@ -9,6 +9,7 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 
 const client_fed_response_endpoint = process.env.REACT_APP_SUBMIT_CLIENT_FEDERATED_RESPONSE_URL;
+const get_training_endpoint_base_url = process.env.REACT_APP_GET_ALL_FEDERATED_SESSIONS_URL;
 /*
   Not Needed These
   const private_training_start_url = "http://localhost:9000/execute-round";
@@ -100,7 +101,7 @@ export default function TrainingDetails({ clientToken, socket }) {
   // ==========================================================================
 
   const fetchFederatedSessionData = async (clientId) => {
-    const get_training_endpoint = `http://localhost:8000/get-federated-session/${sessionId}`;
+    const get_training_endpoint = `${get_training_endpoint_base_url}/${sessionId}`;
     try {
       const params = {
         client_id: clientId,
