@@ -10,15 +10,6 @@ import { useForm } from "react-hook-form";
 
 const client_fed_response_endpoint = process.env.REACT_APP_SUBMIT_CLIENT_FEDERATED_RESPONSE_URL;
 const get_training_endpoint_base_url = process.env.REACT_APP_GET_FEDERATED_SESSION_URL;
-/*
-  Not Needed These
-  const private_training_start_url = "http://localhost:9000/execute-round";
-  const server_status_four_update_Url =
-  "http://localhost:8000/update-client-status-four";
-  const private_server_model_initiate_url =
-  "http://localhost:9000/initiate-model";
-
-*/
 
 
 // Recursive component to render any type of data
@@ -102,6 +93,7 @@ export default function TrainingDetails({ clientToken, socket }) {
 
   const fetchFederatedSessionData = async (clientId) => {
     const get_training_endpoint = `${get_training_endpoint_base_url}/${sessionId}`;
+    console.log("get_training_endpoint", get_training_endpoint);
     try {
       const params = {
         client_id: clientId,
