@@ -26,8 +26,8 @@ export default function Register({ clientToken, setClientToken, setSocket }) {
     try {
       const res = await axios.post(register_client_URL, clientData);
       if (res.status === 200) {
-        const clientToken = res.data["client_token"];
-
+        const clientToken   = res.data["client_token"];
+        console.log("Client Token:", clientToken);
         // Connect to websocket for this client Token
         const wsURL = `${process.env.REACT_APP_WS_URL}${clientToken}`;
         const socket = new WebSocket(wsURL);
