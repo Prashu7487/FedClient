@@ -52,6 +52,10 @@ def main():
         else:
             get_url = "http://127.0.0.1:8000/get-model-parameters"
             post_url = "http://localhost:8000/receive-client-parameters"
+        
+        print("Server argument:", server_argument)
+        get_url = "http://127.0.0.1:8000/get-model-parameters"
+        post_url = "http://localhost:8000/receive-client-parameters"
 
         model_path = sys.argv[1]
         with open(model_path, 'r', encoding='utf-8') as json_file:
