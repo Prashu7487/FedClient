@@ -31,9 +31,10 @@ print(environment)
 server_argument = '--production' if environment == 'production' else '--development'
 
 app = FastAPI()
+origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # OR Define the origins that should be allowed to make requests 'origins = ["http://localhost:5173",]'
+    allow_origins=origins,  # OR Define the origins that should be allowed to make requests 'origins = ["http://localhost:5173",]'
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
