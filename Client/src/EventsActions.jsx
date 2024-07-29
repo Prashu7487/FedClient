@@ -1,9 +1,7 @@
-import { useGlobalData } from "./GlobalContext";
 import axios from "axios";
 
 const private_training_start_url = "http://localhost:9000/execute-round";
-const server_status_four_update_Url =
-  "http://localhost:8000/update-client-status-four";
+const server_status_four_update_Url = process.env.REACT_APP_UPDATE_CLIENT_STATUS_FOUR_URL;
 const private_server_model_initiate_url =
   "http://localhost:9000/initiate-model";
 

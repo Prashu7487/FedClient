@@ -78,6 +78,16 @@ const NavBar = function NavBar() {
                   TrainingStatus
                 </NavLink>
               </li>
+
+              <li className="nav-item">
+                <NavLink
+                  className={"nav-link"}
+                  to="/Results"
+                  onClick={handleNavLinkClick}
+                >
+                  TrainingResults
+                </NavLink>
+              </li>
             </ul>
           </div>
         </div>

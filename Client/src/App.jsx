@@ -4,6 +4,8 @@ import Request from "./Pages/Request";
 import Register from "./Pages/Register";
 import TrainingStatus from "./Pages/TrainingStatus";
 import TrainingDetails from "./Pages/TrainingDetails";
+import TrainingResults from "./Pages/Results";
+import ResultDetails from "./Pages/ResultDetails";
 import Error from "./Pages/Error";
 import NavBar from "./components/OnWholeApp/NavBar";
 import MyDataProvider from "./GlobalContext";
@@ -61,6 +63,14 @@ export default function App() {
                 <TrainingDetails clientToken={clientToken} socket={socket} />
               }
             />
+
+            <Route path="/Results" element={<TrainingResults />} />
+
+            <Route
+              path="/TrainingResults/details/:sessionId"
+              element={<ResultDetails />}
+            />
+
             <Route path="/*" element={<Error />} />
           </Routes>
         </div>

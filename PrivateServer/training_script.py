@@ -45,9 +45,17 @@ def send_updated_parameters(url, payload):
 def main():
     try:
 
-        get_url = "http://127.0.0.1:8000/get-model-parameters"
-        post_url = "http://localhost:8000/receive-client-parameters"
-
+        server_argument = sys.argv[4] if len(sys.argv) > 4 else '--development'
+        print("Server argument:", server_argument)
+        
+        if server_argument == '--production':
+            get_url = "https://cdis.iitk.ac.in/fed_server/get-model-parameters"
+            post_url = "https://cdis.iitk.ac.in/fed_server/receive-client-parameters"
+        else:
+            get_url = "http://127.0.0.1:8000/get-model-parameters"
+            post_url = "http://localhost:8000/receive-client-parameters"
+        
+        
         model_path = sys.argv[1]
         with open(model_path, 'r', encoding='utf-8') as json_file:
             modelInfo = json.load(json_file)
