@@ -1,5 +1,6 @@
 const { execSync } = require("child_process");
 const path = require("path");
+const os = require("os");
 
 function run(command, cwd) {
   execSync(command, { stdio: "inherit", cwd });
@@ -18,12 +19,17 @@ run("npm install", path.join(__dirname, "Client"));
 // Create a Python virtual environment for the server
 console.log("Creating a Python virtual environment for the server...");
 const serverPath = path.join(__dirname, "PrivateServer");
-run("python3 -m venv venv", serverPath);
+run("python -m venv venv", serverPath);
 
-// Activate the virtual environment and install Python dependencies for the server
-console.log("Installing server Python dependencies in virtual environment...");
+// Determine the correct path to the pip executable
+const isWindows = os.platform() === "win32";
 const venvPath = path.join(serverPath, "venv");
-const pipPath = path.join(venvPath, "bin", "pip");
+const pipPath = isWindows
+  ? path.join(venvPath, "Scripts", "pip.exe")
+  : path.join(venvPath, "bin", "pip");
+
+// Install Python dependencies using pip from the virtual environment
+console.log("Installing server Python dependencies in virtual environment...");
 run(`${pipPath} install -r requirements.txt`, serverPath);
 
 console.log("Setup complete!");
