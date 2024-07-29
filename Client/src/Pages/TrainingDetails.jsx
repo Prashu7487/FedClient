@@ -8,9 +8,10 @@ import { useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 
-const client_fed_response_endpoint = process.env.REACT_APP_SUBMIT_CLIENT_FEDERATED_RESPONSE_URL;
-const get_training_endpoint_base_url = process.env.REACT_APP_GET_FEDERATED_SESSION_URL;
-
+const client_fed_response_endpoint =
+  process.env.REACT_APP_SUBMIT_CLIENT_FEDERATED_RESPONSE_URL;
+const get_training_endpoint_base_url =
+  process.env.REACT_APP_GET_FEDERATED_SESSION_URL;
 
 // Recursive component to render any type of data
 const RenderData = ({ data, level = 0 }) => {
@@ -43,53 +44,10 @@ const RenderData = ({ data, level = 0 }) => {
 };
 
 export default function TrainingDetails({ clientToken, socket }) {
-  const [config, setConfig] = useState(null); // delete later, just to test training
   const { sessionId } = useParams();
   const [federatedSessionData, setFederatedSessionData] = useState({});
 
   const { register, handleSubmit } = useForm();
-
-  // // ============================================================================
-  // /* Code to be used to trigger training... "config" state is also associated with this, delete that too while deleting this*/
-  // const setUpTraining = async (config) => {
-  //   console.log("config in setUpTraining: ", config);
-
-  //   const data = {
-  //     model_config: config,
-  //     session_id: sessionId,
-  //     client_id: clientToken,
-  //   };
-  //   const res = await axios.post(private_server_model_initiate_url, data);
-  //   if (res.status === 200) {
-  //     console.log(res.data.message);
-  //     // console.log(typeof sessionId, typeof clientToken, typeof decision); //**** reading decision before defn
-  //     const data = {
-  //       client_id: clientToken,
-  //       session_id: sessionId,
-  //       decision: 1,
-  //     };
-  //     const response = await axios.post(server_status_four_update_Url, data);
-  //     if (response.status === 200) {
-  //       console.log(response.message);
-  //     } else {
-  //       console.error("Failed to update the client status", response);
-  //     }
-  //   } else {
-  //     console.error("Failed to send model config to private server", res);
-  //   }
-  // };
-
-  // const train_model = async () => {
-  //   const training_verbose = await axios.get(private_training_start_url);
-  //   if (training_verbose.status === 200) {
-  //     console.log("output:", training_verbose.data.stdout);
-  //     console.log("stderr:", training_verbose.data.stderr);
-  //     console.log("returncode:", training_verbose.data.returncode);
-  //   } else {
-  //     console.error("Failed to start the execution on the private server", res);
-  //   }
-  // };
-  // ==========================================================================
 
   const fetchFederatedSessionData = async (clientId) => {
     const get_training_endpoint = `${get_training_endpoint_base_url}/${sessionId}`;
@@ -101,7 +59,6 @@ export default function TrainingDetails({ clientToken, socket }) {
       const res = await axios.get(get_training_endpoint, { params });
       console.log("data fetched from server:", res.data);
       setFederatedSessionData(res.data);
-      // setConfig(res.data); // to be deleted
     } catch (error) {
       console.log("Error Fetching Data", error);
     }
@@ -143,6 +100,7 @@ export default function TrainingDetails({ clientToken, socket }) {
       session_id: sessionId,
       decision: data.decision == "accepted" ? 1 : 0,
     };
+
     console.log(requestData.decision, typeof requestData.decision);
     try {
       console.log(requestData);

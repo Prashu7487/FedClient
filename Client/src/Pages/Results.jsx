@@ -1,58 +1,58 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGlobalData } from "../GlobalContext";
 import axios from "axios";
 import { useState } from "react";
 
-const getAllFederatedSessionsURL =
-  process.env.REACT_APP_GET_ALL_FEDERATED_SESSIONS_URL;
+const getAllTrainingResultsURL =
+  process.env.REACT_APP_GET_ALL_COMPLETED_TRAININGS;
 
-export default function TrainingStatus() {
+export default function TrainingResults() {
   const navigate = useNavigate();
-  const [federatedSession, setFederatedSession] = useState([]);
+  const [completedTrainings, setcompletedTrainings] = useState([]);
 
   const opendetails = (item) => {
-    navigate(`/TrainingStatus/details/${item}`);
+    navigate(`/TrainingResults/details/${item}`);
   };
 
   useEffect(() => {
-    async function fetchData(url) {
+    async function fetchTrainingData(url) {
       try {
+        console.log("fetching training from: ", url);
         const res = await axios.get(url);
         if (res.status == 200) {
-          const federatedSession = res.data["federated_session"];
-          setFederatedSession(federatedSession);
+          const completedTrainings = res.data["results"];
+          setcompletedTrainings(completedTrainings);
         } else {
-          console.log("Failed to fetch data from server");
+          console.log(
+            "Failed to fetch completed trainings data from server, status: ",
+            res.status
+          );
         }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     }
-    console.log(getAllFederatedSessionsURL);
-    fetchData(getAllFederatedSessionsURL);
+    console.log("fetching completed trainings..");
+    fetchTrainingData(getAllTrainingResultsURL);
   }, []);
 
   return (
     <div className="container">
-      {federatedSession.length === 0 ? (
+      {completedTrainings.length === 0 ? (
         <div className="alert alert-warning text-center mt-4" role="alert">
-          No training Data Available!!
+          No Completed Trainings Available!!
         </div>
       ) : (
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-          {federatedSession.map((item) => (
+          {completedTrainings.map((item) => (
             <div className="col" key={item.session_id}>
               <div className="card h-100">
                 <div className="card-header">
-                  <h3>{item.OrgName}</h3>
+                  <h3>{item["org_name"]}</h3>
                 </div>
                 <div className="card-body">
                   <h6 className="card-title">
-                    RequestID: {item["session_id"]}
-                  </h6>
-                  <h6 className="card-title">
-                    Status: {item["training_status"]}
+                    SessionID: {item["session_id"]}
                   </h6>
                   <button
                     className="btn btn-primary"
