@@ -24,6 +24,8 @@ Client/*.local
 *.sw?
 
 PrivateServer/__pycache__/
+PrivateServer/venv/
+./PrivateServer/venv/
 PrivateServer/data/
 PrivateServer/Extradata/
 PrivateServer/X_train.npy
@@ -33,5 +35,3 @@ Y_train.npy
 model_config.json
 node_modules
 temp.py 
-PrivateServer/venv/
-.PrivateServer/venv/
