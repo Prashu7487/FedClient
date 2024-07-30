@@ -34,3 +34,4 @@ model_config.json
 node_modules
 temp.py 
 PrivateServer/venv/
+.PrivateServer/venv/
