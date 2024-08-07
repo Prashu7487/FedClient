@@ -81,5 +81,7 @@ https://drive.google.com/drive/folders/1kodF_hf66guEGsYqlEAKwYMj9bqSw3hZ?usp=sha
 
 **Extra**
 
-gdown command:
-gdown https://drive.google.com/uc?id=1PrF1QSGsGGmPpT89WW6F28jKCgLmMbfp where "1PrF1QSGsGGmPpT89WW6F28jKCgLmMbfp" is file ID
+1. **gdown command:**
+   gdown https://drive.google.com/uc?id=1PrF1QSGsGGmPpT89WW6F28jKCgLmMbfp where "1PrF1QSGsGGmPpT89WW6F28jKCgLmMbfp" is file ID
+
+2. **Add CORS extension in your browser**
