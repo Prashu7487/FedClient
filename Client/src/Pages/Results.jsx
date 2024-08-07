@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useState } from "react";
+import Card from "../components/Card/Card";
 
 const getAllTrainingResultsURL =
   process.env.REACT_APP_GET_ALL_COMPLETED_TRAININGS;
@@ -45,24 +46,7 @@ export default function TrainingResults() {
       ) : (
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
           {completedTrainings.map((item) => (
-            <div className="col" key={item.session_id}>
-              <div className="card h-100">
-                <div className="card-header">
-                  <h3>{item["org_name"]}</h3>
-                </div>
-                <div className="card-body">
-                  <h6 className="card-title">
-                    SessionID: {item["session_id"]}
-                  </h6>
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => opendetails(item["session_id"])}
-                  >
-                    Expand
-                  </button>
-                </div>
-              </div>
-            </div>
+           <Card key={item.session_id} item={item} opendetails={opendetails} />
           ))}
         </div>
       )}
