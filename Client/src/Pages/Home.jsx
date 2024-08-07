@@ -3,8 +3,14 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import FedClientImage from "../assets/FedClient.jpeg";
 import StepsGif from "../assets/steps.gif"; // in backgrd
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
+  const navigate = useNavigate();
+  const gotoRegister = () => {
+    navigate("/register");
+  };
+
   return (
     <div className="container-fluid d-flex align-items-center">
       <div className="row w-100">
@@ -23,7 +29,7 @@ export default function Home() {
                   height="150"
                 />
               </div>
-              <h1 className="text-center mb-4 text-primary">
+              <h1 className="text-center mb-4 text-dark">
                 Welcome to FedClient
               </h1>
               <div className="alert alert-info text-center" role="alert">
@@ -31,6 +37,9 @@ export default function Home() {
                   This is Client Application to simulate Federated Learning
                 </strong>
               </div>
+              <button className="btn btn-success w-100" onClick={gotoRegister}>
+                Get Started
+              </button>
             </div>
           </div>
         </div>
