@@ -6,6 +6,7 @@ import TrainingStatus from "./Pages/TrainingStatus";
 import TrainingDetails from "./Pages/TrainingDetails";
 import TrainingResults from "./Pages/Results";
 import ResultDetails from "./Pages/ResultDetails";
+import About from "./Pages/About";
 import Error from "./Pages/Error";
 import NavBar from "./components/OnWholeApp/NavBar";
 import MyDataProvider from "./GlobalContext";
@@ -13,9 +14,11 @@ import EventsAction from "./EventsActions";
 import { useState } from "react";
 
 /*
-      A global file namely GlobalContext.jsx is defined to maintain the global Data Provider,
-      the same file contains custom implementation of DataProvider and useContext function...
-      ,make sure to import the function from GlobalContext.jsx before using them.
+The App component is the main component of the application. It is the parent component of all the other components.
+It contains the NavBar component, which is a navigation bar that allows the user to navigate between different 
+pages of the application. The App component also contains the Routes component, which is used to define the
+routes of the application. Each route is associated with a specific page component, which is rendered when
+the user navigates to that route.
 */
 
 export default function App() {
@@ -70,6 +73,8 @@ export default function App() {
               path="/TrainingResults/details/:sessionId"
               element={<ResultDetails />}
             />
+
+            <Route path="/About" element={<About />} />
 
             <Route path="/*" element={<Error />} />
           </Routes>
