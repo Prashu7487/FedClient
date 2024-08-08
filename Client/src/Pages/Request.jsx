@@ -108,7 +108,7 @@ export default function Request({ clientToken, setSessions }) {
 
   return (
     <>
-      {true ? ( // clientToken
+      {clientToken ? (
         <form
           id="Request-form"
           className="row g-3"
@@ -148,7 +148,7 @@ export default function Request({ clientToken, setSessions }) {
           {selectedModel ? availableModels[selectedModel].component : <></>}
 
           <div>
-            <button type="submit" className="btn btn-dark me-5">
+            <button type="submit" className="btn btn-success me-5">
               Request
             </button>
           </div>
