@@ -2,25 +2,69 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import FedprocessGif from "../assets/fedprocess.gif";
+import AboutIcon from "../assets/aboutsicon.png";
 
 export default function About() {
   return (
-    <div className="container">
-      <div className="row justify-content-center">
-        <div className="col-10 col-md-8 col-lg-6 align-items-center">
-          <h3 className="text-center text-dark">How It Works</h3>
-          <div className="card shadow-lg border-primary rounded-3 overflow-hidden">
-            <div className="card-body p-4">
-              <div className="text-center">
-                <img
-                  src={FedprocessGif}
-                  className="img-fluid rounded-3"
-                  alt="Fedprocess Gif"
-                />
-              </div>
-            </div>
-          </div>
+    <div
+      style={{
+        display: "flex ",
+        maxWidth: "100%",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          margin: "20px",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            margin: "20px",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            flex: 1,
+          }}
+        >
+          <img
+            src={AboutIcon}
+            alt="FedClient"
+            style={{
+              width: "auto",
+              height: "auto",
+              maxHeight: "200px",
+              objectFit: "contain",
+            }}
+          />
+          <h3 style={{ margin: 0, textAlign: "center" }}>How it Works</h3>
         </div>
+      </div>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <img
+          src={FedprocessGif}
+          alt="Fedprocess Gif"
+          style={{
+            width: "auto",
+            height: "auto",
+            maxHeight: "500px",
+            objectFit: "contain",
+          }}
+        />
       </div>
     </div>
   );
