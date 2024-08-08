@@ -2,13 +2,23 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import FedClientImage from "../assets/FedClient.jpeg";
+import StepsGif from "../assets/steps.gif"; // in backgrd
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
+  const navigate = useNavigate();
+  const gotoRegister = () => {
+    navigate("/register");
+  };
+
   return (
-    <div className="container mt-5">
-      <div className="row justify-content-center">
-        <div className="col-10 col-md-8 col-lg-6">
-          <div className="card shadow-sm">
+    <div className="container-fluid d-flex align-items-center">
+      <div className="row w-100">
+        <div className="col-md-5 d-none d-md-block">
+          <img src={StepsGif} alt="Steps" className="img-fluid" />
+        </div>
+        <div className="col-md-7 d-flex justify-content-center align-items-center">
+          <div className="card shadow-md mb-5 rounded">
             <div className="card-body">
               <div className="text-center mb-4">
                 <img
@@ -19,15 +29,17 @@ export default function Home() {
                   height="150"
                 />
               </div>
-              <h1 className="text-center mb-4 text-primary">
+              <h1 className="text-center mb-4 text-dark">
                 Welcome to FedClient
               </h1>
-              <p className="text-center">
-                This is Client Application for a Federated Learning Architecture
-              </p>
               <div className="alert alert-info text-center" role="alert">
-                updates coming soon!
+                <strong>
+                  This is Client Application to simulate Federated Learning
+                </strong>
               </div>
+              <button className="btn btn-success w-100" onClick={gotoRegister}>
+                Get Started
+              </button>
             </div>
           </div>
         </div>

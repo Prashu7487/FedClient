@@ -1,95 +1,68 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { useGlobalData } from "../../GlobalContext";
 
-const NavBar = function NavBar() {
-  const { GlobalData, setGlobalData } = useGlobalData();
-  const clientName = GlobalData.Client.ClientName;
+const NavBar = () => {
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 
-  const handleNavLinkClick = () => {
-    setIsNavbarOpen(false); // Close the offcanvas navbar when a NavLink is clicked
+  const handleToggle = () => {
+    setIsNavbarOpen(!isNavbarOpen);
   };
 
   return (
-    <nav className="navbar navbar-dark bg-dark fixed-top">
+    <nav
+      className="navbar navbar-expand-lg bg-dark border-bottom border-body"
+      data-bs-theme="dark"
+    >
       <div className="container-fluid">
+        <a className="navbar-brand" href="#">
+          FedClient
+        </a>
         <button
           className="navbar-toggler"
           type="button"
-          onClick={() => setIsNavbarOpen(!isNavbarOpen)} // Toggle the navbar state
+          onClick={handleToggle}
+          aria-controls="navbarSupportedContent"
           aria-expanded={isNavbarOpen ? "true" : "false"}
+          aria-label="Toggle navigation"
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        <a className="navbar-brand" href="#">
-          {clientName === "" ? "Unknown" : clientName}
-        </a>
         <div
-          className={`offcanvas offcanvas-start text-bg-dark ${
-            isNavbarOpen ? "show" : ""
-          }`}
-          tabIndex="-1"
-          id="offcanvasDarkNavbar"
+          className={`collapse navbar-collapse ${isNavbarOpen ? "show" : ""}`}
+          id="navbarSupportedContent"
         >
-          <div className="offcanvas-header">
-            <h5 className="offcanvas-title">Hello {clientName}</h5>
-            <button
-              type="button"
-              className="btn-close btn-close-white"
-              onClick={() => setIsNavbarOpen(false)} // Close the offcanvas navbar when close button is clicked
-            ></button>
-          </div>
-          <div className="offcanvas-body">
-            <ul className="navbar-nav justify-content-end flex-grow-1 pe-2">
-              <li className="nav-item">
-                <NavLink
-                  className={"nav-link"}
-                  to="/"
-                  onClick={handleNavLinkClick}
-                >
-                  Home
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink
-                  className={"nav-link"}
-                  to="/Register"
-                  onClick={handleNavLinkClick}
-                >
-                  Register
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink
-                  className={"nav-link"}
-                  to="/Request"
-                  onClick={handleNavLinkClick}
-                >
-                  Request
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink
-                  className={"nav-link"}
-                  to="/TrainingStatus"
-                  onClick={handleNavLinkClick}
-                >
-                  TrainingStatus
-                </NavLink>
-              </li>
-
-              <li className="nav-item">
-                <NavLink
-                  className={"nav-link"}
-                  to="/Results"
-                  onClick={handleNavLinkClick}
-                >
-                  TrainingResults
-                </NavLink>
-              </li>
-            </ul>
-          </div>
+          <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li className="nav-item me-3">
+              <NavLink className="nav-link" to="/">
+                Home
+              </NavLink>
+            </li>
+            <li className="nav-item me-3">
+              <NavLink className="nav-link" to="/Register">
+                Register
+              </NavLink>
+            </li>
+            <li className="nav-item me-3">
+              <NavLink className="nav-link" to="/Request">
+                Request
+              </NavLink>
+            </li>
+            <li className="nav-item me-3">
+              <NavLink className="nav-link" to="/TrainingStatus">
+                Training Status
+              </NavLink>
+            </li>
+            <li className="nav-item me-3">
+              <NavLink className="nav-link" to="/Results">
+                Training Results
+              </NavLink>
+            </li>
+            <li className="nav-item me-3">
+              <NavLink className="nav-link" to="/About">
+                About
+              </NavLink>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
