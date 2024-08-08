@@ -1,11 +1,16 @@
 import React from "react";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { useGlobalData } from "../GlobalContext";
+import { useState } from "react";
 import axios from "axios";
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap/dist/js/bootstrap.bundle";
 
 const register_client_URL = process.env.REACT_APP_REGISTER_CLIENT_URL;
 export default function Register({ clientToken, setClientToken, setSocket }) {
   const { GlobalData, setGlobalData } = useGlobalData();
+  const [showToast, setShowToast] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -13,8 +18,12 @@ export default function Register({ clientToken, setClientToken, setSocket }) {
   } = useForm();
 
   const onSubmit = async (formData) => {
+    clientToken = true;
     if (clientToken) {
-      console.log("Already registered..");
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
       return;
     }
 
@@ -26,7 +35,7 @@ export default function Register({ clientToken, setClientToken, setSocket }) {
     try {
       const res = await axios.post(register_client_URL, clientData);
       if (res.status === 200) {
-        const clientToken   = res.data["client_token"];
+        const clientToken = res.data["client_token"];
         console.log("Client Token:", clientToken);
         // Connect to websocket for this client Token
         const wsURL = `${process.env.REACT_APP_WS_URL}${clientToken}`;
@@ -66,76 +75,105 @@ export default function Register({ clientToken, setClientToken, setSocket }) {
 
   // registration form
   return (
-    <form
-      id="Registration-form"
-      className="row g-3"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <div className="col-12">
-        <label htmlFor="clientName" className="form-label">
-          Client Name:
-        </label>
-        <input
-          type="text"
-          className={`form-control ${errors.clientName ? "is-invalid" : ""}`}
-          id="clientName"
-          placeholder="Enter Client Name"
-          defaultValue={GlobalData.Client.ClientName}
-          {...register("clientName", { required: true })}
-        />
-        {errors.clientName && (
-          <div className="invalid-feedback">Client Name is required.</div>
-        )}
-      </div>
-      <div className="col-12">
-        <label htmlFor="data_path" className="form-label">
-          Data Path:
-        </label>
-        <input
-          type="text"
-          className={`form-control ${errors.data_path ? "is-invalid" : ""}`}
-          id="data_path"
-          placeholder="Enter Data Path"
-          defaultValue={GlobalData.Client.DataPath}
-          {...register("data_path", { required: true })}
-        />
-        {errors.data_path && (
-          <div className="invalid-feedback">Data Path is required.</div>
-        )}
-      </div>
-      <div className="col-12">
-        <label htmlFor="password" className="form-label">
-          Password:
-        </label>
-        <input
-          type="password"
-          className={`form-control ${errors.password ? "is-invalid" : ""}`}
-          id="password"
-          placeholder="Enter Password"
-          defaultValue={GlobalData.Client.Password}
-          {...register("password", { required: true })}
-        />
-        {errors.password && (
-          <div className="invalid-feedback">Password is required.</div>
-        )}
-      </div>
-      <div className="col-12">
-        <button
-          type="submit"
-          className="btn btn-primary me-3"
-          id="liveToastBtn"
-        >
-          Register
-        </button>
+    <>
+      <form
+        id="Registration-form"
+        className="row g-3"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="col-12">
+          <label htmlFor="clientName" className="form-label">
+            Client Name:
+          </label>
+          <input
+            type="text"
+            className={`form-control ${errors.clientName ? "is-invalid" : ""}`}
+            id="clientName"
+            placeholder="Enter Client Name"
+            defaultValue={GlobalData.Client.ClientName}
+            {...register("clientName", { required: true })}
+          />
+          {errors.clientName && (
+            <div className="invalid-feedback">Client Name is required.</div>
+          )}
+        </div>
+        <div className="col-12">
+          <label htmlFor="data_path" className="form-label">
+            Data Path:
+          </label>
+          <input
+            type="text"
+            className={`form-control ${errors.data_path ? "is-invalid" : ""}`}
+            id="data_path"
+            placeholder="Enter Data Path"
+            defaultValue={GlobalData.Client.DataPath}
+            {...register("data_path", { required: true })}
+          />
+          {errors.data_path && (
+            <div className="invalid-feedback">Data Path is required.</div>
+          )}
+        </div>
+        <div className="col-12">
+          <label htmlFor="password" className="form-label">
+            Password:
+          </label>
+          <input
+            type="password"
+            className={`form-control ${errors.password ? "is-invalid" : ""}`}
+            id="password"
+            placeholder="Enter Password"
+            defaultValue={GlobalData.Client.Password}
+            {...register("password", { required: true })}
+          />
+          {errors.password && (
+            <div className="invalid-feedback">Password is required.</div>
+          )}
+        </div>
+        <div className="col-12">
+          <button
+            type="submit"
+            className="btn btn-primary me-3"
+            id="liveToastBtn"
+          >
+            Register
+          </button>
 
-        <button
-          type="button"
-          className="btn btn-secondary"
-          onClick={handleDeregistration}
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={handleDeregistration}
+          >
+            Deregister
+          </button>
+        </div>
+      </form>
+      {showToast && (
+        <div
+          className="position-fixed top-0 end-0 p-5"
+          style={{ margin: "1rem", zIndex: 1100 }}
         >
-          Deregister
-        </button>
-      </div>
-    </form>
+          <div
+            className="toast align-items-center text-bg-primary border-0 show"
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true"
+            data-bs-autohide="true" //it's not working to be corrected later (now using setTimeout)
+            data-bs-delay="3000" // 3 seconds
+          >
+            <div className="d-flex">
+              <div className="toast-body">
+                Already registered. Please deregister to register again.
+              </div>
+              <button
+                type="button"
+                className="btn-close btn-close-white me-2 m-auto"
+                data-bs-dismiss="toast"
+                aria-label="Close"
+              ></button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
