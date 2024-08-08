@@ -64,7 +64,7 @@ export default function DataInfo({ control, register }) {
 
       <button
         type="button"
-        className="btn btn-primary"
+        className="btn btn-dark"
         onClick={() => append({ feature_name: "", type_Of_feature: "" })}
       >
         Add Feature

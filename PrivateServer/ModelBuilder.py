@@ -6,13 +6,17 @@ from CustomModels.CustomCNN import CustomCNN
 
 import json
 
+# ==========================================================================================
+# The Key here should be exactly equal to the key (not label) of model in request.jsx file of the client (that is model_name)
+# ==========================================================================================
+
 model_classes = {
-        "LandMarkSVM": LandMarkSVM,
-        "CustomSVM": CustomSVM,
-        "Linear_Regression": LinearRegression,
-        "multiLayerPerceptron":MultiLayerPerceptron,
-        "CNN": CustomCNN
-        # Add other models here if necessary
+    "LinearRegression": LinearRegression,
+    "SVM": CustomSVM,
+    "LandMarkSVM": LandMarkSVM,
+    "multiLayerPerceptron":MultiLayerPerceptron,
+    "CNN": CustomCNN
+     # Add other models here if necessary
     }
 
 def model_instance_from_config(modelConfig):
