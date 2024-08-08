@@ -43,7 +43,6 @@ export default function Register({ clientToken, setClientToken, setSocket }) {
 
         socket.onopen = function (event) {
           console.log("Connected to WebSocket server.");
-          socket.send("Client connected with client_id: " + clientToken);
         };
 
         setSocket(socket);
