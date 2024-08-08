@@ -5,9 +5,12 @@ import CNN from "../components/OnRequestPage/CNN";
 import { useGlobalData } from "../GlobalContext";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import CustomSVM from "../components/OnRequestPage/CustomSVM";
+import LandMarkSVM from "../components/OnRequestPage/LandMarkSVM";
 
 // Required URLs
-const federatedSessionRequestURL = process.env.REACT_APP_REQUEST_FEDERATED_SESSION_URL;
+const federatedSessionRequestURL =
+  process.env.REACT_APP_REQUEST_FEDERATED_SESSION_URL;
 
 /*
 ==================================================
@@ -50,6 +53,14 @@ export default function Request({ clientToken, setSessions }) {
       label: "CNN",
       component: <CNN control={control} register={register} />,
     },
+    SVM: {
+      label: "CustomSVM",
+      component: <CustomSVM control={control} register={register} />,
+    },
+    LandMarkSVM: {
+      label: "LandMarkSVM",
+      component: <LandMarkSVM control={control} register={register} />,
+    },
   };
 
   const onSubmit = async (formData) => {
@@ -89,7 +100,7 @@ export default function Request({ clientToken, setSessions }) {
 
   return (
     <>
-      {clientToken ? (
+      {true ? ( // clientToken
         <form
           id="Request-form"
           className="row g-3"
