@@ -5,6 +5,7 @@ import { useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/js/bootstrap.bundle";
+import RegisterImg from "../assets/register.png";
 
 const register_client_URL = process.env.REACT_APP_REGISTER_CLIENT_URL;
 export default function Register({ clientToken, setClientToken, setSocket }) {
@@ -18,7 +19,6 @@ export default function Register({ clientToken, setClientToken, setSocket }) {
   } = useForm();
 
   const onSubmit = async (formData) => {
-    clientToken = true;
     if (clientToken) {
       setShowToast(true);
       setTimeout(() => {
@@ -78,73 +78,80 @@ export default function Register({ clientToken, setClientToken, setSocket }) {
     <>
       <form
         id="Registration-form"
-        className="row g-3"
+        className="row d-flex justify-content-center"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="col-12">
-          <label htmlFor="clientName" className="form-label">
-            Client Name:
-          </label>
-          <input
-            type="text"
-            className={`form-control ${errors.clientName ? "is-invalid" : ""}`}
-            id="clientName"
-            placeholder="Enter Client Name"
-            defaultValue={GlobalData.Client.ClientName}
-            {...register("clientName", { required: true })}
-          />
-          {errors.clientName && (
-            <div className="invalid-feedback">Client Name is required.</div>
-          )}
+        <div className="col-2 mt-5">
+          <img src={RegisterImg} alt="FedClient" className="img-fluid" />
         </div>
-        <div className="col-12">
-          <label htmlFor="data_path" className="form-label">
-            Data Path:
-          </label>
-          <input
-            type="text"
-            className={`form-control ${errors.data_path ? "is-invalid" : ""}`}
-            id="data_path"
-            placeholder="Enter Data Path"
-            defaultValue={GlobalData.Client.DataPath}
-            {...register("data_path", { required: true })}
-          />
-          {errors.data_path && (
-            <div className="invalid-feedback">Data Path is required.</div>
-          )}
-        </div>
-        <div className="col-12">
-          <label htmlFor="password" className="form-label">
-            Password:
-          </label>
-          <input
-            type="password"
-            className={`form-control ${errors.password ? "is-invalid" : ""}`}
-            id="password"
-            placeholder="Enter Password"
-            defaultValue={GlobalData.Client.Password}
-            {...register("password", { required: true })}
-          />
-          {errors.password && (
-            <div className="invalid-feedback">Password is required.</div>
-          )}
-        </div>
-        <div className="col-12">
-          <button
-            type="submit"
-            className="btn btn-primary me-3"
-            id="liveToastBtn"
-          >
-            Register
-          </button>
+        <div className="col-8">
+          <div className="col-8">
+            <label htmlFor="clientName" className="form-label">
+              Client Name:
+            </label>
+            <input
+              type="text"
+              className={`form-control ${
+                errors.clientName ? "is-invalid" : ""
+              }`}
+              id="clientName"
+              placeholder="Enter Client Name"
+              defaultValue={GlobalData.Client.ClientName}
+              {...register("clientName", { required: true })}
+            />
+            {errors.clientName && (
+              <div className="invalid-feedback">Client Name is required.</div>
+            )}
+          </div>
+          <div className="col-8">
+            <label htmlFor="data_path" className="form-label">
+              Data Path:
+            </label>
+            <input
+              type="text"
+              className={`form-control ${errors.data_path ? "is-invalid" : ""}`}
+              id="data_path"
+              placeholder="Enter Data Path"
+              defaultValue={GlobalData.Client.DataPath}
+              {...register("data_path", { required: true })}
+            />
+            {errors.data_path && (
+              <div className="invalid-feedback">Data Path is required.</div>
+            )}
+          </div>
+          <div className="col-8">
+            <label htmlFor="password" className="form-label">
+              Password:
+            </label>
+            <input
+              type="password"
+              className={`form-control ${errors.password ? "is-invalid" : ""}`}
+              id="password"
+              placeholder="Enter Password"
+              defaultValue={GlobalData.Client.Password}
+              {...register("password", { required: true })}
+            />
+            {errors.password && (
+              <div className="invalid-feedback">Password is required.</div>
+            )}
+          </div>
+          <div className="col-8 mt-5 d-flex justify-content-center">
+            <button
+              type="submit"
+              className="btn btn-success mx-5 border border-primary"
+              id="liveToastBtn"
+            >
+              Register
+            </button>
 
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={handleDeregistration}
-          >
-            Deregister
-          </button>
+            <button
+              type="button"
+              className="btn btn-secondary mx-5 border border-primary"
+              onClick={handleDeregistration}
+            >
+              Deregister
+            </button>
+          </div>
         </div>
       </form>
       {showToast && (
