@@ -5,9 +5,13 @@ import CNN from "../components/OnRequestPage/CNN";
 import { useGlobalData } from "../GlobalContext";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import CustomSVM from "../components/OnRequestPage/CustomSVM";
+import LandMarkSVM from "../components/OnRequestPage/LandMarkSVM";
+import LinearRegression from "../components/OnRequestPage/LinearRegression";
 
 // Required URLs
-const federatedSessionRequestURL = process.env.REACT_APP_REQUEST_FEDERATED_SESSION_URL;
+const federatedSessionRequestURL =
+  process.env.REACT_APP_REQUEST_FEDERATED_SESSION_URL;
 
 /*
 ==================================================
@@ -40,8 +44,23 @@ export default function Request({ clientToken, setSessions }) {
   const { GlobalData, setGlobalData } = useGlobalData();
   const { register, control, handleSubmit } = useForm();
 
-  // Avail Models
+  // Avail Models (keys not labels will be used in model_name)
   const availableModels = {
+    LinearRegression: {
+      label: "Linear Regression",
+      component: <LinearRegression control={control} register={register} />,
+    },
+
+    SVM: {
+      label: "SVM",
+      component: <CustomSVM control={control} register={register} />,
+    },
+
+    LandMarkSVM: {
+      label: "LandMark SVM",
+      component: <LandMarkSVM control={control} register={register} />,
+    },
+
     multiLayerPerceptron: {
       label: "Multi Layer Perceptron",
       component: <MultiLayerPerceptron control={control} register={register} />,
@@ -129,7 +148,7 @@ export default function Request({ clientToken, setSessions }) {
           {selectedModel ? availableModels[selectedModel].component : <></>}
 
           <div>
-            <button type="submit" className="btn btn-primary me-5">
+            <button type="submit" className="btn btn-success me-5">
               Request
             </button>
           </div>
