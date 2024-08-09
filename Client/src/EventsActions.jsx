@@ -51,8 +51,8 @@ export default function EventsAction({ socket, clientToken }) {
   if (socket) {
     socket.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      console.log("Config before initialising: ", message);
       if (message.type === "get_model_parameters_start_background_process") {
+        console.log("Config before initialising: ", message);
         const config = message.data;
         const sessionId = message.session_id;
         console.log("building model on client side...");
@@ -60,6 +60,12 @@ export default function EventsAction({ socket, clientToken }) {
       } else if (message.type === "start_training") {
         console.log("start training on client side...");
         train_model();
+      }
+      else if(message.type==="ping"){
+        console.log("ping received from server");
+        // Send pong response back to the server
+        socket.send(JSON.stringify({ type: "pong" }));
+        console.log("Sent pong response to server");
       }
     };
   }
