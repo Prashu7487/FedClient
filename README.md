@@ -82,6 +82,7 @@ https://drive.google.com/drive/folders/1kodF_hf66guEGsYqlEAKwYMj9bqSw3hZ?usp=sha
 **Extra**
 
 1. **gdown command:**
+   pip install gdown
    gdown --fuzzy <gdrive_publicly_shared_file_link>
 
 2. **Add CORS extension in your browser**
