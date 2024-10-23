@@ -63,6 +63,7 @@ Make sure you have the following installed (rest of the dependencies will be ins
 
 ```bash
     npm run build:client
+    npm run serve:client:prod
 ```
 
 5. **Start the Client and Private Server:**

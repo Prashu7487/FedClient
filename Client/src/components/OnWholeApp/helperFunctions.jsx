@@ -16,10 +16,10 @@ const testMetricsOptions = [
 // Multiselect Component for Test Metrics
 const TestMetricsMultiselect = ({ register }) => {
   return (
-    <div>
+    <div className="mt-2">
       <h5>Select Test Metrics:</h5>
       {testMetricsOptions.map((option) => (
-        <div key={option.value} className="form-check">
+        <div key={option.value} className="form-check form-check-inline">
           <input
             className="form-check-input"
             type="checkbox"
