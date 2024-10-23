@@ -28,7 +28,7 @@ Make sure you have the following installed (rest of the dependencies will be ins
 2. **Clone the Repository:**
 
 ```bash
-    git clone [https://github.com/Prashu7487/FedClient.git]
+    git clone https://github.com/Prashu7487/FedClient.git
     cd FedClient
 ```
 
