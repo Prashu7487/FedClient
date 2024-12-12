@@ -7,6 +7,9 @@ import "bootstrap/dist/js/bootstrap.js";
 import { useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
+import { useAuth } from "../contexts/AuthContext";
+import { getFederatedSession, respondToSession } from "../services/federatedService";
+import { ClientStatus, TrainingStatuses } from "../helpers/constants";
 
 const client_fed_response_endpoint =
   process.env.REACT_APP_SUBMIT_CLIENT_FEDERATED_RESPONSE_URL;
@@ -46,26 +49,34 @@ const RenderData = ({ data, level = 0 }) => {
 export default function TrainingDetails({ clientToken, socket }) {
   const { sessionId } = useParams();
   const [federatedSessionData, setFederatedSessionData] = useState({});
+  const { api } = useAuth()
 
   const { register, handleSubmit } = useForm();
 
   const fetchFederatedSessionData = async (clientId) => {
-    const get_training_endpoint = `${get_training_endpoint_base_url}/${sessionId}`;
-    console.log("get_training_endpoint", get_training_endpoint);
-    try {
-      const params = {
-        client_id: clientId,
-      };
-      const res = await axios.get(get_training_endpoint, { params });
-      console.log("data fetched from server:", res.data);
-      setFederatedSessionData(res.data);
-    } catch (error) {
-      console.log("Error Fetching Data", error);
-    }
+    getFederatedSession(api, sessionId)
+      .then((response) => {
+        setFederatedSessionData(response.data);
+      })
+      .catch(error => {
+        console.log("Error Fetching Data", error);
+      })
+    // const get_training_endpoint = `${get_training_endpoint_base_url}/${sessionId}`;
+    // console.log("get_training_endpoint", get_training_endpoint);
+    // try {
+    //   const params = {
+    //     client_id: clientId,
+    //   };
+    //   const res = await axios.get(get_training_endpoint, { params });
+    //   console.log("data fetched from server:", res.data);
+    //   setFederatedSessionData(res.data);
+    // } catch (error) {
+    //   console.log("Error Fetching Data", error);
+    // }
   };
 
   useEffect(() => {
-    fetchFederatedSessionData(clientToken);
+    fetchFederatedSessionData();
     // if (socket) {
     //   socket.onmessage = (event) => {
     //     const message = JSON.parse(event.data);
@@ -79,7 +90,7 @@ export default function TrainingDetails({ clientToken, socket }) {
     //     }
     //   };
     // }
-  }, [clientToken]);
+  }, []);
 
   // Function to determine status badge color
   const getStatusBadgeClass = (status) => {
@@ -94,76 +105,99 @@ export default function TrainingDetails({ clientToken, socket }) {
   };
 
   const onSubmit = async (data) => {
-    console.log(data.decision);
     const requestData = {
-      client_id: clientToken,
       session_id: sessionId,
       decision: data.decision == "accepted" ? 1 : 0,
     };
 
-    console.log(requestData.decision, typeof requestData.decision);
     try {
-      console.log(requestData);
-      const res = await axios.post(client_fed_response_endpoint, requestData);
-      if (res.status === 200) {
-        // Client Background Task --> Save the session token in the use State have to implement logic in backend
-        console.log(res.data);
-        fetchFederatedSessionData(clientToken);
-      } else {
-        console.error("Failed to submit the request:", res);
-      }
+      respondToSession(api, requestData)
+        .then((response) => {
+          if (response?.data?.success) {
+            fetchFederatedSessionData()
+          }
+        })
+
+      // const res = await axios.post(client_fed_response_endpoint, requestData);
+      // if (res.status === 200) {
+      //   // Client Background Task --> Save the session token in the use State have to implement logic in backend
+      //   console.log(res.data);
+      //   fetchFederatedSessionData(clientToken);
+      // } else {
+      //   console.error("Failed to submit the request:", res);
+      // }
     } catch (error) {
       console.error("Error submitting the request:", error);
     }
   };
 
-  return clientToken ? (
-    <div className="container mt-4">
-      <div className="card">
-        <div className="card-header text-center bg-primary text-white">
-          <h3>Training Details</h3>
-        </div>
-        <div className="card-body">
-          {federatedSessionData &&
-            Object.entries(federatedSessionData).map(([key, value]) => (
-              <div key={key} className="mb-3">
-                <h5 className="text-primary border-bottom pb-2">{key}</h5>
-                {key.toLowerCase() === "training_status" ? (
-                  <span className={getStatusBadgeClass(value)}>{value}</span>
-                ) : (
-                  <>
-                    {value === 1 ? (
-                      <form onSubmit={handleSubmit(onSubmit)}>
-                        <label>
+  return <div className="container mt-4">
+    <div className="card">
+      <div className="card-header text-center bg-primary text-white">
+        <h3>Training Details</h3>
+      </div>
+
+      <div className="card-body">
+        {federatedSessionData &&
+          Object.entries(federatedSessionData).map(([key, value]) => (
+            <div key={key} className="mb-3">
+              <h5 className="text-primary border-bottom pb-2">{key}</h5>
+              {
+                key.toLowerCase() === "training_status"
+                && (
+                  <span className={getStatusBadgeClass(value) + ` mt-2`}>{TrainingStatuses[value]}</span>
+                )
+              }
+
+              {
+                key.toLowerCase() === "client_status" &&
+                (
+                  value == 1
+                    ? <form onSubmit={handleSubmit(onSubmit)} className="mt-3">
+                      <div className="flex">
+                        <label className="mr-2 flex gap-2">
                           <input
                             type="radio"
                             value="accepted"
+                            className="form-radio text-blue-600 focus:ring-blue-500 h-5 w-5"
                             {...register("decision", { required: true })}
                           />
-                          Accept
+
+                          <div>
+                            Accept
+                          </div>
                         </label>
-                        <label>
+
+                        <label className="mr-2 flex gap-2">
                           <input
                             type="radio"
                             value="rejected"
+                            className="form-radio text-blue-600 focus:ring-blue-500 h-5 w-5"
                             {...register("decision", { required: true })}
                           />
-                          Reject
+
+                          <div>
+                            Reject
+                          </div>
                         </label>
-                        <br />
-                        <button type="submit">Submit Response</button>
-                      </form>
-                    ) : (
-                      <RenderData data={value} />
-                    )}
-                  </>
-                )}
-              </div>
-            ))}
-        </div>
+                      </div>
+                      <br />
+
+                      <button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-1 focus:outline-none">Submit Response</button>
+                    </form>
+                    : <div>
+                      {ClientStatus[value]}
+                    </div>
+                )
+              }
+
+              {
+                !["client_status", "training_status"].includes(key)
+                && <RenderData data={value} />
+              }
+            </div>
+          ))}
       </div>
     </div>
-  ) : (
-    <>LogInFirst</>
-  );
+  </div>
 }

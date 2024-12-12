@@ -12,7 +12,7 @@ export default function EventsAction({ socket, clientToken }) {
     const data = {
       model_config: config,
       session_id: sessionId,
-      client_id: clientToken,
+      // client_id: clientToken,
     };
     const res = await axios.post(private_server_model_initiate_url, data);
     if (res.status === 200) {
@@ -61,7 +61,7 @@ export default function EventsAction({ socket, clientToken }) {
         console.log("start training on client side...");
         train_model();
       }
-      else if(message.type==="ping"){
+      else if (message.type === "ping") {
         console.log("ping received from server");
         // Send pong response back to the server
         socket.send(JSON.stringify({ type: "pong" }));

@@ -2,6 +2,9 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 
 const environmentVariables = [
+  "REACT_APP_SERVER_BASE_URL",
+  "REACT_APP_SERVER_WS_BASE_URL",
+  "REACT_APP_PRIVATE_SERVER_BASE_URL",
   "REACT_APP_REGISTER_CLIENT_URL",
   "REACT_APP_REQUEST_FEDERATED_SESSION_URL",
   "REACT_APP_GET_ALL_FEDERATED_SESSIONS_URL",
@@ -10,7 +13,6 @@ const environmentVariables = [
   "REACT_APP_GET_FEDERATED_SESSION_URL",
   "REACT_APP_GET_ALL_COMPLETED_TRAININGS",
   "REACT_APP_GET_TRAINING_RESULT_WITH_SESSION_ID",
-  "REACT_APP_WS_URL",
 ];
 
 export default defineConfig(({ mode }) => {

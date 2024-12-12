@@ -4,6 +4,7 @@ import subprocess
 import json
 import os
 from dotenv import load_dotenv
+import random
 
 """
   Don't start this server from terminal without specifying port (9000 or something unused) in the command,
@@ -17,7 +18,7 @@ from dotenv import load_dotenv
 """
 load_dotenv()
 # Paths for model configuration and training data
-model_path = "model_config.json"
+model_path = "storage/model_config"
 data_dir = os.path.join(os.path.dirname(__file__), 'data')
 train_X_path = os.path.join(data_dir, "X_train.npy")
 train_Y_path = os.path.join(data_dir, "Y_train.npy")
@@ -42,9 +43,18 @@ app.add_middleware(
 
 @app.post("/initiate-model")
 def initiate_model(modelConfig: dict):
-    with open(model_path, 'w') as json_file:
+    local_model_id = None
+
+    while local_model_id == None or os.path.exists(model_file):
+        local_model_id = generate_random_hex(18)
+        model_file = f"{model_path}/{local_model_id}.json"
+
+    with open(model_file, 'w') as json_file:
         json.dump(modelConfig, json_file, indent=4)
-    return {"message": "model configuration saved"}
+    return {
+        "message": "model configuration saved",
+        "local_model_id": local_model_id
+    }
 
 @app.get("/execute-round")
 def run_script():
@@ -62,3 +72,9 @@ if __name__ == "__main__":
 
 # http://localhost:9000/initiate-model
 # http://localhost:9000/execute-round
+
+def generate_random_hex(n):
+    if n <= 0:
+        raise ValueError("Length of the hex string must be greater than 0")
+    # Generate a random hex string
+    return ''.join(random.choices('0123456789abcdef', k=n))
