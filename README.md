@@ -28,7 +28,7 @@ Make sure you have the following installed (rest of the dependencies will be ins
 2. **Clone the Repository:**
 
 ```bash
-    git clone [https://github.com/Prashu7487/FedClient.git]
+    git clone https://github.com/Prashu7487/FedClient.git
     cd FedClient
 ```
 
@@ -83,6 +83,9 @@ https://drive.google.com/drive/folders/1kodF_hf66guEGsYqlEAKwYMj9bqSw3hZ?usp=sha
 **Extra**
 
 1. **gdown command:**
-   gdown https://drive.google.com/uc?id=1PrF1QSGsGGmPpT89WW6F28jKCgLmMbfp where "1PrF1QSGsGGmPpT89WW6F28jKCgLmMbfp" is file ID
+   ```bash
+   pip install gdown
+   gdown --fuzzy <gdrive_publicly_shared_file_link>
+   ```
 
 2. **Add CORS extension in your browser**

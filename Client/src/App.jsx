@@ -12,6 +12,12 @@ import NavBar from "./components/OnWholeApp/NavBar";
 import MyDataProvider from "./GlobalContext";
 import EventsAction from "./EventsActions";
 import { useState } from "react";
+import { AuthProvider } from "./contexts/AuthContext";
+import { PrivateRoute, OnlyGuestRoute } from "./components/ProtectedRoute";
+import { ToastContainer } from "react-toastify";
+
+import './index.css'
+import 'react-toastify/dist/ReactToastify.min.css'
 
 /*
 The App component is the main component of the application. It is the parent component of all the other components.
@@ -28,57 +34,83 @@ export default function App() {
   return (
     <>
       <MyDataProvider>
-        <EventsAction socket={socket} clientToken={clientToken} />
-        <NavBar />
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            margin: "100px",
-          }}
-        >
-          <Routes>
-            <Route path="/" exact element={<Home />} />
-            <Route
-              path="/Register"
-              element={
-                <Register
-                  clientToken={clientToken}
-                  setClientToken={setClientToken}
-                  setSocket={setSocket}
-                />
-              }
-            />
-            <Route
-              path="/Request"
-              element={
-                <Request clientToken={clientToken} setSessions={setSessions} />
-              }
-            />
-            <Route
-              path="/TrainingStatus"
-              element={<TrainingStatus sessions={sessions} />}
-            />
-            <Route
-              path="/TrainingStatus/details/:sessionId"
-              element={
-                <TrainingDetails clientToken={clientToken} socket={socket} />
-              }
-            />
+        <AuthProvider>
+          <ToastContainer />
 
-            <Route path="/Results" element={<TrainingResults />} />
+          <EventsAction socket={socket} clientToken={clientToken} />
 
-            <Route
-              path="/TrainingResults/details/:sessionId"
-              element={<ResultDetails />}
-            />
+          <NavBar />
 
-            <Route path="/About" element={<About />} />
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              margin: "100px",
+            }}
+          >
+            <Routes>
+              <Route path="/" exact element={<Home />} />
 
-            <Route path="/*" element={<Error />} />
-          </Routes>
-        </div>
+              <Route
+                path="/Register"
+                element={
+                  <OnlyGuestRoute>
+                    <Register
+                      clientToken={clientToken}
+                      setClientToken={setClientToken}
+                      setSocket={setSocket}
+                    />
+                  </OnlyGuestRoute>
+                }
+              />
+
+              <Route
+                path="/Request"
+                element={
+                  <PrivateRoute>
+                    <Request clientToken={clientToken} setSessions={setSessions} />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path="/TrainingStatus"
+                element={
+                  <PrivateRoute>
+                    <TrainingStatus sessions={sessions} />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/TrainingStatus/details/:sessionId"
+                element={
+                  <PrivateRoute>
+                    <TrainingDetails clientToken={clientToken} socket={socket} />
+                  </PrivateRoute>
+                }
+              />
+
+              <Route path="/Results" element={
+                <PrivateRoute>
+                  <TrainingResults />
+                </PrivateRoute>
+              } />
+
+              <Route
+                path="/TrainingResults/details/:sessionId"
+                element={
+                  <PrivateRoute>
+                    <ResultDetails />
+                  </PrivateRoute>}
+              />
+
+              <Route path="/About" element={<About />} />
+
+              <Route path="/*" element={<Error />} />
+            </Routes>
+          </div>
+        </AuthProvider>
       </MyDataProvider>
     </>
   );

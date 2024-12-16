@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 const NavBar = () => {
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
+  const { logout, user } = useAuth()
 
   const handleToggle = () => {
     setIsNavbarOpen(!isNavbarOpen);
@@ -33,35 +35,46 @@ const NavBar = () => {
         >
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
             <li className="nav-item me-3">
-              <NavLink className="nav-link" to="/">
+              <NavLink className="nav-link visible" to="/">
                 Home
               </NavLink>
             </li>
+            {
+              !user &&
+              <li className="nav-item me-3">
+                <NavLink className="nav-link visible" to="/Register">
+                  Register
+                </NavLink>
+              </li>
+            }
             <li className="nav-item me-3">
-              <NavLink className="nav-link" to="/Register">
-                Register
-              </NavLink>
-            </li>
-            <li className="nav-item me-3">
-              <NavLink className="nav-link" to="/Request">
+              <NavLink className="nav-link visible" to="/Request">
                 Request
               </NavLink>
             </li>
             <li className="nav-item me-3">
-              <NavLink className="nav-link" to="/TrainingStatus">
+              <NavLink className="nav-link visible" to="/TrainingStatus">
                 Training Status
               </NavLink>
             </li>
             <li className="nav-item me-3">
-              <NavLink className="nav-link" to="/Results">
+              <NavLink className="nav-link visible" to="/Results">
                 Training Results
               </NavLink>
             </li>
             <li className="nav-item me-3">
-              <NavLink className="nav-link" to="/About">
+              <NavLink className="nav-link visible" to="/About">
                 About
               </NavLink>
             </li>
+            {
+              user &&
+              <li className="nav-item me-3">
+                <div className="nav-link visible" onClick={logout}>
+                  Log out
+                </div>
+              </li>
+            }
           </ul>
         </div>
       </div>
