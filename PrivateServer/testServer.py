@@ -31,6 +31,12 @@ print(environment)
 # Determine the server argument
 server_argument = '--production' if environment == 'production' else '--development'
 
+def generate_random_hex(n):
+    if n <= 0:
+        raise ValueError("Length of the hex string must be greater than 0")
+    # Generate a random hex string
+    return ''.join(random.choices('0123456789abcdef', k=n))
+
 app = FastAPI()
 origins = ["*"]
 app.add_middleware(
@@ -73,8 +79,3 @@ if __name__ == "__main__":
 # http://localhost:9000/initiate-model
 # http://localhost:9000/execute-round
 
-def generate_random_hex(n):
-    if n <= 0:
-        raise ValueError("Length of the hex string must be greater than 0")
-    # Generate a random hex string
-    return ''.join(random.choices('0123456789abcdef', k=n))

@@ -20,3 +20,7 @@ export const getFederatedSession = (api: AxiosInstance, session_id) => {
 export const respondToSession = (api: AxiosInstance, data: { session_id: number, decision: number }) => {
     return api.post('submit-client-federated-response', data)
 }
+
+export const sendModelInitiation = (api: AxiosInstance, data: { session_id: number, decision: number }) => {
+    return api.post('update-client-status-four', data)
+}

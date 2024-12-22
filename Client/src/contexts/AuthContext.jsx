@@ -5,6 +5,7 @@ import { BASE_URL, WS_BASE_URL } from '../services/config';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { initializeModel } from '../services/privateService';
+import { sendModelInitiation } from '../services/federatedService';
 
 const AuthContext = createContext();
 
@@ -28,41 +29,56 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        const initializeEventSource = () => {
+        const initializeEventSource = async () => {
             if (user && user.access_token) {
-                const notification_path = `${BASE_URL}/notifications?token=${user.access_token}`
-                axios.get(notification_path, { timeout: 10 })
-                    .then((response) => {
-                        // removeUserData()
-                    })
-                    .catch((error) => {
-                        if (error.code == "ECONNABORTED") { // When the Request has timed out
-                            const source = new EventSource(notification_path);
+                const user = JSON.parse(localStorage.getItem("user"));
+                const headers = {};
 
-                            // Listen for messages
-                            source.onmessage = (event) => {
-                                const data = JSON.parse(event.data);
-                                handleNotification(data)
-                            };
+                if (user && user.access_token) {
+                    headers["Authorization"] = `Bearer ${user.access_token}`;
+                }
 
-                            let reconnectDelay = 1000;
-                            // Handle errors and attempt reconnection
-                            source.onerror = (a, b, c) => {
-                                console.error('EventSource disconnected. Attempting to reconnect...', a, b, c);
-                                source.close(); // Close the current connection
-                                setTimeout(() => {
-                                    reconnectDelay = Math.min(reconnectDelay * 2, 30000); // Cap delay at 30 seconds
-                                    initializeEventSource();
-                                }, reconnectDelay);
-                            };
+                const response = await fetch(`${BASE_URL}/notifications/stream`, {
+                    method: "GET",
+                    headers: headers,
+                });
 
-                            // Save the EventSource instance
-                            setEventSource(source);
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+
+                let buffer = "";
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) {
+                        console.log("Stream closed.");
+                        break;
+                    }
+
+                    buffer += decoder.decode(value, { stream: true });
+
+                    // Process SSE messages
+                    const lines = buffer.split("\n");
+                    for (const line of lines) {
+                        if (line.startsWith("data:")) {
+                            const jsonData = line.replace("data:", "").trim();
+                            try {
+                                const notifications = JSON.parse(jsonData);
+
+                                for (let notification of notifications) {
+                                    handleNotification(notification)
+                                }
+                                console.log("Received data:", notifications);
+                            }
+                            catch (exception) {
+                                console.log("Received data:", exception, jsonData)
+                            }
                         }
-                        else {
-                            removeUserData()
-                        }
-                    })
+                    }
+
+                    // Keep only unprocessed data
+                    buffer = buffer.slice(buffer.lastIndexOf("\n") + 1);
+                }
             }
         };
 
@@ -135,7 +151,7 @@ export const AuthProvider = ({ children }) => {
             console.log("Config before initialising: ", data, session_id);
 
             console.log("building model on client side...");
-            setUpModel(data, session_id); // Function to initialize training
+            setUpModel(data, session_id, api); // Function to initialize training
         }
     }
 
@@ -194,6 +210,25 @@ export const AuthProvider = ({ children }) => {
         }
     );
 
+
+    const sseApi = axios.create({
+        baseURL: BASE_URL,
+        responseType: "stream",
+        timeout: 2 * 24 * 60 * 60 * 1000
+    });
+
+    sseApi.interceptors.request.use(
+        (config) => {
+            //   const token = localStorage.getItem('token'); // Retrieve token from local storage
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (user) {
+                config.headers['Authorization'] = `Bearer ${user.access_token ?? ''}`;
+            }
+            return config;
+        },
+        (error) => Promise.reject(error)
+    );
+
     return (
         <AuthContext.Provider value={{ user, login, logout, api }}>
             {!loading && children}
@@ -203,7 +238,7 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => useContext(AuthContext);
 
-const setUpModel = async (config, sessionId) => {
+const setUpModel = async (config, sessionId, api) => {
     console.log("config received by setUpModel: ", config);
 
     const data = {
@@ -221,26 +256,9 @@ const setUpModel = async (config, sessionId) => {
                 decision: 1,
                 local_model_id: data.local_model_id
             };
-        })
-    const res = await axios.post(private_server_model_initiate_url, data);
-    if (res.status === 200) {
-        console.log(res.data.message);
 
-        const status_four_data = {
-            client_id: clientToken,
-            session_id: sessionId,
-            decision: 1,
-        };
-        const response = await axios.post(
-            server_status_four_update_Url,
-            status_four_data
-        );
-        if (response.status === 200) {
-            console.log(response.message);
-        } else {
-            console.error("Failed to update the client status", response);
-        }
-    } else {
-        console.error("Failed to send model config to private server", res);
-    }
+            sendModelInitiation(api, status_four_data)
+                .then(({ data: { message } }) => console.log(message))
+                .catch(console.error)
+        })
 };

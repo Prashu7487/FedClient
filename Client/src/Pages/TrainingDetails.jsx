@@ -61,36 +61,11 @@ export default function TrainingDetails({ clientToken, socket }) {
       .catch(error => {
         console.log("Error Fetching Data", error);
       })
-    // const get_training_endpoint = `${get_training_endpoint_base_url}/${sessionId}`;
-    // console.log("get_training_endpoint", get_training_endpoint);
-    // try {
-    //   const params = {
-    //     client_id: clientId,
-    //   };
-    //   const res = await axios.get(get_training_endpoint, { params });
-    //   console.log("data fetched from server:", res.data);
-    //   setFederatedSessionData(res.data);
-    // } catch (error) {
-    //   console.log("Error Fetching Data", error);
-    // }
   };
 
   useEffect(() => {
     fetchFederatedSessionData();
-    // if (socket) {
-    //   socket.onmessage = (event) => {
-    //     const message = JSON.parse(event.data);
-    //     // const modelConfig = message.data;
-    //     console.log("Config before initialising: ", message);
-    //     if (message.type === "get_model_parameters_start_background_process") {
-    //       // setConfig(modelConfig);
-    //       setUpTraining(config); // Function to initialize training
-    //     } else if (message.type === "start_training") {
-    //       train_model(config);
-    //     }
-    //   };
-    // }
-  }, []);
+  }, [sessionId]);
 
   // Function to determine status badge color
   const getStatusBadgeClass = (status) => {
