@@ -51,8 +51,8 @@ export default function TrainingStatus() {
         </div>
       ) : (
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-          {federatedSession.map((item) => (
-            <div className="col" key={item.session_id}>
+          {federatedSession.map((item, index) => (
+            <div className="col" key={index}>
               <div className="card h-100">
                 <div className="card-header">
                   <h3>{item['name']}</h3>

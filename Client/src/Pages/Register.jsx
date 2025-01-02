@@ -220,7 +220,7 @@ const LoginForm = () => {
           .catch(console.log)
       })
       .catch(error => {
-        if (error.response.status == 400) {
+        if (error?.response?.status == 400) {
           alert(error.response.data.detail)
         }
       })
