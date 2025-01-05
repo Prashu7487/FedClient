@@ -16,6 +16,8 @@ const client_fed_response_endpoint =
 const get_training_endpoint_base_url =
   process.env.REACT_APP_GET_FEDERATED_SESSION_URL;
 
+const client_price_response_endpoint  = process.env.REACT_APP_SUBMIT_CLIENT_PRICE_RESPONSE_URL
+
 // Recursive component to render any type of data
 const RenderData = ({ data, level = 0 }) => {
   if (typeof data === "object" && data !== null) {
@@ -65,6 +67,8 @@ export default function TrainingDetails({ clientToken, socket }) {
 
   useEffect(() => {
     fetchFederatedSessionData();
+    console.log(client_price_response_endpoint)
+    console.log(get_training_endpoint_base_url)
   }, [sessionId]);
 
   // Function to determine status badge color
@@ -92,19 +96,37 @@ export default function TrainingDetails({ clientToken, socket }) {
             fetchFederatedSessionData()
           }
         })
-
-      // const res = await axios.post(client_fed_response_endpoint, requestData);
-      // if (res.status === 200) {
-      //   // Client Background Task --> Save the session token in the use State have to implement logic in backend
-      //   console.log(res.data);
-      //   fetchFederatedSessionData(clientToken);
-      // } else {
-      //   console.error("Failed to submit the request:", res);
-      // }
     } catch (error) {
       console.error("Error submitting the request:", error);
     }
   };
+    // Handle submission for accepting/rejecting price
+const onSubmitPriceAcceptance = async (data) => {
+
+  // Send required datapoints to server
+  console.log(federatedSessionData.price)
+
+  const requestData = {
+    client_id: clientToken,
+    session_id: sessionId,
+    decision: data.decision === "accepted" ? 1 : data.decision === "rejected" ? -1 : 0, // Accepted = 1, Rejected = -1, Not decided = 0
+  };
+
+  try {
+    // Send to the price acceptance endpoint
+    console.log(client_price_response_endpoint)
+    const res = await axios.post(client_price_response_endpoint, requestData);
+
+    if (res.status === 200) {
+      console.log("Price acceptance response submitted successfully:", res.data);
+      fetchFederatedSessionData(clientToken);  // Fetch updated session data after submission
+    } else {
+      console.error("Failed to submit the price acceptance:", res);
+    }
+  } catch (error) {
+    console.error("Error submitting price acceptance:", error);
+  }
+};
 
   return <div className="container mt-4">
     <div className="card">
@@ -120,8 +142,30 @@ export default function TrainingDetails({ clientToken, socket }) {
               {
                 key.toLowerCase() === "training_status"
                 && (
-                  <span className={getStatusBadgeClass(value) + ` mt-2`}>{TrainingStatuses[value]}</span>
-                )
+                  value == 1
+                  ?
+                  <form onSubmit={handleSubmit(onSubmitPriceAcceptance)}>
+               <label>
+                 <input
+                   type="radio"
+                   value="accepted"
+                   {...register("decision", { required: true })}
+                 />
+                 Accept
+             </label>
+               <label>
+                 <input
+                   type="radio"
+                   value="rejected"
+                   {...register("decision", { required: true })}
+               />
+                 Reject
+             </label>
+               <br />
+               <button type="submit">Submit Response for Price</button>
+             </form>:<div>
+                      {TrainingStatuses[value]}
+                    </div>             )
               }
 
               {

@@ -8,9 +8,7 @@ import numpy as np
 
 def receive_global_parameters(url,session_id,client_id):
     try:
-        params = {'session_id': session_id}
-        response = requests.get(url+"/"+session_id)
-        # print(response.text)
+        response = requests.get(url+"/"+str(session_id))
         response.raise_for_status()  # Raise an HTTPError for bad responses 
         data = response.json()  # Assuming the response is in JSON format
         return data
@@ -19,9 +17,13 @@ def receive_global_parameters(url,session_id,client_id):
         return None
 
 
-def send_updated_parameters(url, payload):
+def send_updated_parameters(url, payload, client_token):
     try:
-        response = requests.post(url, json=payload)
+        headers = {
+            "Authorization": f"Bearer {client_token}",  # Using Bearer token
+            "Content-Type": "application/json"         # Specify the payload format
+        }
+        response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()  # Raise an HTTPError for bad responses
         result = response.json()  # Assuming the response is in JSON format
         print("response of sending updated paramter to server:", result)
@@ -55,7 +57,7 @@ def main():
             get_url = "http://127.0.0.1:8000/get-model-parameters"
             post_url = "http://localhost:8000/receive-client-parameters"
         
-        
+        import os
         model_path = sys.argv[1]
         with open(model_path, 'r', encoding='utf-8') as json_file:
             modelInfo = json.load(json_file)
@@ -73,33 +75,38 @@ def main():
 
         Y_path = sys.argv[3]
         Y = np.load(Y_path)
-        # print(Y.shape)
 
         # =======================================================
         #  uncomment when end points implemented
         # =======================================================
-
         global_parameters = receive_global_parameters(get_url,session_id,client_id)
         # global_parameters = dict(global_parameters) #see if works without it
-    
         if global_parameters:
             print("Received global weights")
-            # print(global_parameters)
 
         if(global_parameters['is_first']==0):
-            model.update_parameters(global_parameters['global_parameters']) 
-    
-        model.fit(X,Y)
+            model.update_parameters(global_parameters['global_parameters'])
+            print("Checkpoint  1: Gandu idhar aaya hu mei",type(global_parameters['global_parameters'])) 
 
+        # Save global_parameters string into a file
+        file_path = "local_parameters.txt"  # Specify the desired file path and name
+        with open(file_path, "a" , encoding="utf-8") as file:
+            file.write("\n---\n")  # Add a separator before each new entry
+            file.write(json.dumps(model.get_parameters()))  # Append the JSON string
+            file.write("\n")  # Add a newline after the entry for readability
+        print(f"Local parameters have been saved to {file_path}.")
+        
+        
+        model.fit(X,Y)
+        
         # Sending updated parameters to the server
         updated_parameters = model.get_parameters()
         payload = {
             "session_id": session_id,
-            "client_id": client_id,
             "client_parameter": updated_parameters
         }
 
-        send_updated_parameters(post_url, payload)
+        send_updated_parameters(post_url, payload, client_id)
         print("Parameters sent to server")
         # =======================================================
     except Exception as e:

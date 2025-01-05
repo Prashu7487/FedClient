@@ -24,6 +24,9 @@ train_X_path = os.path.join(data_dir, "X_train.npy")
 train_Y_path = os.path.join(data_dir, "Y_train.npy")
 training_script_path = os.path.join(os.path.dirname(__file__), "training_script.py")
 
+# Ensure the directory exists
+os.makedirs(model_path, exist_ok=True)
+
 # Get the environment (default to 'development' if not set)
 environment = os.getenv('ENVIRONMENT')
 print(environment)
@@ -49,6 +52,7 @@ app.add_middleware(
 
 @app.post("/initiate-model")
 def initiate_model(modelConfig: dict):
+    print("Checkpoint 2: ",modelConfig)
     local_model_id = None
 
     while local_model_id == None or os.path.exists(model_file):
@@ -63,9 +67,10 @@ def initiate_model(modelConfig: dict):
     }
 
 @app.get("/execute-round")
-def run_script():
+def run_script(local_model_id: str):
     # Run the script using subprocess
-    result = subprocess.run(["python", training_script_path, model_path, train_X_path, train_Y_path, server_argument], capture_output=True, text=True, encoding='utf-8')
+    model_path_with_id = f"{model_path}/{local_model_id}.json"
+    result = subprocess.run(["python", training_script_path, model_path_with_id, train_X_path, train_Y_path, server_argument], capture_output=True, text=True, encoding='utf-8')
     return {"stdout": result.stdout, "stderr": result.stderr, "returncode": result.returncode}  
 
 @app.get("/check")

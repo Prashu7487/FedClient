@@ -4,7 +4,7 @@ import axios from 'axios';
 import { BASE_URL, WS_BASE_URL } from '../services/config';
 import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { initializeModel } from '../services/privateService';
+import { initializeModel, trainModelService } from '../services/privateService';
 import { sendModelInitiation } from '../services/federatedService';
 
 const AuthContext = createContext();
@@ -135,6 +135,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     const handleNotification = ({ type, message, data, session_id }) => {
+        console.log(type)
         if (type == 'new-session') {
             // if (location.pathname === '/TrainingStatus') {
             //     // window.location.reload();
@@ -151,7 +152,11 @@ export const AuthProvider = ({ children }) => {
             console.log("Config before initialising: ", data, session_id);
 
             console.log("building model on client side...");
-            setUpModel(data, session_id, api); // Function to initialize training
+            setUpModel(data, user, session_id, api); // Function to initialize training
+        }
+        else if (type == "start_training"){
+            console.log("start training on client side...");
+            trainModel(data["local_model_id"]);
         }
     }
 
@@ -238,13 +243,13 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => useContext(AuthContext);
 
-const setUpModel = async (config, sessionId, api) => {
+const setUpModel = async (config, user, sessionId, api) => {
     console.log("config received by setUpModel: ", config);
-
+    console.log("Checkpoint 1 :access token", user)
     const data = {
         model_config: config,
         session_id: sessionId,
-        // client_id: clientToken,
+        client_id: user.access_token,
     };
 
     initializeModel(data)
@@ -261,4 +266,20 @@ const setUpModel = async (config, sessionId, api) => {
                 .then(({ data: { message } }) => console.log(message))
                 .catch(console.error)
         })
+};
+
+const trainModel = (local_model_id) => {
+    trainModelService(local_model_id)
+        .then(({ data }) => {
+            if (data && data.status === 200) {
+                console.log("output:", data.stdout);
+                console.log("stderr:", data.stderr);
+                console.log("returncode:", data.returncode);
+            } else {
+                console.error("Failed to start the execution on the private server", data);
+            }
+        })
+        .catch((error) => {
+            console.error("Error in trainModelService:", error);
+        });
 };
