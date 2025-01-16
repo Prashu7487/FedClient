@@ -18,6 +18,8 @@ import { ToastContainer } from "react-toastify";
 
 import './index.css'
 import 'react-toastify/dist/ReactToastify.min.css'
+import DatasetList from "./Pages/DatasetList";
+import DatasetDetail from "./Pages/DatasetDetail";
 
 /*
 The App component is the main component of the application. It is the parent component of all the other components.
@@ -104,7 +106,20 @@ export default function App() {
                     <ResultDetails />
                   </PrivateRoute>}
               />
-
+              <Route
+                path="/Datasets"
+                element={
+                  <PrivateRoute>
+                    <DatasetList />
+                  </PrivateRoute>}
+              />
+              <Route
+                path="/Datasets/:code"
+                element={
+                  <PrivateRoute>
+                    <DatasetDetail />
+                  </PrivateRoute>}
+              />
               <Route path="/About" element={<About />} />
 
               <Route path="/*" element={<Error />} />

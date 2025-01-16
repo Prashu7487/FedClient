@@ -48,6 +48,11 @@ const NavBar = () => {
               </li>
             }
             <li className="nav-item me-3">
+              <NavLink className="nav-link visible" to="/Datasets">
+                Datasets
+              </NavLink>
+            </li>
+            <li className="nav-item me-3">
               <NavLink className="nav-link visible" to="/Request">
                 Request
               </NavLink>
