@@ -86,7 +86,6 @@ def main():
 
         if(global_parameters['is_first']==0):
             model.update_parameters(global_parameters['global_parameters'])
-            print("Checkpoint  1: Gandu idhar aaya hu mei",type(global_parameters['global_parameters'])) 
 
         # Save global_parameters string into a file
         file_path = "local_parameters.txt"  # Specify the desired file path and name

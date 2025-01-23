@@ -18,8 +18,8 @@ export default function TrainingResults() {
   useEffect(() => {
     async function fetchTrainingData(url) {
       try {
-        console.log("fetching training from: ", url);
         const res = await axios.get(url);
+        console.log(res.data)
         if (res.status == 200) {
           const completedTrainings = res.data["results"];
           setcompletedTrainings(completedTrainings);

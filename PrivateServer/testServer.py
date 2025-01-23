@@ -52,7 +52,6 @@ app.add_middleware(
 
 @app.post("/initiate-model")
 def initiate_model(modelConfig: dict):
-    print("Checkpoint 2: ",modelConfig)
     local_model_id = None
 
     while local_model_id == None or os.path.exists(model_file):
