@@ -26,7 +26,6 @@ def send_updated_parameters(url, payload, client_token):
         response = requests.post(url, json=payload, headers=headers)
         response.raise_for_status()  # Raise an HTTPError for bad responses
         result = response.json()  # Assuming the response is in JSON format
-        print("response of sending updated paramter to server:", result)
     except requests.exceptions.RequestException as e:
         print(f"Error posting data to {url}: {e}")
     
@@ -47,17 +46,16 @@ def send_updated_parameters(url, payload, client_token):
 def main():
     try:
 
+        
         server_argument = sys.argv[4] if len(sys.argv) > 4 else '--development'
-        print("Server argument:", server_argument)
+        # Get API Base URL from environment variable
+        BASE_URL = os.getenv("API_BASE_URL", "http://host.docker.internal:8000")
         
-        if server_argument == '--production':
-            get_url = "https://cdis.iitk.ac.in/fed_server/get-model-parameters"
-            post_url = "https://cdis.iitk.ac.in/fed_server/receive-client-parameters"
-        else:
-            get_url = "http://127.0.0.1:8000/get-model-parameters"
-            post_url = "http://localhost:8000/receive-client-parameters"
+        # Construct URLs dynamically
+        get_url = f"{BASE_URL}/get-model-parameters"
+        post_url = f"{BASE_URL}/receive-client-parameters"
         
-        import os
+        
         model_path = sys.argv[1]
         with open(model_path, 'r', encoding='utf-8') as json_file:
             modelInfo = json.load(json_file)
@@ -80,9 +78,6 @@ def main():
         #  uncomment when end points implemented
         # =======================================================
         global_parameters = receive_global_parameters(get_url,session_id,client_id)
-        # global_parameters = dict(global_parameters) #see if works without it
-        if global_parameters:
-            print("Received global weights")
 
         if(global_parameters['is_first']==0):
             model.update_parameters(global_parameters['global_parameters'])

@@ -27,5 +27,9 @@ export default defineConfig(({ mode }) => {
       "process.env": processEnv,
     },
     plugins: [react()],
+    server: {
+      host: "0.0.0.0", // Allows external access from Docker
+      port: 5174,      // Change to the new port
+    }
   };
 });

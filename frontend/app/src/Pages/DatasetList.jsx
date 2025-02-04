@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 const url_get_all_dataset = process.env.REACT_APP_GET_DATASET;
 
+const client_price_response_endpoint  = process.env.REACT_APP_SUBMIT_CLIENT_PRICE_RESPONSE_URL
+
 const DatasetCard = ({ dataset }) => {
     const navigate = useNavigate();
 
@@ -84,6 +86,7 @@ const DatasetList = () => {
     useEffect(() => {
         const fetchData = async () => {
             await fetchDatasets();
+            console.log("Checkpoint 1: ",client_price_response_endpoint)
         };
         fetchData();
     }, []);

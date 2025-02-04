@@ -5,7 +5,8 @@ import json
 import os
 from dotenv import load_dotenv
 import random
-
+import uvicorn
+import requests
 """
   Don't start this server from terminal without specifying port (9000 or something unused) in the command,
   otherwise by default 8000 port will conflict with federated server
@@ -18,7 +19,7 @@ import random
 """
 load_dotenv()
 # Paths for model configuration and training data
-model_path = "storage/model_config"
+model_path = "/backend/app/storage/model_config"
 data_dir = os.path.join(os.path.dirname(__file__), 'data')
 train_X_path = os.path.join(data_dir, "X_train.npy")
 train_Y_path = os.path.join(data_dir, "Y_train.npy")
@@ -76,8 +77,16 @@ def run_script(local_model_id: str):
 def check_environment():
     return {"environment": environment}
 
+@app.get("/testing")
+def testing():
+    try:
+        response = requests.get("http://host.docker.internal:8000/datasets")
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        return f"Error Connecting to FedServer: {e}"
+
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="localhost", port=9000)
 
 # http://localhost:9000/initiate-model
