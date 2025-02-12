@@ -35,3 +35,11 @@ Y_train.npy
 model_config.json
 node_modules
 temp.py 
+
+
+
+/backend/app/__pycache__
+/backend/app/CustomModels/__pycache__
+/backend/app/data/*
+
+/frontend/app/node_modules

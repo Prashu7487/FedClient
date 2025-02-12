@@ -1,4 +1,4 @@
-# FedClient
+<!-- # FedClient
 
 - Application to simulate client in Federated Learning
 
@@ -88,4 +88,14 @@ https://drive.google.com/drive/folders/1kodF_hf66guEGsYqlEAKwYMj9bqSw3hZ?usp=sha
    gdown --fuzzy <gdrive_publicly_shared_file_link>
    ```
 
-2. **Add CORS extension in your browser**
+2. **Add CORS extension in your browser** -->
+
+
+
+## New Instruction
+1. After downloading repo, setup .env file in both backend and frontend
+2. Download datasets from above.
+3. Do docker-compose up --build
+
+
+
