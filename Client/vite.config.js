@@ -11,6 +11,7 @@ const environmentVariables = [
   "REACT_APP_GET_ALL_COMPLETED_TRAININGS",
   "REACT_APP_GET_TRAINING_RESULT_WITH_SESSION_ID",
   "REACT_APP_WS_URL",
+  "REACT_APP_DATA_UPLOAD_URL",
 ];
 
 export default defineConfig(({ mode }) => {

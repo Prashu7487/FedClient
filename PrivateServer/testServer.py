@@ -1,20 +1,15 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 import subprocess
 import json
 import os
+import shutil
 from dotenv import load_dotenv
 
 """
-  Don't start this server from terminal without specifying port (9000 or something unused) in the command,
-  otherwise by default 8000 port will conflict with federated server
-
-
-  Dataset link: https://drive.google.com/drive/folders/11fclSnlnfEvgYukFkUk9ienmv7SzHmv2?usp=drive_link
-  Please download respective client datasets and adjust the paths accordingly (preferably keep in PrivateServer\data directory).
-
   NOTE: adjust the directory of training_script
 """
+
 load_dotenv()
 # Paths for model configuration and training data
 model_path = "model_config.json"
@@ -25,7 +20,7 @@ training_script_path = os.path.join(os.path.dirname(__file__), "training_script.
 
 # Get the environment (default to 'development' if not set)
 environment = os.getenv('ENVIRONMENT')
-print(environment)
+# print(environment)
 
 # Determine the server argument
 server_argument = '--production' if environment == 'production' else '--development'
@@ -55,6 +50,17 @@ def run_script():
 @app.get("/check")
 def check_environment():
     return {"environment": environment}
+
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...)):
+    #  The UploadFile class from FastAPI will process the incoming file. It allows access to the file’s metadata and content.
+    # File(...) specifies that file is a required parameter, and tells FastAPI to expect the file from the client as part of the form data.
+
+    save_path = os.path.join(data_dir, file.filename)
+    with open(save_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+    
+    return {"message": f'{file.filename} uploaded successfully'}
 
 if __name__ == "__main__":
     import uvicorn

@@ -37,3 +37,7 @@ everything req to create model should be in that dict only-->
 2. list your model name along with the respective model class in the dict model_classes specified in the "PrivateServer\ModelBuilder.py" file (include the imports in the same file)
 
 ---
+
+## Extra things ..will be needed in future
+
+1. If FedClient is being hosted ..change DATASET_UPLOAD_URL as relevant

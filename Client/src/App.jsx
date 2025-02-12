@@ -12,6 +12,8 @@ import NavBar from "./components/OnWholeApp/NavBar";
 import MyDataProvider from "./GlobalContext";
 import EventsAction from "./EventsActions";
 import { useState } from "react";
+import ManageData from "./components/DataPipeline/ManageData";
+import InitPreProcess from "./components/DataPipeline/InitPreProcess";
 
 /*
 The App component is the main component of the application. It is the parent component of all the other components.
@@ -74,7 +76,11 @@ export default function App() {
               element={<ResultDetails />}
             />
 
+            <Route path="/Manage-data" element={<ManageData />} />
+
             <Route path="/About" element={<About />} />
+
+            <Route path="/PreProcess/:dataPath" element={<InitPreProcess />} />
 
             <Route path="/*" element={<Error />} />
           </Routes>
