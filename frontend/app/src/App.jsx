@@ -16,10 +16,15 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { PrivateRoute, OnlyGuestRoute } from "./components/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
 
-import './index.css'
-import 'react-toastify/dist/ReactToastify.min.css'
+import "./index.css";
+import "react-toastify/dist/ReactToastify.min.css";
 import DatasetList from "./Pages/DatasetList";
 import DatasetDetail from "./Pages/DatasetDetail";
+import ManageData from "./Pages/ManageData";
+import ViewRecentUploads from "./components/DataPipeline/ViewRecentUploads";
+import ViewAllDatasets from "./components/DataPipeline/ViewAllDatasets";
+import DataSetOverview from "./components/DataPipeline/DataSetVisuals/DataSetOverview";
+import PreprocessingDocs from "./components/DataPipeline/DataSetVisuals/ProcessingComponents/PreprocessingDocs.jsx";
 
 /*
 The App component is the main component of the application. It is the parent component of all the other components.
@@ -71,7 +76,10 @@ export default function App() {
                 path="/Request"
                 element={
                   <PrivateRoute>
-                    <Request clientToken={clientToken} setSessions={setSessions} />
+                    <Request
+                      clientToken={clientToken}
+                      setSessions={setSessions}
+                    />
                   </PrivateRoute>
                 }
               />
@@ -88,40 +96,63 @@ export default function App() {
                 path="/TrainingStatus/details/:sessionId"
                 element={
                   <PrivateRoute>
-                    <TrainingDetails clientToken={clientToken} socket={socket} />
+                    <TrainingDetails
+                      clientToken={clientToken}
+                      socket={socket}
+                    />
                   </PrivateRoute>
                 }
               />
 
-              <Route path="/Results" element={
-                <PrivateRoute>
-                  <TrainingResults />
-                </PrivateRoute>
-              } />
+              <Route
+                path="/Results"
+                element={
+                  <PrivateRoute>
+                    <TrainingResults />
+                  </PrivateRoute>
+                }
+              />
 
               <Route
                 path="/TrainingResults/details/:sessionId"
                 element={
                   <PrivateRoute>
                     <ResultDetails />
-                  </PrivateRoute>}
+                  </PrivateRoute>
+                }
               />
               <Route
                 path="/Datasets"
                 element={
                   <PrivateRoute>
                     <DatasetList />
-                  </PrivateRoute>}
+                  </PrivateRoute>
+                }
               />
+
               <Route
                 path="/Datasets/:code"
                 element={
                   <PrivateRoute>
                     <DatasetDetail />
-                  </PrivateRoute>}
+                  </PrivateRoute>
+                }
               />
               <Route path="/About" element={<About />} />
-
+              <Route path="/ManageData" element={<ManageData />} />
+              <Route
+                path="/view-recent-uploads"
+                element={<ViewRecentUploads />}
+              />
+              <Route path="/view-all-datasets" element={<ViewAllDatasets />} />
+              <Route
+                path="/dataset-overview/:dir/:filename"
+                element={<DataSetOverview />}
+              />
+              <Route
+                path="/preprocessing-docs"
+                element={<PreprocessingDocs />}
+              />
               <Route path="/*" element={<Error />} />
             </Routes>
           </div>
@@ -130,3 +161,5 @@ export default function App() {
     </>
   );
 }
+
+// later change all the paths for PrivateRoute authentication

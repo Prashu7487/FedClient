@@ -1,6 +1,4 @@
 import React from "react";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap.bundle";
 import FedClientImage from "../assets/FedClient.jpeg";
 import StepsGif from "../assets/steps.gif"; // in backgrd
 import { useNavigate } from "react-router-dom";

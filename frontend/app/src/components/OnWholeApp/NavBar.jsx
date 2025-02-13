@@ -4,7 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 
 const NavBar = () => {
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
-  const { logout, user } = useAuth()
+  const { logout, user } = useAuth();
 
   const handleToggle = () => {
     setIsNavbarOpen(!isNavbarOpen);
@@ -39,14 +39,13 @@ const NavBar = () => {
                 Home
               </NavLink>
             </li>
-            {
-              !user &&
+            {!user && (
               <li className="nav-item me-3">
                 <NavLink className="nav-link visible" to="/Register">
                   Register
                 </NavLink>
               </li>
-            }
+            )}
             <li className="nav-item me-3">
               <NavLink className="nav-link visible" to="/Datasets">
                 Datasets
@@ -68,18 +67,22 @@ const NavBar = () => {
               </NavLink>
             </li>
             <li className="nav-item me-3">
+              <NavLink className="nav-link visible" to="/ManageData">
+                Manage Data
+              </NavLink>
+            </li>
+            <li className="nav-item me-3">
               <NavLink className="nav-link visible" to="/About">
                 About
               </NavLink>
             </li>
-            {
-              user &&
+            {user && (
               <li className="nav-item me-3">
                 <div className="nav-link visible" onClick={logout}>
                   Log out
                 </div>
               </li>
-            }
+            )}
           </ul>
         </div>
       </div>

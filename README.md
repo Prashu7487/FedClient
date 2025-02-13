@@ -90,12 +90,8 @@ https://drive.google.com/drive/folders/1kodF_hf66guEGsYqlEAKwYMj9bqSw3hZ?usp=sha
 
 2. **Add CORS extension in your browser** -->
 
-
-
 ## New Instruction
+
 1. After downloading repo, setup .env file in both backend and frontend
 2. Download datasets from above.
 3. Do docker-compose up --build
-
-
-

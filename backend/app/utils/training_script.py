@@ -2,9 +2,8 @@ import requests
 import sys
 import json
 import os
-from ModelBuilder import model_instance_from_config
+from utils.modelbuilder import model_instance_from_config
 import numpy as np
-
 
 def receive_global_parameters(url,session_id,client_id):
     try:
@@ -45,8 +44,6 @@ def send_updated_parameters(url, payload, client_token):
 
 def main():
     try:
-
-        
         server_argument = sys.argv[4] if len(sys.argv) > 4 else '--development'
         # Get API Base URL from environment variable
         BASE_URL = os.getenv("API_BASE_URL", "http://host.docker.internal:8000")

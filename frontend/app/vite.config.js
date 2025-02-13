@@ -14,7 +14,14 @@ const environmentVariables = [
   "REACT_APP_GET_ALL_COMPLETED_TRAININGS",
   "REACT_APP_GET_TRAINING_RESULT_WITH_SESSION_ID",
   "REACT_APP_SUBMIT_CLIENT_PRICE_RESPONSE_URL",
-  "REACT_APP_GET_DATASET"
+  "REACT_APP_GET_DATASET",
+  "REACT_APP_VIEW_RECENT_UPLOADS_URL",
+  "REACT_APP_VIEW_ALL_DATASETS_URL",
+  "REACT_APP_DELETE_DATAFILE_URL",
+  "REACT_APP_LIST_ALL_DATASETS_URL",
+  "REACT_APP_DATASET_DETAILS_URL",
+  "REACT_APP_PREPROCESS_DATASET_URL",
+  "REACT_APP_CREATE_NEW_DATASET_URL",
 ];
 
 export default defineConfig(({ mode }) => {
@@ -29,7 +36,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       host: "0.0.0.0", // Allows external access from Docker
-      port: 5174,      // Change to the new port
-    }
+      port: 5174, // Change to the new port
+    },
   };
 });

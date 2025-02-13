@@ -6,7 +6,7 @@ COPY ./app/package*.json ./
 
 RUN npm install
 
-COPY ./app ./
+# COPY ./app ./
 
 EXPOSE 5174
 
