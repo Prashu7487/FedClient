@@ -4,7 +4,6 @@ import MultiLayerPerceptron from "../components/OnRequestPage/MultiLayerPerceptr
 import CNN from "../components/OnRequestPage/CNN";
 import { useGlobalData } from "../GlobalContext";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import CustomSVM from "../components/OnRequestPage/CustomSVM";
 import LandMarkSVM from "../components/OnRequestPage/LandMarkSVM";
 import LinearRegression from "../components/OnRequestPage/LinearRegression";
@@ -12,60 +11,26 @@ import { createSession } from "../services/federatedService";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-// Required URLs
-const federatedSessionRequestURL =
-  process.env.REACT_APP_REQUEST_FEDERATED_SESSION_URL;
-
-/*
-==================================================
-Form schema:
- {fed_info: {obj}, client_token: string}
-==================================================
-
-==================================================
-fed_info schema:
-{
-  dataset_info : 
-  {
-    about_dataset : string,
-    feature_list: 
-    {
-      0: {feature_name: 'col1', type_Of_feature: 'int'}
-      1: {feature_name: 'col2', type_Of_feature: 'array of shape (256,256)'}
-    }
-  }
-  model_info : { obj, structure depends on individual model itself}
-  model_name: "string"
-  organisation_name: "string"
-}
-==================================================
-
-*/
 export default function Request() {
-  // React States
   const [selectedModel, setSelectedModel] = useState("");
   const { GlobalData, setGlobalData } = useGlobalData();
   const { register, control, handleSubmit } = useForm();
-  const { api } = useAuth()
-  const navigate = useNavigate()
+  const { api } = useAuth();
+  const navigate = useNavigate();
 
-  // Avail Models (keys not labels will be used in model_name)
   const availableModels = {
     LinearRegression: {
       label: "Linear Regression",
       component: <LinearRegression control={control} register={register} />,
     },
-
     SVM: {
       label: "SVM",
       component: <CustomSVM control={control} register={register} />,
     },
-
     LandMarkSVM: {
       label: "LandMark SVM",
       component: <LandMarkSVM control={control} register={register} />,
     },
-
     multiLayerPerceptron: {
       label: "Multi Layer Perceptron",
       component: <MultiLayerPerceptron control={control} register={register} />,
@@ -77,11 +42,9 @@ export default function Request() {
   };
 
   const onSubmit = async (formData) => {
-    const requestData = {
-      fed_info: formData,
-      // client_token: clientToken,
-    };
+    const requestData = { fed_info: formData };
     console.log("sending in request:", requestData);
+
     try {
       createSession(api, requestData)
         .then((res) => {
@@ -93,91 +56,115 @@ export default function Request() {
             Data: formData.dataset_info,
           };
 
-          // const session_token = res.data.session_token;
-          // setSessions((prevList) => [...prevList, session_token]);
-          // alert("Federated Learning Request is accepted!");
           setGlobalData((prevGlobalData) => ({
             ...prevGlobalData,
             CurrentModels: [...prevGlobalData.CurrentModels, newRequestData],
           }));
 
-          navigate(`/TrainingStatus/details/${res.data.session_id}`)
+          navigate(`/TrainingStatus/details/${res.data.session_id}`);
         })
-        .catch(console.error)
-      // const res = await axios.post(federatedSessionRequestURL, requestData);
-      // // We dont need to store this here this can be fetch from server side
-      // const newRequestData = {
-      //   RequestId: `${GlobalData.Client.ClientID}${Date.now()}`,
-      //   OrgName: formData.organisation_name,
-      //   Status: "Requested",
-      //   Model: formData.model_info,
-      //   Data: formData.dataset_info,
-      // };
-
-      // if (res.status === 200) {
-      //   // Client Background Task --> Save the session token in the use State have to implement logic in backend
-
-      //   const session_token = res.data.session_token;
-      //   setSessions((prevList) => [...prevList, session_token]);
-      //   alert("Federated Learning Request is accepted!");
-      //   setGlobalData((prevGlobalData) => ({
-      //     ...prevGlobalData,
-      //     CurrentModels: [...prevGlobalData.CurrentModels, newRequestData],
-      //   }));
-      // } else {
-      //   console.error("Failed to submit the request:", res);
-      // }
+        .catch(console.error);
     } catch (error) {
       console.error("Error submitting the request:", error);
     }
   };
 
   return (
-    <>
+    <div className="container mx-auto max-w-3xl px-4 py-6">
+      <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+        Federated Learning Request Portal
+      </h2>
+
       <form
         id="Request-form"
-        className="row g-3"
+        className="space-y-5"
         onSubmit={handleSubmit(onSubmit)}
       >
-        <div className="container mt-3">
-          <h4>Org Name:</h4>
+        {/* Organization Details */}
+        <div>
+          <label className="block text-lg font-medium text-gray-700">
+            Organization Name
+          </label>
           <input
             type="text"
             id="organisationName"
-            className="form-control"
-            placeholder="e.g. XYZ"
+            className="w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="e.g., XYZ Corp"
             {...register("organisation_name")}
           />
         </div>
 
-        <h4>Data:</h4>
-        <DataInfo control={control} register={register} />
+        {/* Dataset Information */}
+        <div>
+          <h4 className="text-lg font-semibold text-gray-700 mb-2">
+            Data Information
+          </h4>
+          <DataInfo control={control} register={register} />
+        </div>
 
-        <h4>Model:</h4>
-        {/* Dropdown for selecting the model */}
-        <div className="select-model">
+        {/* Statistical Information */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-lg font-medium text-gray-700">
+              Expected Standard Mean
+            </label>
+            <input
+              type="number"
+              id="standardMean"
+              step="0.01"
+              className="w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., 0.5"
+              {...register("std_mean")}
+            />
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-700">
+              Expected Standard Deviation
+            </label>
+            <input
+              type="number"
+              id = "standardDeviation"
+              step="0.01"
+              className="w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., 0.1"
+              {...register("std_deviation")}
+            />
+          </div>
+        </div>
+
+        {/* Model Selection */}
+        <div>
+          <label className="block text-lg font-semibold text-gray-700">
+            Select Model
+          </label>
           <select
-            className="form-select"
+            className="w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             {...register("model_name")}
             onChange={(e) => setSelectedModel(e.target.value)}
           >
-            <option value="selectModel">Select your model</option>
+            <option value="selectModel">Select a model</option>
             {Object.keys(availableModels).map((model_value) => (
               <option key={model_value} value={model_value}>
                 {availableModels[model_value].label}
               </option>
             ))}
           </select>
+
+          {selectedModel && (
+            <div className="mt-3">{availableModels[selectedModel].component}</div>
+          )}
         </div>
 
-        {selectedModel ? availableModels[selectedModel].component : <></>}
-
-        <div>
-          <button type="submit" className="btn btn-success me-5">
-            Request
+        {/* Submit Button */}
+        <div className="flex justify-center">
+          <button
+            type="submit"
+            className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Submit Request
           </button>
         </div>
       </form>
-    </>
+    </div>
   );
 }
