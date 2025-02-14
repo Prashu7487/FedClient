@@ -51,88 +51,98 @@ export default function Register({ setSocket }) {
   const password = watch("password");
 
   return (
-    <div className="flex flex-col items-center mt-12">
-      <h1 className="text-2xl font-bold">{isLogin ? "Login" : "Register"}</h1>
+    <div className="flex flex-col items-center justify-center sm:flex-row sm:space-x-12 my-12">
+      {/* Left Side - Image */}
+      <div className="sm:block w-1/4 max-w-md">
+        <img src={RegisterImg} alt="FedClient" className="w-full h-auto" />
+      </div>
 
-      {isLogin ? (
-        <LoginForm />
-      ) : (
-        <form
-          className="flex flex-col items-center w-full max-w-md mt-6 space-y-4"
-          onSubmit={handleSubmit(onSubmit)}
+      {/* Right Side - Form */}
+      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-lg">
+        <h1 className="text-2xl font-bold text-center mb-6">
+          {isLogin ? "Login" : "Register"}
+        </h1>
+
+        {isLogin ? (
+          <LoginForm />
+        ) : (
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+            <div>
+              <label className="block text-sm font-medium">Client Name:</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                {...register("clientName", { required: true })}
+              />
+              {errors.clientName && (
+                <p className="text-red-500 text-xs">Client Name is required.</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">Data Path:</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                {...register("data_path", { required: true })}
+              />
+              {errors.data_path && (
+                <p className="text-red-500 text-xs">Data Path is required.</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">Password:</label>
+              <input
+                type="password"
+                className="w-full p-2 border rounded"
+                {...register("password", { required: true, minLength: 6 })}
+              />
+              {errors.password && (
+                <p className="text-red-500 text-xs">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">
+                Confirm Password:
+              </label>
+              <input
+                type="password"
+                className="w-full p-2 border rounded"
+                {...register("confirmPassword", {
+                  required: true,
+                  validate: (value) =>
+                    value === password || "Passwords do not match",
+                })}
+              />
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-xs">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            >
+              Register
+            </button>
+          </form>
+        )}
+
+        <p
+          className="mt-4 text-blue-500 cursor-pointer text-center"
+          onClick={toggleForm}
         >
-          <img src={RegisterImg} alt="FedClient" className="w-24" />
-
-          <div className="w-full">
-            <label className="block text-sm font-medium">Client Name:</label>
-            <input
-              type="text"
-              className="w-full p-2 border rounded"
-              {...register("clientName", { required: true })}
-            />
-            {errors.clientName && (
-              <p className="text-red-500 text-xs">Client Name is required.</p>
-            )}
-          </div>
-
-          <div className="w-full">
-            <label className="block text-sm font-medium">Data Path:</label>
-            <input
-              type="text"
-              className="w-full p-2 border rounded"
-              {...register("data_path", { required: true })}
-            />
-            {errors.data_path && (
-              <p className="text-red-500 text-xs">Data Path is required.</p>
-            )}
-          </div>
-
-          <div className="w-full">
-            <label className="block text-sm font-medium">Password:</label>
-            <input
-              type="password"
-              className="w-full p-2 border rounded"
-              {...register("password", { required: true, minLength: 6 })}
-            />
-            {errors.password && (
-              <p className="text-red-500 text-xs">{errors.password.message}</p>
-            )}
-          </div>
-
-          <div className="w-full">
-            <label className="block text-sm font-medium">
-              Confirm Password:
-            </label>
-            <input
-              type="password"
-              className="w-full p-2 border rounded"
-              {...register("confirmPassword", {
-                required: true,
-                validate: (value) =>
-                  value === password || "Passwords do not match",
-              })}
-            />
-            {errors.confirmPassword && (
-              <p className="text-red-500 text-xs">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            className="w-full px-4 py-2 bg-green-500 text-white rounded"
-          >
-            Register
-          </button>
-        </form>
-      )}
-
-      <p className="mt-4 text-blue-500 cursor-pointer" onClick={toggleForm}>
-        {isLogin
-          ? "Don't have an account? Register"
-          : "Already have an account? Login"}
-      </p>
+          {isLogin
+            ? "Don't have an account? Register"
+            : "Already have an account? Login"}
+        </p>
+      </div>
     </div>
   );
 }

@@ -12,12 +12,12 @@ const NavBar = () => {
 
   return (
     <nav className="bg-gray-900 border-b border-gray-700 text-white">
-      <div className="container mx-auto flex justify-between items-center p-4">
-        <a className="text-xl font-bold" href="#">
+      <div className="container mx-auto flex justify-between items-center p-2">
+        <a className="text-xl font-bold" href="/">
           FedClient
         </a>
         <button
-          className="block md:hidden text-white focus:outline-none"
+          className="block md:hidden text-white focus:outline"
           onClick={handleToggle}
           aria-expanded={isNavbarOpen}
           aria-label="Toggle navigation"
@@ -42,7 +42,7 @@ const NavBar = () => {
             isNavbarOpen ? "block" : "hidden"
           } w-full md:w-auto`}
         >
-          <ul className="md:flex md:space-x-6 text-center md:text-left">
+          <ul className="md:flex md:space-x-6 text-center md:text-left flex-">
             <li>
               <NavLink className="block py-2 px-4 hover:text-gray-400" to="/">
                 Home

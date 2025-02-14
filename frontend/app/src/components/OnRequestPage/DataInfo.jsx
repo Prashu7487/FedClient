@@ -8,30 +8,34 @@ export default function DataInfo({ control, register }) {
   });
 
   return (
-    <div className="container mt-3">
+    <div className="mx-auto mt-4 space-y-4">
       {/* About Dataset */}
-      <div className="input-group mb-3">
-        <span className="input-group-text">About Dataset:</span>
+      <div className="flex items-center border border-gray-300 rounded-lg p-2">
+        <span className="bg-gray-200 text-gray-700 px-3 py-2 rounded-l-md">
+          About Dataset:
+        </span>
         <input
           type="text"
           id="datainfo"
           aria-label="About Dataset"
-          className="form-control"
+          className="flex-1 p-2 border-0 focus:ring-0 focus:outline-none"
           placeholder="Name, purpose, etc.."
           {...register(`dataset_info.about_dataset`)}
         />
       </div>
 
       {/* Parent Div (where cloned elements will be inserted) */}
-      <div id="parent-template-div">
+      <div id="parent-template-div" className="space-y-3">
         {fields.map((field, index) => (
-          <div key={field.id} className="input-group mb-3">
-            <span className="input-group-text">Column Name and Type</span>
+          <div key={field.id} className="flex items-center space-x-2">
+            <span className="bg-gray-200 text-gray-700 px-3 py-2 rounded-md">
+              Column Name & Type
+            </span>
             <Controller
               render={({ field }) => (
                 <input
                   {...field}
-                  className="form-control"
+                  className="flex-1 p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
                   placeholder="Feature Name"
                 />
               )}
@@ -43,7 +47,7 @@ export default function DataInfo({ control, register }) {
               render={({ field }) => (
                 <input
                   {...field}
-                  className="form-control"
+                  className="flex-1 p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
                   placeholder="Type of Feature"
                 />
               )}
@@ -52,7 +56,7 @@ export default function DataInfo({ control, register }) {
               defaultValue=""
             />
             <button
-              className="btn btn-outline-danger"
+              className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
               type="button"
               onClick={() => remove(index)}
             >
@@ -64,7 +68,7 @@ export default function DataInfo({ control, register }) {
 
       <button
         type="button"
-        className="btn btn-dark"
+        className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900"
         onClick={() => append({ feature_name: "", type_Of_feature: "" })}
       >
         Add Feature
