@@ -169,9 +169,38 @@ export default function Request() {
             ))}
           </select>
         </div>
+        {/* Statistical Information */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-lg font-medium text-gray-700">
+              Expected Standard Mean
+            </label>
+            <input
+              type="number"
+              id="standardMean"
+              step="0.01"
+              className="w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., 0.5"
+              {...register("std_mean")}
+            />
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-700">
+              Expected Standard Deviation
+            </label>
+            <input
+              type="number"
+              id = "standardDeviation"
+              step="0.01"
+              className="w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., 0.1"
+              {...register("std_deviation")}
+            />
+          </div>
+        </div>
 
         {selectedModel ? availableModels[selectedModel].component : <></>}
-
+        
         <div>
           <button type="submit" className="btn btn-success me-5">
             Request
