@@ -93,9 +93,29 @@ https://drive.google.com/drive/folders/1kodF_hf66guEGsYqlEAKwYMj9bqSw3hZ?usp=sha
 
 
 ## New Instruction
-1. After downloading repo, setup .env file in both backend and frontend
-2. Download datasets from above.
-3. Do docker-compose up --build
+1. Install all the required packages given below 
+2. After downloading repo, setup .env file in both backend/app and frontend/app folder
+3. Download datasets from below in folder backend/app/data, make data folder if not there
+4. Do docker-compose up --build
+
+
+
+## Package Requisite
+1. docker
+2. docker compose
+3. python3
+
+## Datasets
+Datasets for federated Learning (prepared for 5 clients)
+
+https://drive.google.com/drive/folders/1kodF_hf66guEGsYqlEAKwYMj9bqSw3hZ?usp=sharing
+
+**Extra**
+1. **gdown command:** to download from google drive
+   ```bash
+   pip install gdown
+   gdown --fuzzy <gdrive_publicly_shared_file_link>
+   ```
 
 
 
