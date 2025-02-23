@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useFieldArray } from "react-hook-form";
-
+import { XCircleIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import TestMetricsMultiselect from "../OnWholeApp/helperFunctions";
 
 const activationFunctions = {
@@ -132,43 +132,37 @@ const CNN = ({ control, register }) => {
 
   const renderLayerConfig = (layer, index) => {
     switch (layer.layer_type) {
-      // Convolution Layer
       case "convolution":
         return (
-          <div key={layer.id} className="input-group mb-2">
-            <span className="input-group-text">Convolutional Layer</span>
+          <div
+            key={layer.id}
+            className="flex flex-col gap-2 p-4 border rounded-lg shadow-sm"
+          >
+            <span className="font-semibold">Convolutional Layer</span>
 
-            {/*  number of filters  */}
             <input
               type="number"
-              className="form-control"
+              className="input"
               placeholder="Number of Filters e.g. 32"
-              defaultValue={defaultValues.layers[0].filters}
               {...register(`model_info.layers.${index}.filters`)}
             />
 
-            {/* Kernal size */}
             <input
               type="text"
-              className="form-control"
+              className="input"
               placeholder="Kernel Size e.g. (5,5)"
-              defaultValue={defaultValues.layers[0].kernel_size}
               {...register(`model_info.layers.${index}.kernel_size`)}
             />
 
-            {/* Stride */}
             <input
               type="text"
-              className="form-control"
+              className="input"
               placeholder="Stride e.g. (2,2)"
-              defaultValue={defaultValues.layers[0].stride}
               {...register(`model_info.layers.${index}.stride`)}
             />
 
-            {/* Activation Function */}
             <select
-              className="form-select"
-              defaultValue={defaultValues.layers[0].activation_function}
+              className="select"
               {...register(`model_info.layers.${index}.activation_function`)}
             >
               <option value="">Select Activation Function</option>
@@ -179,27 +173,25 @@ const CNN = ({ control, register }) => {
               ))}
             </select>
 
-            {/* Remove Button */}
             <button
-              className="btn btn-outline-danger"
+              className="btn btn-danger flex items-center gap-2"
               type="button"
               onClick={() => remove(index)}
             >
-              Remove
+              <XCircleIcon className="h-5 w-5" /> Remove
             </button>
           </div>
         );
-
-      // Pooling Layer
       case "pooling":
         return (
-          <div key={layer.id} className="input-group mb-2">
-            <span className="input-group-text">Pooling Layer</span>
+          <div
+            key={layer.id}
+            className="flex flex-col gap-2 p-4 border rounded-lg shadow-sm"
+          >
+            <span className="font-semibold">Pooling Layer</span>
 
-            {/* Pooling type  */}
             <select
-              className="form-select"
-              defaultValue={defaultValues.layers[2].pooling_type}
+              className="select"
               {...register(`model_info.layers.${index}.pooling_type`)}
             >
               <option value="">Select Pooling Type</option>
@@ -210,102 +202,53 @@ const CNN = ({ control, register }) => {
               ))}
             </select>
 
-            {/* Pool Size  */}
             <input
               type="text"
-              className="form-control"
+              className="input"
               placeholder="Pool Size e.g. (2,2)"
-              defaultValue={defaultValues.layers[2].pool_size}
               {...register(`model_info.layers.${index}.pool_size`)}
             />
 
-            {/* Stride  */}
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Stride e.g. (2,2)"
-              defaultValue={defaultValues.layers[2].stride}
-              {...register(`model_info.layers.${index}.stride`)}
-            />
-
-            {/* Remove Button  */}
             <button
-              className="btn btn-outline-danger"
+              className="btn btn-danger flex items-center gap-2"
               type="button"
               onClick={() => remove(index)}
             >
-              Remove
+              <XCircleIcon className="h-5 w-5" /> Remove
             </button>
           </div>
         );
-
-      // Dense Layer
-      case "dense":
-        return (
-          <div key={layer.id} className="input-group mb-2">
-            <span className="input-group-text">Dense Layer</span>
-
-            {/* NUmber of nodes */}
-            <input
-              type="number"
-              className="form-control"
-              placeholder="Number of Nodes e.g. 512"
-              defaultValue={defaultValues.layers[1].num_nodes}
-              {...register(`model_info.layers.${index}.num_nodes`)}
-            />
-
-            {/* Activation function  */}
-            <select
-              className="form-select"
-              defaultValue={defaultValues.layers[1].activation_function}
-              {...register(`model_info.layers.${index}.activation_function`)}
-            >
-              <option value="">Select Activation Function</option>
-              {Object.keys(activationFunctions).map((key) => (
-                <option key={key} value={key}>
-                  {activationFunctions[key]}
-                </option>
-              ))}
-            </select>
-
-            {/* Remove button  */}
-            <button
-              className="btn btn-outline-danger"
-              type="button"
-              onClick={() => remove(index)}
-            >
-              Remove
-            </button>
-          </div>
-        );
-
-      // Flatten Layer
       case "flatten":
         return (
-          <div key={layer.id} className="input-group mb-2">
-            <span className="input-group-text">Flatten Layer</span>
+          <div
+            key={layer.id}
+            className="flex flex-col gap-2 p-4 border rounded-lg shadow-sm"
+          >
+            <span className="font-semibold">Flatten Layer</span>
 
-            {/* Remove button  */}
+            {/* Remove button */}
             <button
-              className="btn btn-outline-danger"
+              className="btn btn-danger flex items-center gap-2"
               type="button"
               onClick={() => remove(index)}
             >
-              Remove
+              {" "}
+              Remove{" "}
             </button>
           </div>
         );
-
-      // Reshape Layer
       case "reshape":
         return (
-          <div key={layer.id} className="input-group mb-2">
-            <span className="input-group-text">Reshape Layer</span>
+          <div
+            key={layer.id}
+            className="flex flex-col gap-2 p-4 border rounded-lg shadow-sm"
+          >
+            <span className="font-semibold">Reshape Layer</span>
 
             {/* Reshape target shape */}
             <input
               type="text"
-              className="form-control"
+              className="input"
               placeholder="Target Shape  e.g. (64, 64, 3) or (512,1)"
               defaultValue={defaultValues.layers[3].target_shape}
               {...register(`model_info.layers.${index}.target_shape`)}
@@ -313,16 +256,15 @@ const CNN = ({ control, register }) => {
 
             {/* Remove button */}
             <button
-              className="btn btn-outline-danger"
+              className="btn btn-danger flex items-center gap-2"
               type="button"
               onClick={() => remove(index)}
             >
-              Remove
+              <XCircleIcon className="h-5 w-5" /> Remove
             </button>
           </div>
         );
 
-      // Not a layer type case
       default:
         return null;
     }
@@ -330,35 +272,35 @@ const CNN = ({ control, register }) => {
 
   // Start of model_info component
   return (
-    <div>
-      <p>
-        Note: keeping first Layer as convolution is mandatory to avaoid error
+    <div className="p-4 bg-gray-100 rounded-lg shadow">
+      <p className="text-red-600 font-medium">
+        Note: Keeping the first layer as convolution is mandatory to avoid
+        errors.
       </p>
-      <h5>Input Layer:</h5>
-      <div className="input-group mb-3">
-        <span className="input-group-text">Input Shape</span>
 
-        {/* Input shape */}
+      {/* Input Layer */}
+      <h5 className="text-lg font-semibold mt-4">Input Layer:</h5>
+      <div className="flex items-center space-x-2">
+        <label className="text-sm font-medium">Input Shape:</label>
         <input
           type="text"
-          className="form-control"
+          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
           placeholder="e.g., 64, 64, 3"
           defaultValue={defaultValues.input_shape}
           {...register("model_info.input_shape")}
         />
       </div>
 
-      {/* Layers */}
-      <h5>Layers:</h5>
+      {/* Layers Section */}
+      <h5 className="text-lg font-semibold mt-6">Layers:</h5>
       <div id="parent-template-div">
         {fields.map((layer, index) => (
-          <div key={layer.id}>
-            <div className="input-group mb-2">
-              <span className="input-group-text">Layer Type</span>
+          <div key={layer.id} className="bg-white p-4 rounded-lg shadow mb-4">
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium">Layer Type:</label>
               <select
-                className="form-select"
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                 {...register(`model_info.layers.${index}.layer_type`)}
-                // onChange={(e) => changeVisibility(index, e)}
               >
                 <option value="">Select Layer Type</option>
                 {Object.keys(layerTypes).map((key) => (
@@ -369,37 +311,52 @@ const CNN = ({ control, register }) => {
               </select>
             </div>
 
-            {/* Rendering Layer configs */}
-            {/* {layerVisibilities[index] && renderLayerConfig(layer, index)} */}
+            {/* Rendering Layer Configurations */}
             {renderLayerConfig(layer, index)}
           </div>
         ))}
       </div>
 
+      {/* Add Layer Button */}
       <button
         type="button"
-        className="btn btn-dark mb-3"
+        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2"
         onClick={() => append({ layer_type: "" })}
       >
-        Add Layer
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+        <span>Add Layer</span>
       </button>
 
-      <h5>Output Layer:</h5>
-      <div className="input-group mb-3">
-        <span className="input-group-text">Output Shape</span>
-
-        {/* Output shape */}
+      {/* Output Layer */}
+      <h5 className="text-lg font-semibold mt-6">Output Layer:</h5>
+      <div className="flex items-center space-x-2">
+        <label className="text-sm font-medium">Output Shape:</label>
         <input
           type="number"
-          className="form-control"
+          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
           placeholder="Number of Nodes"
           defaultValue={defaultValues.output_layer.num_nodes}
           {...register("model_info.output_layer.num_nodes")}
         />
+      </div>
 
-        {/* Output activation function */}
+      <div className="flex items-center space-x-2 mt-2">
+        <label className="text-sm font-medium">Activation Function:</label>
         <select
-          className="form-select"
+          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
           defaultValue={defaultValues.output_layer.activation_function}
           {...register("model_info.output_layer.activation_function")}
         >
@@ -412,36 +369,44 @@ const CNN = ({ control, register }) => {
         </select>
       </div>
 
-      {/* Select Loss */}
-      <select
-        className="form-select"
-        defaultValue={defaultValues.loss}
-        {...register("model_info.loss")}
-      >
-        <option value="">Select Loss Function</option>
-        {Object.keys(lossFunctions).map((key) => (
-          <option key={key} value={key}>
-            {lossFunctions[key]}
-          </option>
-        ))}
-      </select>
+      {/* Loss Function Selection */}
+      <div className="mt-4">
+        <label className="text-sm font-medium">Loss Function:</label>
+        <select
+          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          defaultValue={defaultValues.loss}
+          {...register("model_info.loss")}
+        >
+          <option value="">Select Loss Function</option>
+          {Object.keys(lossFunctions).map((key) => (
+            <option key={key} value={key}>
+              {lossFunctions[key]}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      {/* Select Optimizers */}
-      <select
-        className="form-select"
-        defaultValue={defaultValues.optimizer}
-        {...register("model_info.optimizer")}
-      >
-        <option value="">Select Optimizer</option>
-        {Object.keys(optimizers).map((key) => (
-          <option key={key} value={key}>
-            {optimizers[key]}
-          </option>
-        ))}
-      </select>
+      {/* Optimizer Selection */}
+      <div className="mt-4">
+        <label className="text-sm font-medium">Optimizer:</label>
+        <select
+          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          defaultValue={defaultValues.optimizer}
+          {...register("model_info.optimizer")}
+        >
+          <option value="">Select Optimizer</option>
+          {Object.keys(optimizers).map((key) => (
+            <option key={key} value={key}>
+              {optimizers[key]}
+            </option>
+          ))}
+        </select>
+      </div>
 
-      {/* select test metrices */}
-      <TestMetricsMultiselect register={register} />
+      {/* Test Metrics Selection */}
+      <div className="mt-4">
+        <TestMetricsMultiselect register={register} />
+      </div>
     </div>
   );
 };

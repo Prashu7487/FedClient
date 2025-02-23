@@ -1,8 +1,10 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import PreviewIcon from '@mui/icons-material/Preview';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import PreviewIcon from "@mui/icons-material/Preview";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+//change icons from from "@heroicons/react/24/outline";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -184,7 +186,7 @@ const DatasetDetail = () => {
                     onClick={() => openMetricsBlock(benchmark)}
                     className="text-blue-500 hover:underline"
                   >
-                    <PreviewIcon/>
+                    <PreviewIcon />
                   </button>
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-sm text-gray-600 text-center">
@@ -192,7 +194,7 @@ const DatasetDetail = () => {
                     onClick={() => navigateToTrainModel(benchmark)}
                     className="text-green-500 hover:underline"
                   >
-                    <ExitToAppIcon/>
+                    <ExitToAppIcon />
                   </button>
                 </td>
               </tr>

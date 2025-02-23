@@ -11,6 +11,11 @@ import LinearRegression from "../components/OnRequestPage/LinearRegression";
 import { createSession } from "../services/federatedService";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import {
+  AcademicCapIcon,
+  DocumentTextIcon,
+  CubeIcon,
+} from "@heroicons/react/24/outline";
 
 // Required URLs
 const federatedSessionRequestURL =
@@ -46,8 +51,8 @@ export default function Request() {
   const [selectedModel, setSelectedModel] = useState("");
   const { GlobalData, setGlobalData } = useGlobalData();
   const { register, control, handleSubmit } = useForm();
-  const { api } = useAuth()
-  const navigate = useNavigate()
+  const { api } = useAuth();
+  const navigate = useNavigate();
 
   // Avail Models (keys not labels will be used in model_name)
   const availableModels = {
@@ -101,9 +106,9 @@ export default function Request() {
             CurrentModels: [...prevGlobalData.CurrentModels, newRequestData],
           }));
 
-          navigate(`/TrainingStatus/details/${res.data.session_id}`)
+          navigate(`/TrainingStatus/details/${res.data.session_id}`);
         })
-        .catch(console.error)
+        .catch(console.error);
       // const res = await axios.post(federatedSessionRequestURL, requestData);
       // // We dont need to store this here this can be fetch from server side
       // const newRequestData = {
@@ -133,81 +138,58 @@ export default function Request() {
   };
 
   return (
-    <>
+    <div className="bg-gray-100 flex flex-col items-center p-6 w-full">
       <form
-        id="Request-form"
-        className="row g-3"
         onSubmit={handleSubmit(onSubmit)}
+        className="w-full max-w-4xl bg-white p-8 rounded-xl shadow-lg space-y-6"
       >
-        <div className="container mt-3">
-          <h4>Org Name:</h4>
-          <input
-            type="text"
-            id="organisationName"
-            className="form-control"
-            placeholder="e.g. XYZ"
-            {...register("organisation_name")}
-          />
+        <div className="flex items-center space-x-2">
+          <AcademicCapIcon className="h-6 w-6 text-blue-600" />
+          <h4 className="text-lg font-semibold">Organization Name</h4>
         </div>
+        <input
+          type="text"
+          placeholder="e.g. XYZ"
+          {...register("organisation_name")}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
 
-        <h4>Data:</h4>
+        <div className="flex items-center space-x-2">
+          <DocumentTextIcon className="h-6 w-6 text-green-600" />
+          <h4 className="text-lg font-semibold">Dataset Information</h4>
+        </div>
         <DataInfo control={control} register={register} />
 
-        {/* Statistical Information */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-lg font-medium text-gray-700">
-              Expected Standard Mean
-            </label>
-            <input
-              type="number"
-              id="standardMean"
-              step="0.01"
-              className="w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="e.g., 0.5"
-              {...register("std_mean")}
-            />
+        <div className="flex items-center space-x-2">
+          <CubeIcon className="h-6 w-6 text-purple-600" />
+          <h4 className="text-lg font-semibold">Select Model</h4>
+        </div>
+        <select
+          {...register("model_name")}
+          onChange={(e) => setSelectedModel(e.target.value)}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+        >
+          <option value="">Select your model</option>
+          {Object.keys(availableModels).map((model_value) => (
+            <option key={model_value} value={model_value}>
+              {availableModels[model_value].label}
+            </option>
+          ))}
+        </select>
+
+        {selectedModel && (
+          <div className="p-4 border rounded-md bg-gray-50">
+            {availableModels[selectedModel].component}
           </div>
-          <div>
-            <label className="block text-lg font-medium text-gray-700">
-              Expected Standard Deviation
-            </label>
-            <input
-              type="number"
-              id = "standardDeviation"
-              step="0.01"
-              className="w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="e.g., 0.1"
-              {...register("std_deviation")}
-            />
-          </div>
-        </div>
+        )}
 
-        <h4>Model:</h4>
-        {/* Dropdown for selecting the model */}
-        <div className="select-model">
-          <select
-            className="form-select"
-            {...register("model_name")}
-            onChange={(e) => setSelectedModel(e.target.value)}
-          >
-            <option value="selectModel">Select your model</option>
-            {Object.keys(availableModels).map((model_value) => (
-              <option key={model_value} value={model_value}>
-                {availableModels[model_value].label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {selectedModel ? availableModels[selectedModel].component : <></>}
-
-        <div>
-          <button type="submit" className="btn btn-success me-5">
-            Request
-          </button>
-        </div>
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+        >
+          Request
+        </button>
       </form>
-    </>
+    </div>
   );
 }

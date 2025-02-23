@@ -11,76 +11,109 @@ const NavBar = () => {
   };
 
   return (
-    <nav
-      className="navbar navbar-expand-lg bg-dark border-bottom border-body"
-      data-bs-theme="dark"
-    >
-      <div className="container-fluid">
-        <a className="navbar-brand" href="#">
+    <nav className="bg-gray-900 border-b border-gray-700 text-white">
+      <div className="container mx-auto flex justify-between items-center p-2">
+        <a className="text-xl font-bold" href="/">
           FedClient
         </a>
         <button
-          className="navbar-toggler"
-          type="button"
+          className="block md:hidden text-white focus:outline"
           onClick={handleToggle}
-          aria-controls="navbarSupportedContent"
-          aria-expanded={isNavbarOpen ? "true" : "false"}
+          aria-expanded={isNavbarOpen}
           aria-label="Toggle navigation"
         >
-          <span className="navbar-toggler-icon"></span>
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M4 6h16M4 12h16m-7 6h7"
+            ></path>
+          </svg>
         </button>
         <div
-          className={`collapse navbar-collapse ${isNavbarOpen ? "show" : ""}`}
-          id="navbarSupportedContent"
+          className={`md:flex md:items-center ${
+            isNavbarOpen ? "block" : "hidden"
+          } w-full md:w-auto`}
         >
-          <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-            <li className="nav-item me-3">
-              <NavLink className="nav-link visible" to="/">
+          <ul className="md:flex md:space-x-6 text-center md:text-left flex-">
+            <li>
+              <NavLink className="block py-2 px-4 hover:text-gray-400" to="/">
                 Home
               </NavLink>
             </li>
             {!user && (
-              <li className="nav-item me-3">
-                <NavLink className="nav-link visible" to="/Register">
+              <li>
+                <NavLink
+                  className="block py-2 px-4 hover:text-gray-400"
+                  to="/Register"
+                >
                   Register
                 </NavLink>
               </li>
             )}
-            <li className="nav-item me-3">
-              <NavLink className="nav-link visible" to="/Datasets">
+            <li>
+              <NavLink
+                className="block py-2 px-4 hover:text-gray-400"
+                to="/Datasets"
+              >
                 Datasets
               </NavLink>
             </li>
-            <li className="nav-item me-3">
-              <NavLink className="nav-link visible" to="/Request">
+            <li>
+              <NavLink
+                className="block py-2 px-4 hover:text-gray-400"
+                to="/Request"
+              >
                 Request
               </NavLink>
             </li>
-            <li className="nav-item me-3">
-              <NavLink className="nav-link visible" to="/TrainingStatus">
+            <li>
+              <NavLink
+                className="block py-2 px-4 hover:text-gray-400"
+                to="/TrainingStatus"
+              >
                 Training Status
               </NavLink>
             </li>
-            <li className="nav-item me-3">
-              <NavLink className="nav-link visible" to="/Results">
+            <li>
+              <NavLink
+                className="block py-2 px-4 hover:text-gray-400"
+                to="/Results"
+              >
                 Training Results
               </NavLink>
             </li>
-            <li className="nav-item me-3">
-              <NavLink className="nav-link visible" to="/ManageData">
+            <li>
+              <NavLink
+                className="block py-2 px-4 hover:text-gray-400"
+                to="/ManageData"
+              >
                 Manage Data
               </NavLink>
             </li>
-            <li className="nav-item me-3">
-              <NavLink className="nav-link visible" to="/About">
+            <li>
+              <NavLink
+                className="block py-2 px-4 hover:text-gray-400"
+                to="/About"
+              >
                 About
               </NavLink>
             </li>
             {user && (
-              <li className="nav-item me-3">
-                <div className="nav-link visible" onClick={logout}>
+              <li>
+                <button
+                  className="block py-2 px-4 hover:text-gray-400 w-full text-left"
+                  onClick={logout}
+                >
                   Log out
-                </div>
+                </button>
               </li>
             )}
           </ul>

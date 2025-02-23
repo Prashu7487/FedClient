@@ -1,69 +1,26 @@
 import React from "react";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap.bundle";
 import FedprocessGif from "../assets/fedprocess.gif";
 import AboutIcon from "../assets/aboutsicon.png";
 
 export default function About() {
   return (
-    <div
-      style={{
-        display: "flex ",
-        maxWidth: "100%",
-        overflow: "hidden",
-      }}
-    >
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          margin: "20px",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            margin: "20px",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            flex: 1,
-          }}
-        >
-          <img
-            src={AboutIcon}
-            alt="FedClient"
-            style={{
-              width: "auto",
-              height: "auto",
-              maxHeight: "200px",
-              objectFit: "contain",
-            }}
-          />
-          <h3 style={{ margin: 0, textAlign: "center" }}>How it Works</h3>
-        </div>
+    <div className="flex flex-col lg:flex-row max-w-full overflow-hidden items-center justify-center my-20 gap-12">
+      {/* Left Section */}
+      <div className="flex flex-col items-center justify-center text-center">
+        <img
+          src={AboutIcon}
+          alt="FedClient"
+          className="max-h-48 w-auto object-contain"
+        />
+        <h3 className="text-2xl font-semibold text-gray-700">How it Works</h3>
       </div>
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+
+      {/* Right Section */}
+      <div className="flex justify-center items-center p-4">
         <img
           src={FedprocessGif}
           alt="Fedprocess Gif"
-          style={{
-            width: "auto",
-            height: "auto",
-            maxHeight: "500px",
-            objectFit: "contain",
-          }}
+          className="max-h-96 w-auto object-contain shadow-lg rounded-lg"
         />
       </div>
     </div>
