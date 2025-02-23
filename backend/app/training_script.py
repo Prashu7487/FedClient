@@ -2,11 +2,7 @@ import requests
 import sys
 import json
 import os
-<<<<<<< Updated upstream:backend/app/training_script.py
-from ModelBuilder import model_instance_from_config
-=======
 from modelbuilder import model_instance_from_config
->>>>>>> Stashed changes:backend/app/utils/training_script.py
 import numpy as np
 
 
