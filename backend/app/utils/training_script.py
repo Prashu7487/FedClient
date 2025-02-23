@@ -2,7 +2,7 @@ import requests
 import sys
 import json
 import os
-from utils.modelbuilder import model_instance_from_config
+from modelbuilder import model_instance_from_config
 import numpy as np
 
 def receive_global_parameters(url,session_id,client_id):
