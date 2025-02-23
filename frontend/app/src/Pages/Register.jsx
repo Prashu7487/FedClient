@@ -3,8 +3,6 @@ import { set, useForm } from "react-hook-form";
 import { useGlobalData } from "../GlobalContext";
 import { useState } from "react";
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap.bundle";
 import RegisterImg from "../assets/register.png";
 import { createUser, getMe, login } from "../services/authService";
 import { useAuth } from "../contexts/AuthContext";

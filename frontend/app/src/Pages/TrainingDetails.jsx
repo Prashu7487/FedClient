@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useGlobalData } from "../GlobalContext";
 import Error from "../Pages/Error";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap.js";
 import { useEffect } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";

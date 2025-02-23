@@ -1,6 +1,4 @@
 import React from "react";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/js/bootstrap.bundle";
 import FedprocessGif from "../assets/fedprocess.gif";
 import AboutIcon from "../assets/aboutsicon.png";
 
