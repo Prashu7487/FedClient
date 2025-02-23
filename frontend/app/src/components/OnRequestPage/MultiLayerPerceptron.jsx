@@ -48,78 +48,56 @@ const MultiLayerPerceptron = ({ control, register }) => {
   });
 
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          marginBottom: "10px",
-          justifyContent: "space-between",
-        }}
-      >
-        <span>
-          <h5>Loss Function:</h5>
-        </span>
-        <div className="select-loss-function">
-          <select
-            className="form-select"
-            id="lossFunction"
-            {...register("model_info.loss_function")}
-          >
-            <option value="selectLossFunction">
-              Select your Loss Function
+    <div className="space-y-4">
+      <div className="flex justify-between items-center mb-2">
+        <h5 className="text-lg font-semibold">Loss Function:</h5>
+        <select
+          className="border rounded p-2"
+          id="lossFunction"
+          {...register("model_info.loss_function")}
+        >
+          <option value="selectLossFunction">Select your Loss Function</option>
+          {Object.keys(lossFunctions).map((lossFunctionValue) => (
+            <option key={lossFunctionValue} value={lossFunctionValue}>
+              {lossFunctions[lossFunctionValue]}
             </option>
-            {Object.keys(lossFunctions).map((lossFunctionValue) => (
-              <option key={lossFunctionValue} value={lossFunctionValue}>
-                {lossFunctions[lossFunctionValue]}
-              </option>
-            ))}
-          </select>
-        </div>
+          ))}
+        </select>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          marginBottom: "10px",
-          justifyContent: "space-between",
-        }}
-      >
-        <span>
-          <h5>Optimizer Function:</h5>
-        </span>
-        <div className="select-Optimizer-function">
-          <select className="form-select" {...register("model_info.optimizer")}>
-            <option value="selectOptimizer">
-              Select your Optimizer Function
+      <div className="flex justify-between items-center mb-2">
+        <h5 className="text-lg font-semibold">Optimizer Function:</h5>
+        <select
+          className="border rounded p-2"
+          {...register("model_info.optimizer")}
+        >
+          <option value="selectOptimizer">
+            Select your Optimizer Function
+          </option>
+          {Object.keys(optimizers).map((optimizer_key) => (
+            <option key={optimizer_key} value={optimizer_key}>
+              {optimizers[optimizer_key]}
             </option>
-            {Object.keys(optimizers).map((optimizer_key) => (
-              <option key={optimizer_key} value={optimizer_key}>
-                {optimizers[optimizer_key]}
-              </option>
-            ))}
-          </select>
-        </div>
+          ))}
+        </select>
       </div>
 
-      <h5>Input Layer:</h5>
-      <div className="input-group mb-3">
-        <span className="input-group-text">Column Name and Type</span>
+      <h5 className="text-lg font-semibold">Input Layer:</h5>
+      <div className="flex space-x-2 mb-3">
         <input
           type="text"
-          aria-label="Feature"
-          className="form-control"
-          placeholder="Input_Shape of Dataset"
+          className="border rounded p-2 flex-1"
+          placeholder="Input Shape of Dataset"
           {...register("model_info.input_layer.input_shape")}
         />
         <input
           type="text"
-          aria-label="Type"
-          className="form-control"
+          className="border rounded p-2 flex-1"
           placeholder="Number of Nodes"
           {...register("model_info.input_layer.num_nodes")}
         />
         <select
-          className="form-select"
+          className="border rounded p-2"
           {...register("model_info.input_layer.activation_function")}
         >
           <option value="select-activation">Activation Function</option>
@@ -131,22 +109,20 @@ const MultiLayerPerceptron = ({ control, register }) => {
         </select>
       </div>
 
-      <h5>Intermediate Layer:</h5>
-      <div id="parent-template-div">
+      <h5 className="text-lg font-semibold">Intermediate Layer:</h5>
+      <div>
         {fields.map((field, index) => (
-          <div key={field.id} className="input-group mb-2">
-            <span className="input-group-text">Column Name and Type</span>
+          <div key={field.id} className="flex space-x-2 mb-2 items-center">
             <input
               type="text"
-              aria-label="Type"
-              className="form-control"
+              className="border rounded p-2 flex-1"
               placeholder="Number of Nodes"
               {...register(
                 `model_info.intermediate_layer.${index}.feature_name`
               )}
             />
             <select
-              className="form-select"
+              className="border rounded p-2"
               {...register(
                 `model_info.intermediate_layer.${index}.activation_function`
               )}
@@ -159,7 +135,7 @@ const MultiLayerPerceptron = ({ control, register }) => {
               ))}
             </select>
             <button
-              className="btn btn-outline-danger"
+              className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
               type="button"
               onClick={() => remove(index)}
             >
@@ -170,24 +146,22 @@ const MultiLayerPerceptron = ({ control, register }) => {
       </div>
       <button
         type="button"
-        className="btn btn-primary mb-3"
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         onClick={() => append()}
       >
         Add Intermediate Level
       </button>
 
-      <h5>Output Layer:</h5>
-      <div className="input-group mb-3">
-        <span className="input-group-text">Column Name and Type</span>
+      <h5 className="text-lg font-semibold">Output Layer:</h5>
+      <div className="flex space-x-2 mb-3">
         <input
           type="text"
-          aria-label="Type"
-          className="form-control"
+          className="border rounded p-2 flex-1"
           placeholder="Number of Nodes"
           {...register("model_info.output_layer.num_nodes")}
         />
         <select
-          className="form-select"
+          className="border rounded p-2"
           {...register("model_info.output_layer.activation_function")}
         >
           <option value="select-activation">Activation Function</option>
