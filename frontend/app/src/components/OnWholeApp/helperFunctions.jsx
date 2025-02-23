@@ -1,3 +1,5 @@
+// import { CheckCircleIcon } from "@heroicons/react/24/outline";
+
 const testMetricsOptions = [
   { value: "mse", label: "Mean Squared Error" },
   { value: "mae", label: "Mean Absolute Error" },
@@ -14,32 +16,36 @@ const testMetricsOptions = [
 ];
 
 // Multiselect Component for Test Metrics
+
 const TestMetricsMultiselect = ({ register }) => {
   return (
-    <div className="mt-2">
-      <h5>Select Test Metrics:</h5>
-      {testMetricsOptions.map((option) => (
-        <div key={option.value} className="form-check form-check-inline">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            value={option.value}
-            id={`test-metric-${option.value}`}
-            {...register("model_info.test_metrics")}
-          />
+    <div className="mt-4 p-4 border border-gray-300 rounded-lg shadow-sm">
+      <h5 className="text-lg font-semibold text-gray-700 mb-3">
+        Select Test Metrics:
+      </h5>
+      <div className="flex flex-wrap gap-x-4 gap-y-2">
+        {testMetricsOptions.map((option) => (
           <label
-            className="form-check-label"
-            htmlFor={`test-metric-${option.value}`}
+            key={option.value}
+            className="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100 transition"
           >
-            {option.label}
+            <input
+              type="checkbox"
+              value={option.value}
+              id={`test-metric-${option.value}`}
+              className="w-4 h-4 accent-blue-500"
+              {...register("model_info.test_metrics")}
+            />
+            <span className="text-gray-700 text-sm">{option.label}</span>
           </label>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };
 
 export default TestMetricsMultiselect;
+
 // multi import and export
 // export { TestMetricsMultiselect, LossSelect, ActivationSelect };
 // import { TestMetricsMultiselect, LossSelect, ActivationSelect } from './Components';

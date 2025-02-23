@@ -1,5 +1,9 @@
 import React from "react";
 import TestMetricsMultiselect from "../OnWholeApp/helperFunctions";
+import {
+  AdjustmentsHorizontalIcon,
+  HashtagIcon,
+} from "@heroicons/react/24/outline";
 
 /*
 Checks/validation can be included in the component later as these do not involve changing something out of this file...
@@ -25,33 +29,40 @@ const LinearRegression = ({ control, register }) => {
     n_iters: 1,
   };
 
-  // Start of model_info component
   return (
-    <div>
-      <p>Configure the Linear Regression model parameters below:</p>
+    <div className="p-4 bg-white rounded-lg shadow-md">
+      <p className="text-lg font-semibold mb-4">
+        Configure the Linear Regression Model Parameters:
+      </p>
 
       {/* Learning Rate */}
-      <div className="input-group mb-3">
-        <span className="input-group-text">Learning Rate</span>
+      <div className="mb-4">
+        <label className="flex items-center text-gray-700 font-medium mb-1">
+          <AdjustmentsHorizontalIcon className="h-5 w-5 mr-2 text-blue-500" />
+          Learning Rate
+        </label>
         <input
           type="number"
-          className="form-control"
           step="0.01"
           placeholder="e.g. 0.01"
           defaultValue={defaultValues.lr}
           {...register("model_info.lr")}
+          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
         />
       </div>
 
       {/* Number of Iterations */}
-      <div className="input-group mb-3">
-        <span className="input-group-text">Number of Iterations</span>
+      <div className="mb-4">
+        <label className="flex items-center text-gray-700 font-medium mb-1">
+          <HashtagIcon className="h-5 w-5 mr-2 text-blue-500" />
+          Number of Iterations
+        </label>
         <input
           type="number"
-          className="form-control"
           placeholder="e.g. 1"
           defaultValue={defaultValues.n_iters}
           {...register("model_info.n_iters")}
+          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
         />
       </div>
 

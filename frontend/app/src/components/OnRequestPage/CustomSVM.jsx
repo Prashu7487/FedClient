@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import TestMetricsMultiselect from "../OnWholeApp/helperFunctions";
-
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 /*
 
 Checks/validation can be included in the componenet later as these not invlove changing something out of this file...
@@ -34,96 +34,104 @@ const CustomSVM = ({ control, register }) => {
     is_binary: "false",
   };
 
-  // Start of model_info component
+  // start of the model_info object
   return (
-    <div>
-      <p>
-        Note: Weight shape is optional but required when all clients don't have
-        the same number of classes
-      </p>
+    <div className="max-w-3xl mx-auto space-y-6">
+      {/* Note */}
+      <div className="bg-yellow-100 text-yellow-800 p-3 rounded-md flex items-start space-x-2">
+        <QuestionMarkCircleIcon className="h-5 w-5 text-yellow-700 mt-0.5" />
+        <p className="text-sm">
+          <strong>Note:</strong> Weight shape is optional but required when all
+          clients don't have the same number of classes.
+        </p>
+      </div>
 
-      {/* C: Regularization parameter */}
-      <div className="input-group mb-3">
-        <span className="input-group-text">C/Regularization parameter</span>
+      {/* Regularization Parameter (C) */}
+      <div className="flex items-center border border-gray-300 rounded-md p-2">
+        <span className="bg-gray-200 text-gray-700 px-3 py-2 rounded-l-md">
+          C / Regularization
+        </span>
         <input
           type="number"
-          className="form-control"
+          className="flex-1 p-2 border-0 focus:ring-0 focus:outline-none"
           placeholder="e.g. 0.5"
           defaultValue={defaultValues.C}
           {...register("model_info.C")}
         />
       </div>
 
-      {/* Learning rate */}
-      <div className="input-group mb-3">
-        <span className="input-group-text">Learning rate</span>
+      {/* Learning Rate */}
+      <div className="flex items-center border border-gray-300 rounded-md p-2">
+        <span className="bg-gray-200 text-gray-700 px-3 py-2 rounded-l-md">
+          Learning Rate
+        </span>
         <input
           type="number"
-          className="form-control"
+          className="flex-1 p-2 border-0 focus:ring-0 focus:outline-none"
           placeholder="e.g. 0.01"
           defaultValue={defaultValues.lr}
           {...register("model_info.lr")}
         />
       </div>
 
-      {/* Number of iterations */}
-      <div className="input-group mb-3">
-        <span className="input-group-text">#iter</span>
+      {/* Number of Iterations */}
+      <div className="flex items-center border border-gray-300 rounded-md p-2">
+        <span className="bg-gray-200 text-gray-700 px-3 py-2 rounded-l-md">
+          # Iter
+        </span>
         <input
           type="number"
-          className="form-control"
-          placeholder="number of iterations in 1 epoch e.g. 100"
+          className="flex-1 p-2 border-0 focus:ring-0 focus:outline-none"
+          placeholder="e.g. 100"
           defaultValue={defaultValues.n_iters}
           {...register("model_info.n_iters")}
         />
       </div>
 
-      {/* Weight shape */}
-      <div className="input-group mb-3">
-        <span className="input-group-text">Weight shape</span>
+      {/* Weight Shape */}
+      <div className="flex items-center border border-gray-300 rounded-md p-2">
+        <span className="bg-gray-200 text-gray-700 px-3 py-2 rounded-l-md">
+          Weight Shape
+        </span>
         <input
           type="text"
-          className="form-control"
-          placeholder="e.g. (5, 10) for 5 classes and 10 features per class"
+          className="flex-1 p-2 border-0 focus:ring-0 focus:outline-none"
+          placeholder="e.g. (5, 10)"
           defaultValue={defaultValues.weights_shape}
           {...register("model_info.weights_shape")}
         />
       </div>
 
-      {/* Binary classification */}
-      <div className="input-group">
-        <span className="input-group-text">Binary Classification</span>
-        <div className="form-check form-check-inline mx-auto">
-          <input
-            className="form-check-input"
-            type="radio"
-            name="inlineRadioOptions"
-            id="inlineRadio1"
-            value="true"
-            defaultChecked={defaultValues.is_binary === "true"}
-            {...register("model_info.is_binary")}
-          />
-          <label className="form-check-label" htmlFor="inlineRadio1">
-            Yes
+      {/* Binary Classification */}
+      <div className="border border-gray-300 rounded-md p-4">
+        <p className="font-medium text-gray-700 mb-2">Binary Classification</p>
+        <div className="flex space-x-4">
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="radio"
+              name="binaryClassification"
+              value="true"
+              className="accent-blue-500"
+              defaultChecked={defaultValues.is_binary === "true"}
+              {...register("model_info.is_binary")}
+            />
+            <span>Yes</span>
           </label>
-        </div>
-        <div className="form-check form-check-inline mx-auto">
-          <input
-            className="form-check-input"
-            type="radio"
-            name="inlineRadioOptions"
-            id="inlineRadio2"
-            value="false"
-            defaultChecked={defaultValues.is_binary === "false"}
-            {...register("model_info.is_binary")}
-          />
-          <label className="form-check-label" htmlFor="inlineRadio2">
-            No
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="radio"
+              name="binaryClassification"
+              value="false"
+              className="accent-blue-500"
+              defaultChecked={defaultValues.is_binary === "false"}
+              {...register("model_info.is_binary")}
+            />
+            <span>No</span>
           </label>
         </div>
       </div>
 
-      {/* Select test metrics */}
+      {/* Select Test Metrics */}
       <TestMetricsMultiselect register={register} />
     </div>
   );
