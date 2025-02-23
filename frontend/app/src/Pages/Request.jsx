@@ -15,6 +15,7 @@ import {
   AcademicCapIcon,
   DocumentTextIcon,
   CubeIcon,
+  ChartBarIcon,
 } from "@heroicons/react/24/outline";
 
 // Required URLs
@@ -154,12 +155,48 @@ export default function Request() {
           className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
+        {/* Dataset info */}
         <div className="flex items-center space-x-2">
           <DocumentTextIcon className="h-6 w-6 text-green-600" />
           <h4 className="text-lg font-semibold">Dataset Information</h4>
         </div>
         <DataInfo control={control} register={register} />
 
+        {/* Statistical Information */}
+        <div className="flex items-center space-x-2">
+          <ChartBarIcon className="h-6 w-6 text-yellow-600" />
+          <h4 className="text-lg font-semibold">Statistical Information</h4>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-lg font-medium text-gray-700">
+              Expected Standard Mean
+            </label>
+            <input
+              type="number"
+              id="standardMean"
+              step="0.01"
+              className="w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., 0.5"
+              {...register("std_mean")}
+            />
+          </div>
+          <div>
+            <label className="block text-lg font-medium text-gray-700">
+              Expected Standard Deviation
+            </label>
+            <input
+              type="number"
+              id="standardDeviation"
+              step="0.01"
+              className="w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="e.g., 0.1"
+              {...register("std_deviation")}
+            />
+          </div>
+        </div>
+
+        {/* model selection */}
         <div className="flex items-center space-x-2">
           <CubeIcon className="h-6 w-6 text-purple-600" />
           <h4 className="text-lg font-semibold">Select Model</h4>
