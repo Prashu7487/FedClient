@@ -189,7 +189,7 @@ import ViewRecentUploads from "./components/DataPipeline/ViewRecentUploads";
 import ViewAllDatasets from "./components/DataPipeline/ViewAllDatasets";
 import DataSetOverview from "./components/DataPipeline/DataSetVisuals/DataSetOverview";
 import PreprocessingDocs from "./components/DataPipeline/DataSetVisuals/ProcessingComponents/PreprocessingDocs.jsx";
-
+import Dashboard from "./Pages/Dashboard.jsx";
 /*
 The App component is the main component of the application. It is the parent component of all the other components.
 It contains the NavBar component, which is a navigation bar that allows the user to navigate between different 
@@ -263,7 +263,6 @@ export default function App() {
                 element={<ResultDetails />}
               />
               <Route path="/Datasets" element={<DatasetList />} />
-
               <Route path="/Datasets/:code" element={<DatasetDetail />} />
               <Route path="/About" element={<About />} />
               <Route path="/ManageData" element={<ManageData />} />
@@ -275,6 +274,11 @@ export default function App() {
               <Route
                 path="/dataset-overview/:dir/:filename"
                 element={<DataSetOverview />}
+              />
+
+              <Route 
+                path="/dashboard"
+                element={<Dashboard />}
               />
               <Route
                 path="/preprocessing-docs"

@@ -1,5 +1,5 @@
 import { AxiosInstance } from "axios"
-
+const get_all_initiated_sessions = process.env.REACT_APP_GET_ALL_INITIATED_SESSIONS;
 export const createSession = async (
     api: AxiosInstance,
     session_data: {
@@ -23,4 +23,8 @@ export const respondToSession = (api: AxiosInstance, data: { session_id: number,
 
 export const sendModelInitiation = (api: AxiosInstance, data: { session_id: number, decision: number }) => {
     return api.post('update-client-status-four', data)
+}
+
+export const getUserInitiatedSessions = (api: AxiosInstance) => {
+    return api.get(get_all_initiated_sessions)
 }
