@@ -19,5 +19,10 @@ services:
       - "9090:9090"
     volumes:
       - ./backend/app:/app
+      - ${DB_VOLUME}:/db_volume
+    env_file:
+      - .env
+    environment:
+      - DB_PATH=/db_volume/database.db
 
     # later remove volumes and uncomment copy code in individual Dockerfile

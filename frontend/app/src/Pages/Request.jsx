@@ -4,7 +4,6 @@ import MultiLayerPerceptron from "../components/OnRequestPage/MultiLayerPerceptr
 import CNN from "../components/OnRequestPage/CNN";
 import { useGlobalData } from "../GlobalContext";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import CustomSVM from "../components/OnRequestPage/CustomSVM";
 import LandMarkSVM from "../components/OnRequestPage/LandMarkSVM";
 import LinearRegression from "../components/OnRequestPage/LinearRegression";
@@ -175,7 +174,7 @@ export default function Request() {
             <input
               type="number"
               id="standardMean"
-              step="0.01"
+              step="0.00001"
               className="w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="e.g., 0.5"
               {...register("std_mean")}
@@ -188,7 +187,7 @@ export default function Request() {
             <input
               type="number"
               id="standardDeviation"
-              step="0.01"
+              step="0.00001"
               className="w-full mt-1 px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="e.g., 0.1"
               {...register("std_deviation")}

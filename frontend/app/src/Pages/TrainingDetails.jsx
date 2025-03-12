@@ -45,11 +45,14 @@ export default function TrainingDetails({ clientToken }) {
   const { api } = useAuth();
   const { register, handleSubmit } = useForm();
   const [federatedSessionData, setFederatedSessionData] = useState({});
-
+  const [uploadStatus, setUploadStatus] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  
   useEffect(() => {
     const fetchFederatedSessionData = async () => {
       try {
         const response = await getFederatedSession(api, sessionId);
+        console.log("Checkpoint 1 : ", response.data)
         setFederatedSessionData(response.data);
       } catch (error) {
         console.error("Error fetching session data:", error);
@@ -57,7 +60,17 @@ export default function TrainingDetails({ clientToken }) {
     };
     fetchFederatedSessionData();
   }, [sessionId]);
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
 
+  const handleFileUpload = async () => {
+    if (!selectedFile) {
+      setUploadStatus("No file selected.");
+      return;
+    }
+    alert("File is Selected")
+  }
   const onSubmit = async (data) => {
     try {
       const requestData = {
@@ -122,8 +135,7 @@ export default function TrainingDetails({ clientToken }) {
                           Training Price
                         </label>
                         <div className="p-3 bg-white border rounded-lg shadow-sm text-gray-900 text-lg font-bold">
-                          89 Points{" "}
-                          {/* Replace with {federatedSessionData.price} later */}
+                        {federatedSessionData.session_price} Points
                         </div>
                       </div>
 
@@ -149,12 +161,34 @@ export default function TrainingDetails({ clientToken }) {
                         </label>
                       </div>
 
+                      {/* Upload Data Button */}
+                      <div className="mt-4">
+                        <input
+                          type="file"
+                          accept=".npy"
+                          onChange={handleFileChange}
+                          className="mb-2"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleFileUpload}
+                          className="px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition"
+                        >
+                          Upload Data
+                        </button>
+                        {uploadStatus && (
+                          <p className="mt-2 text-sm text-gray-600">
+                            {uploadStatus}
+                          </p>
+                        )}
+                      </div>
+
                       {/* Submit Button */}
                       <button
                         type="submit"
                         className="mt-4 w-full px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition"
                       >
-                        Submit Price Response
+                        Submit Price to Server
                       </button>
                     </form>
                   ) : (

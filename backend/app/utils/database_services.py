@@ -7,9 +7,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_FILENAME = os.getenv("DB_FILENAME")
-DB_PATH = os.path.join(os.getcwd(), DB_FILENAME)  
-DATABASE_URL = os.getenv("DB_URL")
+# Get the database path from the environment
+DB_PATH = os.getenv("DB_PATH")
+
+# SQLite Database URL
+DATABASE_URL = f"sqlite:///{DB_PATH}"
 
 HDFS_RAW_DATASETS_DIR = os.getenv("HDFS_RAW_DATASETS_DIR")
 HDFS_PROCESSED_DATASETS_DIR = os.getenv("HDFS_PROCESSED_DATASETS_DIR")

@@ -41,5 +41,6 @@ temp.py
 /backend/app/__pycache__
 /backend/app/CustomModels/__pycache__
 /backend/app/data/*
+.env
 
 /frontend/app/node_modules
