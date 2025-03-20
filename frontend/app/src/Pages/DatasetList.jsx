@@ -86,7 +86,6 @@ const DatasetList = () => {
     useEffect(() => {
         const fetchData = async () => {
             await fetchDatasets();
-            console.log("Checkpoint 1: ",client_price_response_endpoint)
         };
         fetchData();
     }, []);

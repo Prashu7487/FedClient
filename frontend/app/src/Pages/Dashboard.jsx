@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { getUserInitiatedSessions } from "../services/federatedService";
+import {
+  getAllSessions,
+  getUserInitiatedSessions,
+} from "../services/federatedService";
+import { getLocalDatasets } from "../services/privateService";
 
 export default function Dashboard() {
   const [initiatedSessions, setInitiatedSessions] = useState([]);
+  const [datasets, setDatasets] = useState({ uploads: [], processed: [] });
+  const [sessions, setSessions] = useState([]);
   const { api } = useAuth();
   const fetchInitiatedSession = async () => {
     try {
@@ -16,9 +22,44 @@ export default function Dashboard() {
       console.error("Error fetching initiated sessions:", error);
     }
   };
+  const fetchDatasets = async () => {
+    try {
+      getLocalDatasets().then((res) => {
+        console.log("Global Datasets : ", res.data);
+        setDatasets(res.data.contents);
+      });
+    } catch (error) {
+      console.error("Error fetching Datasets:", error);
+    }
+  };
+  const fetchSessions = async () => {
+    try {
+      getAllSessions(api).then((res) => {
+        console.log("Sessions : ", res.data);
+        setSessions(res.data);
+      });
+    } catch (error) {
+      console.error("Error fetching Sessions:", error);
+    }
+  };
+  // Define statusMap outside for better performance
+  const statusMap = {
+    1: { text: "Pre-Training Stage", color: "bg-blue-200 text-blue-700" },
+    2: { text: "Pre-Training Stage", color: "bg-blue-200 text-blue-700" },
+    3: { text: "Pre-Training Stage", color: "bg-blue-200 text-blue-700" },
+    4: { text: "Training Stage", color: "bg-yellow-200 text-yellow-700" },
+    5: { text: "Post-Training", color: "bg-green-200 text-green-700" },
+    "-1": { text: "Training Failed", color: "bg-red-200 text-red-700" },
+  };
+
+  // Default status if not found
+  const defaultStatus = { text: "Unknown", color: "bg-gray-200 text-gray-700" };
+
   useEffect(() => {
     const fetchData = async () => {
       await fetchInitiatedSession();
+      await fetchDatasets();
+      await fetchSessions();
     };
     fetchData();
   }, []);
@@ -33,7 +74,7 @@ export default function Dashboard() {
         <h2 className="text-2xl font-semibold mb-4">Initiated Sessions</h2>
         <div className="overflow-x-auto">
           {initiatedSessions.length > 0 ? (
-            <table className="w-full border-collapse border border-gray-200">
+            <table className="w-full border-collapse border border-gray-200 text-center">
               <thead>
                 <tr className="bg-gray-100 text-gray-700">
                   <th className="border border-gray-300 px-4 py-2">#</th>
@@ -74,14 +115,16 @@ export default function Dashboard() {
                       {session.session_price || "N/A"}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      {session.training_status === 1
-                        ? "🕒 Waiting"
-                        : session.training_status === 2
-                        ? "📩 Collecting Clients"
-                        : session.training_status === 3
-                        ? "🚀 Training"
-                        : "✅ Completed"}
-                    </td>
+                        <span
+                          className={`px-2 py-0.5 text-xs font-semibold rounded-lg ${
+                            statusMap[session.training_status]?.color ||
+                            defaultStatus.color
+                          }`}
+                        >
+                          {statusMap[session.training_status]?.text ||
+                            defaultStatus.text}
+                        </span>
+                      </td>
                     <td className="border border-gray-300 px-4 py-2">
                       <Link
                         to={`/TrainingStatus/details/${session.session_id}`}
@@ -104,55 +147,124 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl">
         {/* Recent Sessions */}
         <div className="p-6 bg-white shadow-lg rounded-xl">
-          <h2 className="text-xl font-semibold">Recent Sessions</h2>
-          <div className="mt-2 space-y-2">
-            <p className="text-gray-600">Session 1 - ✅ Completed</p>
-            <p className="text-gray-600">Session 2 - ⏳ In Progress</p>
-            <p className="text-gray-600">Session 3 - ❌ Failed</p>
+          <h2 className="text-xl font-semibold mb-3">Recent Sessions</h2>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse border border-gray-200">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-300 px-4 py-2 text-left">
+                    ID
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 text-left">
+                    Name
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 text-left">
+                    Status
+                  </th>
+                  <th className="border border-gray-300 px-4 py-2 text-left">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {sessions.length > 0 ? (
+                  sessions.map(({ id, name, training_status }) => (
+                    <tr key={id} className="border-b border-gray-200">
+                      <td className="border border-gray-300 px-4 py-2">{id}</td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {name || "Unknown"}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        <span
+                          className={`px-2 py-0.5 text-xs font-semibold rounded-lg ${
+                            statusMap[training_status]?.color ||
+                            defaultStatus.color
+                          }`}
+                        >
+                          {statusMap[training_status]?.text ||
+                            defaultStatus.text}
+                        </span>
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        <Link
+                          to={`/TrainingStatus/details/${id}`}
+                          className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                        >
+                          🔍 View
+                        </Link>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan="4"
+                      className="text-center text-gray-500 border border-gray-300 px-4 py-2"
+                    >
+                      No recent sessions found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
           <Link
-            to="/sessions"
-            className="text-blue-500 mt-3 block hover:underline"
+            to="/TrainingStatus"
+            className="text-blue-500 mt-4 block hover:underline text-center"
           >
-            View All Sessions →
+            📂 View All Sessions →
           </Link>
         </div>
 
         {/* My Data */}
         <div className="p-6 bg-white shadow-lg rounded-xl">
           <h2 className="text-xl font-semibold">My Data</h2>
-          <div className="mt-2 space-y-2">
-            <p className="text-gray-600 flex justify-between">
-              Dataset 1{" "}
-              <button className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300">
-                View
-              </button>
-            </p>
-            <p className="text-gray-600 flex justify-between">
-              Dataset 2{" "}
-              <button className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300">
-                View
-              </button>
-            </p>
-            <p className="text-gray-600 flex justify-between">
-              Dataset 3{" "}
-              <button className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300">
-                View
-              </button>
-            </p>
+          <div className="mt-2 space-y-3">
+            {datasets.uploads.map((dataset) => (
+              <div key={dataset} className="flex justify-between items-center">
+                <span className="text-gray-700 flex items-center">
+                  {dataset}
+                  <span className="ml-2 px-2 py-0.5 text-xs font-semibold text-green-700 bg-green-200 rounded-lg">
+                    Raw
+                  </span>
+                </span>
+                <Link
+                  to={`/dataset-overview/uploads/${dataset}`}
+                  className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                >
+                  🔍 View
+                </Link>
+              </div>
+            ))}
+            {datasets.processed.map((dataset) => (
+              <div key={dataset} className="flex justify-between items-center">
+                <span className="text-gray-700 flex items-center">
+                  {dataset}
+                  <span className="ml-2 px-2 py-0.5 text-xs font-semibold text-orange-700 bg-orange-200 rounded-lg">
+                    Processed
+                  </span>
+                </span>
+                <Link
+                  to={`/dataset-overview/processed/${dataset}`}
+                  className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
+                >
+                  🔍 View
+                </Link>
+              </div>
+            ))}
           </div>
           <Link
-            to="/datasets"
-            className="text-blue-500 mt-3 block hover:underline"
+            to="/ManageData"
+            className="text-blue-500 mt-4 block hover:underline"
           >
-            Manage Datasets →
+            📂 Manage Datasets →
           </Link>
         </div>
       </div>
 
       {/* Floating Add Job Button */}
       <div className="fixed bottom-6 right-6">
-        <Link to="/add-session">
+        <Link to="/request">
           <button className="px-4 py-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition">
             + Add Session
           </button>

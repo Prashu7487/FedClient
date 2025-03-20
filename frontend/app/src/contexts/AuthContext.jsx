@@ -245,7 +245,6 @@ export const useAuth = () => useContext(AuthContext);
 
 const setUpModel = async (config, user, sessionId, api) => {
     console.log("config received by setUpModel: ", config);
-    console.log("Checkpoint 1 :access token", user)
     const data = {
         model_config: config,
         session_id: sessionId,

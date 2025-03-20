@@ -42,7 +42,6 @@ const DatasetDetail = () => {
       try {
         const url = `${url_get_dataset}/${code}`;
         const res = await axios.get(url);
-        console.log("Checkpoint 1: ", res.data);
         setDataset(res.data);
       } catch (err) {
         setError("Failed to fetch dataset. Please try again later.");
