@@ -136,7 +136,6 @@ class DatabaseManager:
             uploads =  [dataset.file_name for dataset in raw_datasets]
             processed_datasets = session.query(ProcessedDataset).all()
             processed = [dataset.file_name for dataset in processed_datasets]
-
             return {"contents": {HDFS_RAW_DATASETS_DIR: uploads, HDFS_PROCESSED_DATASETS_DIR: processed}}
 
         except Exception as e:

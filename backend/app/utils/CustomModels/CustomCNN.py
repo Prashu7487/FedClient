@@ -19,7 +19,7 @@ class CustomCNN:
     def __init__(self, config):
         self.config = config
         self.model = Sequential()
-
+        print("Checkpoint 2 - CustomCNN : ",config)
         try:
             input_shape = ast.literal_eval(config['input_shape'])
             self.model.add(Input(shape=input_shape)) 
