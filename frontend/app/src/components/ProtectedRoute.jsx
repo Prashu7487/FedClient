@@ -11,5 +11,5 @@ export const PrivateRoute = ({ children }) => {
 export const OnlyGuestRoute = ({ children }) => {
     const { user } = useAuth();
 
-    return user ? <Navigate to={'/Request'} /> : children
+    return user ? <Navigate to={'/dashboard'} /> : children
 }

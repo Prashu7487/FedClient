@@ -43,3 +43,4 @@ temp.py
 /backend/app/data/*
 
 /frontend/app/node_modules
+/frontend/app/.env.example

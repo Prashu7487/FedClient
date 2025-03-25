@@ -42,6 +42,13 @@ app.include_router(model_training_routes.router)
 def check_environment():
     return {"environment": environment}
 
+@app.get("/check_db_path")
+def check_environment():
+    import os 
+    return {
+        os.getcwd()
+    }
+
 @app.get("/testing")
 def testing():
     try:
