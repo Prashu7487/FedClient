@@ -115,16 +115,16 @@ export default function Dashboard() {
                       {session.session_price || "N/A"}
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                        <span
-                          className={`px-2 py-0.5 text-xs font-semibold rounded-lg ${
-                            statusMap[session.training_status]?.color ||
-                            defaultStatus.color
-                          }`}
-                        >
-                          {statusMap[session.training_status]?.text ||
-                            defaultStatus.text}
-                        </span>
-                      </td>
+                      <span
+                        className={`px-2 py-0.5 text-xs font-semibold rounded-lg ${
+                          statusMap[session.training_status]?.color ||
+                          defaultStatus.color
+                        }`}
+                      >
+                        {statusMap[session.training_status]?.text ||
+                          defaultStatus.text}
+                      </span>
+                    </td>
                     <td className="border border-gray-300 px-4 py-2">
                       <Link
                         to={`/TrainingStatus/details/${session.session_id}`}

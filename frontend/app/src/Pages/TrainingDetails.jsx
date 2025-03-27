@@ -47,12 +47,12 @@ export default function TrainingDetails({ clientToken }) {
   const [federatedSessionData, setFederatedSessionData] = useState({});
   const [uploadStatus, setUploadStatus] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
-  
+
   useEffect(() => {
     const fetchFederatedSessionData = async () => {
       try {
         const response = await getFederatedSession(api, sessionId);
-        console.log("Checkpoint 1 : ", response.data)
+        console.log("Checkpoint 1 : ", response.data);
         setFederatedSessionData(response.data);
       } catch (error) {
         console.error("Error fetching session data:", error);
@@ -69,8 +69,8 @@ export default function TrainingDetails({ clientToken }) {
       setUploadStatus("No file selected.");
       return;
     }
-    alert("File is Selected")
-  }
+    alert("File is Selected");
+  };
   const onSubmit = async (data) => {
     try {
       const requestData = {
@@ -135,7 +135,7 @@ export default function TrainingDetails({ clientToken }) {
                           Training Price
                         </label>
                         <div className="p-3 bg-white border rounded-lg shadow-sm text-gray-900 text-lg font-bold">
-                        {federatedSessionData.session_price} Points
+                          {federatedSessionData.session_price} Points
                         </div>
                       </div>
 

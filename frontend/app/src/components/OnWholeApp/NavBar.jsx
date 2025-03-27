@@ -1,6 +1,19 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import {
+  Bars3Icon,
+  XMarkIcon,
+  HomeIcon,
+  UserMinusIcon,
+  UserPlusIcon,
+  ClipboardDocumentListIcon,
+  DocumentArrowUpIcon,
+  ChartBarSquareIcon,
+  ChartPieIcon,
+  ServerStackIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/24/solid";
 
 const NavBar = () => {
   const [isNavbarOpen, setIsNavbarOpen] = useState(false);
@@ -13,106 +26,105 @@ const NavBar = () => {
   return (
     <nav className="bg-gray-900 border-b border-gray-700 text-white">
       <div className="container mx-auto flex justify-between items-center p-2">
-        <a className="text-xl font-bold" href="/">
-          FedClient
+        {/* Logo */}
+        <a className="text-xl font-bold flex items-center text-white" href="/">
+          <span>FedClient</span>
         </a>
+
+        {/* Mobile Menu Button */}
         <button
-          className="block md:hidden text-white focus:outline"
+          className="md:hidden text-white focus:outline-none"
           onClick={handleToggle}
           aria-expanded={isNavbarOpen}
           aria-label="Toggle navigation"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4 6h16M4 12h16m-7 6h7"
-            ></path>
-          </svg>
+          {isNavbarOpen ? (
+            <XMarkIcon className="w-7 h-7" />
+          ) : (
+            <Bars3Icon className="w-7 h-7" />
+          )}
         </button>
+
+        {/* Navigation Links */}
         <div
-          className={`md:flex md:items-center ${
+          className={`absolute md:static top-10 right-0 w-full md:w-auto bg-gray-900 md:bg-transparent md:flex md:items-center p-4 md:p-0 transition-all duration-300 ${
             isNavbarOpen ? "block" : "hidden"
-          } w-full md:w-auto`}
+          } md:ml-auto`}
         >
-          <ul className="md:flex md:space-x-6 text-center md:text-left flex-">
+          <ul className="md:flex justify-end items-center space-y-4 md:space-y-0 md:space-x-6 w-full">
             <li>
-              <NavLink className="block py-2 px-4 hover:text-gray-400" to="/">
-                Home
+              <NavLink
+                className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
+                to="/"
+              >
+                <HomeIcon className="w-5 h-5" /> Home
               </NavLink>
             </li>
             {!user && (
               <li>
                 <NavLink
-                  className="block py-2 px-4 hover:text-gray-400"
+                  className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
                   to="/Register"
                 >
-                  Register
+                  <UserPlusIcon className="w-5 h-5" /> Register
                 </NavLink>
               </li>
             )}
             <li>
               <NavLink
-                className="block py-2 px-4 hover:text-gray-400"
+                className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
                 to="/Datasets"
               >
-                Datasets
+                <ClipboardDocumentListIcon className="w-5 h-5" /> Datasets
               </NavLink>
             </li>
             <li>
               <NavLink
-                className="block py-2 px-4 hover:text-gray-400"
+                className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
                 to="/Request"
               >
-                Request
+                <DocumentArrowUpIcon className="w-5 h-5" /> Request
               </NavLink>
             </li>
             <li>
               <NavLink
-                className="block py-2 px-4 hover:text-gray-400"
+                className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
                 to="/TrainingStatus"
               >
-                Training Status
+                <ChartBarSquareIcon className="w-5 h-5" /> Training Status
               </NavLink>
             </li>
             <li>
               <NavLink
-                className="block py-2 px-4 hover:text-gray-400"
+                className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
                 to="/Results"
               >
-                Training Results
+                <ChartPieIcon className="w-5 h-5" /> Training Results
               </NavLink>
             </li>
             <li>
               <NavLink
-                className="block py-2 px-4 hover:text-gray-400"
+                className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
                 to="/ManageData"
               >
-                Manage Data
+                <ServerStackIcon className="w-5 h-5" /> Manage Data
               </NavLink>
             </li>
             <li>
               <NavLink
-                className="block py-2 px-4 hover:text-gray-400"
+                className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
                 to="/About"
               >
-                About
+                <InformationCircleIcon className="w-5 h-5" /> About
               </NavLink>
             </li>
             {user && (
               <li>
                 <button
-                  className="block py-2 px-4 hover:text-gray-400 w-full text-left"
+                  className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
                   onClick={logout}
                 >
-                  Log out
+                  <UserMinusIcon className="w-5 h-5" /> Log out
                 </button>
               </li>
             )}

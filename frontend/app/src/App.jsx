@@ -220,7 +220,7 @@ export default function App() {
             }}
           >
             <Routes>
-              <Route path="/" exact element={<Home />} />
+              <Route path="/" exact element={<Dashboard />} />
 
               <Route
                 path="/Register"
@@ -276,10 +276,7 @@ export default function App() {
                 element={<DataSetOverview />}
               />
 
-              <Route 
-                path="/dashboard"
-                element={<Dashboard />}
-              />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route
                 path="/preprocessing-docs"
                 element={<PreprocessingDocs />}
