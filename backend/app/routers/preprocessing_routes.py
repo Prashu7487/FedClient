@@ -78,6 +78,13 @@ async def get_overview(path: str, dataset_id: str):
     except Exception as e:
         return {"error": str(e)}
     
+@router.get("/processed-dataset-overview/{filename}")
+async def get_processed_overview(filename: str):
+    try:
+        return await db_client.get_dataset(HDFS_PROCESSED_DATASETS_DIR,filename)
+    except Exception as e:
+        return {"error": str(e)}
+
 @router.post("/create-new-dataset")
 async def create_new_dataset(request: Request):
     data = await request.json()
@@ -121,4 +128,17 @@ async def delete_file(directory: str = Query(...), fileName: str = Query(...)):
         return {"message": "File deleted successfully!"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+# delete this later (if used, may ccause inconsistency with hdfs)
+@router.post("/create-dataset-in-processed")
+async def create_dataset_in_processed(request: Request):
+    data = await request.json()
+    filename = data.get("fileName")
+    datastats = data.get("dataStats")
+    directory = "processed"
+    db_client.add_dataset(directory, filename, datastats)
+    return {"message": "Dataset created in processed folder successfully!"}
+    
+
 

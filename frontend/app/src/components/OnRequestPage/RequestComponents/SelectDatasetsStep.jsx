@@ -1,45 +1,4 @@
-// import React from "react";
-// import { FolderIcon } from "@heroicons/react/24/outline";
-// import { useFormContext } from "react-hook-form";
-
-// export default function SelectDatasetsStep() {
-//   const { register } = useFormContext();
-
-//   return (
-//     <div className="space-y-6">
-//       <div className="flex items-center space-x-2">
-//         <FolderIcon className="h-6 w-6 text-green-600" />
-//         <h4 className="text-lg font-semibold">Dataset Information</h4>
-//       </div>
-
-//       <div className="space-y-4">
-//         <input
-//           type="text"
-//           placeholder="Dataset description"
-//           {...register("dataset_info.about_dataset")}
-//           className="w-full p-3 border rounded-md"
-//         />
-
-//         <div className="grid grid-cols-2 gap-4">
-//           <input
-//             type="text"
-//             placeholder="Feature name"
-//             {...register("dataset_info.feature_list.0.feature_name")}
-//             className="p-2 border rounded-md"
-//           />
-//           <input
-//             type="text"
-//             placeholder="Feature type"
-//             {...register("dataset_info.feature_list.0.type_Of_feature")}
-//             className="p-2 border rounded-md"
-//           />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FolderIcon,
   ArrowPathIcon,
@@ -47,244 +6,367 @@ import {
   ExclamationTriangleIcon,
   ChevronDownIcon,
   ChevronUpIcon,
+  InformationCircleIcon,
 } from "@heroicons/react/24/outline";
 import { useFormContext } from "react-hook-form";
+
+// Environment variables
+const CLIENT_DATASET_OVERVIEW =
+  process.env.REACT_APP_PROCESSED_DATASET_OVERVIEW_PATH;
+const SERVER_DATASET_OVERVIEW =
+  process.env.REACT_APP_LOCAL_PROCESSED_DATASET_OVERVIEW_PATH;
+const LIST_TASKS_WITH_DATASET_ID =
+  process.env.REACT_APP_GET_TASKS_WITH_DATASET_ID;
 
 export default function SelectDatasetsStep() {
   const { register, setValue, watch } = useFormContext();
   const [loadingClient, setLoadingClient] = useState(false);
   const [loadingServer, setLoadingServer] = useState(false);
+  const [loadingTasks, setLoadingTasks] = useState(false);
   const [clientStats, setClientStats] = useState(null);
   const [serverStats, setServerStats] = useState(null);
+  const [tasks, setTasks] = useState([]);
   const [errorClient, setErrorClient] = useState(null);
   const [errorServer, setErrorServer] = useState(null);
+  const [errorTasks, setErrorTasks] = useState(null);
   const [outputColumns, setOutputColumns] = useState([]);
   const [showColumnSelection, setShowColumnSelection] = useState(false);
 
   const clientFilename = watch("dataset_info.client_filename");
   const serverFilename = watch("dataset_info.server_filename");
+  const selectedTaskId = watch("dataset_info.task_id");
 
-  const fetchClientStats = async () => {
+  // Fetch tasks when client dataset stats are loaded
+  useEffect(() => {
+    const fetchTasks = async () => {
+      if (!clientStats?.dataset_id) return;
+
+      setLoadingTasks(true);
+      setErrorTasks(null);
+
+      try {
+        const response = await fetch(
+          `${LIST_TASKS_WITH_DATASET_ID}?dataset_id=${clientStats.dataset_id}`
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (Array.isArray(data)) {
+          setTasks(data);
+          if (data.length > 0 && !selectedTaskId) {
+            setValue("dataset_info.task_id", data[0].task_id);
+            setValue("dataset_info.metric", data[0].metric);
+          }
+        } else {
+          setErrorTasks(data.detail || "Invalid tasks data received");
+          setTasks([]);
+        }
+      } catch (err) {
+        setErrorTasks(err.message || "Failed to fetch tasks for this dataset");
+        setTasks([]);
+      } finally {
+        setLoadingTasks(false);
+      }
+    };
+
+    fetchTasks();
+  }, [clientStats?.dataset_id, selectedTaskId, setValue]);
+
+  const fetchClientDatasetStats = async () => {
     if (!clientFilename) return;
+
     setLoadingClient(true);
     setErrorClient(null);
+
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/dataset-stats/client/${clientFilename}`
+        `${CLIENT_DATASET_OVERVIEW}/${clientFilename}`
       );
-      const data = await response.json();
-      if (data.detail) {
-        setErrorClient(data.detail);
-        setClientStats(null);
-      } else {
-        setClientStats(data);
-        setErrorClient(null);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      const data = await response.json();
+
+      if (data.detail) {
+        throw new Error(data.detail);
+      }
+
+      setClientStats(data);
+      setValue("dataset_info.client_stats", data.datastats);
+      setErrorClient(null);
     } catch (err) {
-      setErrorClient("Failed to fetch client dataset stats");
+      setErrorClient(err.message || "Failed to fetch client dataset stats");
       setClientStats(null);
+      setValue("dataset_info.client_stats", null);
     } finally {
       setLoadingClient(false);
     }
   };
 
-  const fetchServerStats = async () => {
+  const fetchServerDatasetStats = async () => {
     if (!serverFilename) return;
+
     setLoadingServer(true);
     setErrorServer(null);
+
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/dataset-stats/server/${serverFilename}`
+        `${SERVER_DATASET_OVERVIEW}/${serverFilename}`
       );
-      const data = await response.json();
-      if (data.detail) {
-        setErrorServer(data.detail);
-        setServerStats(null);
-      } else {
-        setServerStats(data);
-        setErrorServer(null);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      const data = await response.json();
+
+      if (data.detail) {
+        throw new Error(data.detail);
+      }
+
+      setServerStats(data);
+      setValue("dataset_info.server_stats", data.datastats);
+      setErrorServer(null);
     } catch (err) {
-      setErrorServer("Failed to fetch server dataset stats");
+      setErrorServer(err.message || "Failed to fetch server dataset stats");
       setServerStats(null);
+      setValue("dataset_info.server_stats", null);
     } finally {
       setLoadingServer(false);
     }
   };
 
   const handleOutputColumnChange = (column) => {
-    setOutputColumns((prev) =>
-      prev.includes(column)
-        ? prev.filter((c) => c !== column)
-        : [...prev, column]
-    );
-    setValue("dataset_info.output_columns", outputColumns);
+    const newColumns = outputColumns.includes(column)
+      ? outputColumns.filter((c) => c !== column)
+      : [...outputColumns, column];
+    setOutputColumns(newColumns);
+    setValue("dataset_info.output_columns", newColumns);
+  };
+
+  const handleTaskChange = (taskId) => {
+    const selectedTask = tasks.find((task) => task.task_id === taskId);
+    if (selectedTask) {
+      setValue("dataset_info.task_id", selectedTask.task_id);
+      setValue("dataset_info.metric", selectedTask.metric);
+    }
   };
 
   const columnsMatch = () => {
     if (!clientStats || !serverStats) return false;
-    const clientColumns = clientStats.columnStats.map((c) => c.name);
-    const serverColumns = serverStats.columnStats.map((c) => c.name);
+    const clientColumns = clientStats.datastats.columnStats.map((c) => c.name);
+    const serverColumns = serverStats.datastats.columnStats.map((c) => c.name);
     return JSON.stringify(clientColumns) === JSON.stringify(serverColumns);
   };
 
   const getAvailableColumns = () => {
     if (columnsMatch() && clientStats) {
-      return clientStats.columnStats.map((c) => c.name);
+      return clientStats.datastats.columnStats.map((c) => c.name);
     }
     return [];
   };
 
+  const getSelectedTaskMetric = () => {
+    if (!selectedTaskId || !tasks.length) return null;
+    const task = tasks.find((t) => t.task_id === selectedTaskId);
+    return task ? task.metric : null;
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center space-x-2">
-        <FolderIcon className="h-6 w-6 text-green-600" />
-        <h4 className="text-lg font-semibold">Dataset Information</h4>
+    <div className="space-y-8">
+      <div className="flex items-center space-x-3">
+        <FolderIcon className="h-7 w-7 text-blue-600" />
+        <h3 className="text-xl font-semibold text-gray-800">
+          Dataset Information
+        </h3>
       </div>
 
       <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Dataset Name:
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Dataset Name
           </label>
           <input
             type="text"
             placeholder="Enter your dataset name"
             {...register("dataset_info.name")}
-            className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium">Client Dataset:</label>
-            <div className="flex space-x-2">
-              <input
-                type="text"
-                placeholder="Enter client filename"
-                {...register("dataset_info.client_filename")}
-                className="flex-1 p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                onClick={fetchClientStats}
-                disabled={loadingClient || !clientFilename}
-                className="px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 flex items-center disabled:opacity-50"
-              >
-                {loadingClient ? (
-                  <ArrowPathIcon className="h-4 w-4 animate-spin" />
-                ) : (
-                  <ArrowPathIcon className="h-4 w-4" />
-                )}
-                <span className="ml-1">Fetch</span>
-              </button>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Client Dataset Section */}
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+            <div className="space-y-3">
+              <label className="block text-sm font-medium text-gray-700">
+                Client Dataset
+              </label>
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  placeholder="Enter client filename"
+                  {...register("dataset_info.client_filename")}
+                  className="flex-1 p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <button
+                  type="button"
+                  onClick={fetchClientDatasetStats}
+                  disabled={loadingClient || !clientFilename}
+                  className="px-4 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {loadingClient ? (
+                    <ArrowPathIcon className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ArrowPathIcon className="h-4 w-4" />
+                  )}
+                  <span className="ml-2">Fetch</span>
+                </button>
+              </div>
+
+              {errorClient && (
+                <div className="mt-2 p-2 bg-red-50 text-red-600 text-sm rounded-md flex items-start">
+                  <ExclamationTriangleIcon className="h-4 w-4 mt-0.5 mr-2 flex-shrink-0" />
+                  {errorClient}
+                </div>
+              )}
+
+              {clientStats && (
+                <div className="mt-2 p-2 bg-green-50 text-green-700 text-sm rounded-md flex items-start">
+                  <CheckCircleIcon className="h-4 w-4 mt-0.5 mr-2 flex-shrink-0" />
+                  <span>
+                    Successfully loaded dataset with{" "}
+                    {clientStats.datastats.numRows} rows and{" "}
+                    {clientStats.datastats.numColumns} columns
+                  </span>
+                </div>
+              )}
             </div>
-            {errorClient && (
-              <div className="text-red-500 text-sm flex items-center">
-                <ExclamationTriangleIcon className="h-4 w-4 mr-1" />
-                {errorClient}
-              </div>
-            )}
-            {clientStats && (
-              <div className="text-green-600 text-sm flex items-center">
-                <CheckCircleIcon className="h-4 w-4 mr-1" />
-                Found {clientStats.numRows} rows, {clientStats.numColumns}{" "}
-                columns
-              </div>
-            )}
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium">Server Dataset:</label>
-            <div className="flex space-x-2">
-              <input
-                type="text"
-                placeholder="Enter server filename"
-                {...register("dataset_info.server_filename")}
-                className="flex-1 p-2 border rounded-md focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="button"
-                onClick={fetchServerStats}
-                disabled={loadingServer || !serverFilename}
-                className="px-3 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 flex items-center disabled:opacity-50"
-              >
-                {loadingServer ? (
-                  <ArrowPathIcon className="h-4 w-4 animate-spin" />
-                ) : (
-                  <ArrowPathIcon className="h-4 w-4" />
-                )}
-                <span className="ml-1">Fetch</span>
-              </button>
+          {/* Server Dataset Section */}
+          <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+            <div className="space-y-3">
+              <label className="block text-sm font-medium text-gray-700">
+                Server Dataset
+              </label>
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  placeholder="Enter server filename"
+                  {...register("dataset_info.server_filename")}
+                  className="flex-1 p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <button
+                  type="button"
+                  onClick={fetchServerDatasetStats}
+                  disabled={loadingServer || !serverFilename}
+                  className="px-4 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {loadingServer ? (
+                    <ArrowPathIcon className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ArrowPathIcon className="h-4 w-4" />
+                  )}
+                  <span className="ml-2">Fetch</span>
+                </button>
+              </div>
+
+              {errorServer && (
+                <div className="mt-2 p-2 bg-red-50 text-red-600 text-sm rounded-md flex items-start">
+                  <ExclamationTriangleIcon className="h-4 w-4 mt-0.5 mr-2 flex-shrink-0" />
+                  {errorServer}
+                </div>
+              )}
+
+              {serverStats && (
+                <div className="mt-2 p-2 bg-green-50 text-green-700 text-sm rounded-md flex items-start">
+                  <CheckCircleIcon className="h-4 w-4 mt-0.5 mr-2 flex-shrink-0" />
+                  <span>
+                    Successfully loaded dataset with{" "}
+                    {serverStats.datastats.numRows} rows and{" "}
+                    {serverStats.datastats.numColumns} columns
+                  </span>
+                </div>
+              )}
             </div>
-            {errorServer && (
-              <div className="text-red-500 text-sm flex items-center">
-                <ExclamationTriangleIcon className="h-4 w-4 mr-1" />
-                {errorServer}
-              </div>
-            )}
-            {serverStats && (
-              <div className="text-green-600 text-sm flex items-center">
-                <CheckCircleIcon className="h-4 w-4 mr-1" />
-                Found {serverStats.numRows} rows, {serverStats.numColumns}{" "}
-                columns
-              </div>
-            )}
           </div>
         </div>
 
+        {/* Dataset Comparison and Task Selection */}
         {clientStats && serverStats && (
-          <div className="space-y-2">
+          <div className="space-y-6">
+            {/* Column Matching Status */}
             <div
-              className={`text-sm p-2 rounded-md ${
+              className={`p-3 rounded-md border ${
                 columnsMatch()
-                  ? "bg-green-100 text-green-800"
-                  : "bg-yellow-100 text-yellow-800"
-              } flex items-center`}
+                  ? "bg-green-50 border-green-200 text-green-800"
+                  : "bg-yellow-50 border-yellow-200 text-yellow-800"
+              }`}
             >
-              {columnsMatch() ? (
-                <CheckCircleIcon className="h-4 w-4 mr-1" />
-              ) : (
-                <ExclamationTriangleIcon className="h-4 w-4 mr-1" />
-              )}
-              {columnsMatch()
-                ? "Column names match between client and server datasets"
-                : "Column names do not match between client and server datasets"}
+              <div className="flex items-start">
+                {columnsMatch() ? (
+                  <CheckCircleIcon className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+                ) : (
+                  <ExclamationTriangleIcon className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+                )}
+                <div>
+                  <p className="font-medium">
+                    {columnsMatch()
+                      ? "Column names match between client and server datasets"
+                      : "Column names do not match between client and server datasets"}
+                  </p>
+                  {!columnsMatch() && (
+                    <p className="text-sm mt-1">
+                      Please ensure both datasets have identical column names
+                      for proper processing.
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
 
+            {/* Column Selection */}
             {columnsMatch() && (
-              <div className="border rounded-md p-3">
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
                 <button
                   type="button"
                   onClick={() => setShowColumnSelection(!showColumnSelection)}
-                  className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-800"
+                  className="flex items-center text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors"
                 >
                   {showColumnSelection ? (
-                    <ChevronUpIcon className="h-4 w-4 mr-1" />
+                    <ChevronUpIcon className="h-4 w-4 mr-2" />
                   ) : (
-                    <ChevronDownIcon className="h-4 w-4 mr-1" />
+                    <ChevronDownIcon className="h-4 w-4 mr-2" />
                   )}
                   Select Output Columns
                 </button>
 
                 {showColumnSelection && (
-                  <div className="mt-3 space-y-2">
+                  <div className="mt-4 space-y-3">
                     <p className="text-sm text-gray-600">
-                      Select which columns should be used as output:
+                      Select which columns should be included in the output:
                     </p>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                       {getAvailableColumns().map((column) => (
                         <label
                           key={column}
-                          className="flex items-center space-x-2"
+                          className="flex items-center space-x-3 p-2 bg-gray-50 rounded-md hover:bg-gray-100 transition-colors cursor-pointer"
                         >
                           <input
                             type="checkbox"
                             checked={outputColumns.includes(column)}
                             onChange={() => handleOutputColumnChange(column)}
-                            className="rounded text-blue-600 focus:ring-blue-500"
+                            className="h-4 w-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
                           />
-                          <span className="text-sm">{column}</span>
+                          <span className="text-sm text-gray-700">
+                            {column}
+                          </span>
                         </label>
                       ))}
                     </div>
@@ -292,20 +374,79 @@ export default function SelectDatasetsStep() {
                 )}
               </div>
             )}
+
+            {/* Task Selection */}
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+              {loadingTasks ? (
+                <div className="flex items-center justify-center p-4 text-gray-500">
+                  <ArrowPathIcon className="h-5 w-5 mr-3 animate-spin" />
+                  <span>Loading available tasks...</span>
+                </div>
+              ) : errorTasks ? (
+                <div className="p-3 bg-red-50 text-red-600 rounded-md flex items-start">
+                  <ExclamationTriangleIcon className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">Error loading tasks</p>
+                    <p className="text-sm mt-1">{errorTasks}</p>
+                  </div>
+                </div>
+              ) : tasks.length > 0 ? (
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Select Task
+                    </label>
+                    <select
+                      {...register("dataset_info.task_id")}
+                      onChange={(e) =>
+                        handleTaskChange(parseInt(e.target.value))
+                      }
+                      className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      {tasks.map((task) => (
+                        <option key={task.task_id} value={task.task_id}>
+                          {task.task_name} (ID: {task.task_id})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {selectedTaskId && (
+                    <div className="bg-blue-50 p-4 rounded-md border border-blue-100">
+                      <div className="flex items-start">
+                        <InformationCircleIcon className="h-5 w-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" />
+                        <div>
+                          <h4 className="text-sm font-medium text-blue-800">
+                            Task Information
+                          </h4>
+                          <p className="text-sm text-blue-700 mt-1">
+                            This task uses{" "}
+                            <strong className="font-semibold">
+                              {getSelectedTaskMetric()}
+                            </strong>{" "}
+                            as its evaluation metric. Please ensure you select
+                            the same metric in the Model Information section.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="p-3 bg-yellow-50 text-yellow-700 rounded-md flex items-start">
+                  <ExclamationTriangleIcon className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-medium">No tasks available</p>
+                    <p className="text-sm mt-1">
+                      No tasks are associated with this dataset. Please check
+                      with your administrator.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
-
-        {/* Hidden fields to store the stats data */}
-        <input
-          type="hidden"
-          {...register("dataset_info.client_stats")}
-          value={JSON.stringify(clientStats)}
-        />
-        <input
-          type="hidden"
-          {...register("dataset_info.server_stats")}
-          value={JSON.stringify(serverStats)}
-        />
       </div>
     </div>
   );

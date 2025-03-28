@@ -212,78 +212,72 @@ export default function App() {
 
           <NavBar />
 
-          <div
+          {/* <div
             style={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
             }}
-          >
-            <Routes>
-              <Route path="/" exact element={<Dashboard />} />
+          > */}
+          <Routes>
+            <Route path="/" exact element={<Dashboard />} />
 
-              <Route
-                path="/Register"
-                element={
-                  <OnlyGuestRoute>
-                    <Register
-                      clientToken={clientToken}
-                      setClientToken={setClientToken}
-                      setSocket={setSocket}
-                    />
-                  </OnlyGuestRoute>
-                }
-              />
-
-              <Route
-                path="/Request"
-                element={
-                  <Request
+            <Route
+              path="/Register"
+              element={
+                <OnlyGuestRoute>
+                  <Register
                     clientToken={clientToken}
-                    setSessions={setSessions}
+                    setClientToken={setClientToken}
+                    setSocket={setSocket}
                   />
-                }
-              />
+                </OnlyGuestRoute>
+              }
+            />
 
-              <Route
-                path="/TrainingStatus"
-                element={<TrainingStatus sessions={sessions} />}
-              />
-              <Route
-                path="/TrainingStatus/details/:sessionId"
-                element={
-                  <TrainingDetails clientToken={clientToken} socket={socket} />
-                }
-              />
+            <Route
+              path="/Request"
+              element={
+                <Request clientToken={clientToken} setSessions={setSessions} />
+              }
+            />
 
-              <Route path="/Results" element={<TrainingResults />} />
+            <Route
+              path="/TrainingStatus"
+              element={<TrainingStatus sessions={sessions} />}
+            />
+            <Route
+              path="/TrainingStatus/details/:sessionId"
+              element={
+                <TrainingDetails clientToken={clientToken} socket={socket} />
+              }
+            />
 
-              <Route
-                path="/TrainingResults/details/:sessionId"
-                element={<ResultDetails />}
-              />
-              <Route path="/Datasets" element={<DatasetList />} />
-              <Route path="/Datasets/:code" element={<DatasetDetail />} />
-              <Route path="/About" element={<About />} />
-              <Route path="/ManageData" element={<ManageData />} />
-              <Route
-                path="/view-recent-uploads"
-                element={<ViewRecentUploads />}
-              />
-              <Route path="/view-all-datasets" element={<ViewAllDatasets />} />
-              <Route
-                path="/dataset-overview/:dir/:filename"
-                element={<DataSetOverview />}
-              />
+            <Route path="/Results" element={<TrainingResults />} />
 
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route
-                path="/preprocessing-docs"
-                element={<PreprocessingDocs />}
-              />
-              <Route path="/*" element={<Error />} />
-            </Routes>
-          </div>
+            <Route
+              path="/TrainingResults/details/:sessionId"
+              element={<ResultDetails />}
+            />
+            <Route path="/Datasets" element={<DatasetList />} />
+            <Route path="/Datasets/:code" element={<DatasetDetail />} />
+            <Route path="/About" element={<About />} />
+            <Route path="/ManageData" element={<ManageData />} />
+            <Route
+              path="/view-recent-uploads"
+              element={<ViewRecentUploads />}
+            />
+            <Route path="/view-all-datasets" element={<ViewAllDatasets />} />
+            <Route
+              path="/dataset-overview/:dir/:filename"
+              element={<DataSetOverview />}
+            />
+
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/preprocessing-docs" element={<PreprocessingDocs />} />
+            <Route path="/*" element={<Error />} />
+          </Routes>
+          {/* </div> */}
         </AuthProvider>
       </MyDataProvider>
     </>
