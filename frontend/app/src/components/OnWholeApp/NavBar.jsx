@@ -70,14 +70,14 @@ const NavBar = () => {
                 </NavLink>
               </li>
             )}
-            <li>
+            {/* <li>
               <NavLink
                 className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
                 to="/Datasets"
               >
                 <ClipboardDocumentListIcon className="w-5 h-5" /> Datasets
               </NavLink>
-            </li>
+            </li> */}
             <li>
               <NavLink
                 className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"

@@ -12,9 +12,9 @@ import { useFormContext } from "react-hook-form";
 
 // Environment variables
 const CLIENT_DATASET_OVERVIEW =
-  process.env.REACT_APP_PROCESSED_DATASET_OVERVIEW_PATH;
-const SERVER_DATASET_OVERVIEW =
   process.env.REACT_APP_LOCAL_PROCESSED_DATASET_OVERVIEW_PATH;
+const SERVER_DATASET_OVERVIEW =
+  process.env.REACT_APP_PROCESSED_DATASET_OVERVIEW_PATH;
 const LIST_TASKS_WITH_DATASET_ID =
   process.env.REACT_APP_GET_TASKS_WITH_DATASET_ID;
 
@@ -37,16 +37,17 @@ export default function SelectDatasetsStep() {
   const selectedTaskId = watch("dataset_info.task_id");
 
   // Fetch tasks when client dataset stats are loaded
+  // right now clientstats and serverstats are different due to table structure in FedClient and FedServer
+  // but they should be the same ideally
+
   useEffect(() => {
     const fetchTasks = async () => {
-      if (!clientStats?.dataset_id) return;
-
+      if (!serverStats?.dataset_id) return;
       setLoadingTasks(true);
       setErrorTasks(null);
-
       try {
         const response = await fetch(
-          `${LIST_TASKS_WITH_DATASET_ID}?dataset_id=${clientStats.dataset_id}`
+          `${LIST_TASKS_WITH_DATASET_ID}/${serverStats.dataset_id}`
         );
 
         if (!response.ok) {
@@ -54,11 +55,16 @@ export default function SelectDatasetsStep() {
         }
 
         const data = await response.json();
+        console.log("Tasks data received: ", data);
+        if (data.detail) {
+          throw new Error(data.detail);
+        }
 
         if (Array.isArray(data)) {
           setTasks(data);
           if (data.length > 0 && !selectedTaskId) {
             setValue("dataset_info.task_id", data[0].task_id);
+            setValue("dataset_info.task_name", data[0].task_name);
             setValue("dataset_info.metric", data[0].metric);
           }
         } else {
@@ -74,7 +80,7 @@ export default function SelectDatasetsStep() {
     };
 
     fetchTasks();
-  }, [clientStats?.dataset_id, selectedTaskId, setValue]);
+  }, [serverStats?.dataset_id, selectedTaskId, setValue]);
 
   const fetchClientDatasetStats = async () => {
     if (!clientFilename) return;
@@ -86,21 +92,21 @@ export default function SelectDatasetsStep() {
       const response = await fetch(
         `${CLIENT_DATASET_OVERVIEW}/${clientFilename}`
       );
-
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
       const data = await response.json();
-
-      if (data.detail) {
+      if (data.datastats.detail) {
         throw new Error(data.detail);
       }
+
+      console.log("Client dataset stats received: ", data);
 
       setClientStats(data);
       setValue("dataset_info.client_stats", data.datastats);
       setErrorClient(null);
     } catch (err) {
+      // error will nvr occur as it is handled in backend
       setErrorClient(err.message || "Failed to fetch client dataset stats");
       setClientStats(null);
       setValue("dataset_info.client_stats", null);
@@ -126,14 +132,17 @@ export default function SelectDatasetsStep() {
 
       const data = await response.json();
 
+      // cause instead of direct error server send it like this {"detail": "error"}
       if (data.detail) {
         throw new Error(data.detail);
       }
 
+      console.log("Server dataset stats received: ", data);
       setServerStats(data);
       setValue("dataset_info.server_stats", data.datastats);
       setErrorServer(null);
     } catch (err) {
+      console.error("Error fetching server dataset stats: ", err);
       setErrorServer(err.message || "Failed to fetch server dataset stats");
       setServerStats(null);
       setValue("dataset_info.server_stats", null);
@@ -188,7 +197,7 @@ export default function SelectDatasetsStep() {
       </div>
 
       <div className="space-y-6">
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+        {/* <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Dataset Name
           </label>
@@ -198,7 +207,7 @@ export default function SelectDatasetsStep() {
             {...register("dataset_info.name")}
             className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
-        </div>
+        </div> */}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Client Dataset Section */}
@@ -323,8 +332,8 @@ export default function SelectDatasetsStep() {
                   </p>
                   {!columnsMatch() && (
                     <p className="text-sm mt-1">
-                      Please ensure both datasets have identical column names
-                      for proper processing.
+                      statistics for client and server datasets are different.
+                      <br />
                     </p>
                   )}
                 </div>
@@ -350,7 +359,8 @@ export default function SelectDatasetsStep() {
                 {showColumnSelection && (
                   <div className="mt-4 space-y-3">
                     <p className="text-sm text-gray-600">
-                      Select which columns should be included in the output:
+                      Select which columns should be marked as output column(s).
+                      <br />
                     </p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                       {getAvailableColumns().map((column) => (
@@ -425,7 +435,7 @@ export default function SelectDatasetsStep() {
                               {getSelectedTaskMetric()}
                             </strong>{" "}
                             as its evaluation metric. Please ensure you select
-                            the same metric in the Model Information section.
+                            this metric in model selection step.
                           </p>
                         </div>
                       </div>
@@ -438,8 +448,7 @@ export default function SelectDatasetsStep() {
                   <div>
                     <p className="font-medium">No tasks available</p>
                     <p className="text-sm mt-1">
-                      No tasks are associated with this dataset. Please check
-                      with your administrator.
+                      No tasks are associated with this dataset.
                     </p>
                   </div>
                 </div>
