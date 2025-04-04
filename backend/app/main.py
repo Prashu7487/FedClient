@@ -4,8 +4,9 @@ import os
 from dotenv import load_dotenv
 import uvicorn
 import requests
-from routers import preprocessing_routes
-from routers import model_training_routes
+from api import preprocessing_routes
+from api import model_training_routes
+from api import confidential_routers    
 
 """
   Don't start this server from terminal without specifying port (9000 or something unused) in the command,
@@ -31,24 +32,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Including preprocessing routers
-app.include_router(preprocessing_routes.router)
-
-# Including model training routers
-app.include_router(model_training_routes.router)
+# Including routers
+app.include_router(preprocessing_routes.dataset_router)
+app.include_router(model_training_routes.model_router)
+app.include_router(confidential_routers.confidential_router)
 
 # Temporary testing endpoints
-@app.get("/check")
-def check_environment():
-    return {"environment": environment}
-
-@app.get("/check_db_path")
-def check_environment():
-    import os 
-    return {
-        os.getcwd()
-    }
-
 @app.get("/testing")
 def testing():
     try:

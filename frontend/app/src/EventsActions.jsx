@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const private_training_start_url = "http://localhost:9000/execute-round";
-const server_status_four_update_Url = process.env.REACT_APP_UPDATE_CLIENT_STATUS_FOUR_URL;
-const private_server_model_initiate_url =
-  "http://localhost:9000/initiate-model";
+const private_server_model_initiate_url = process.env.REACT_APP_INITIATE_MODEL_FOR_TRAINING;
+const private_training_start_url = process.env.REACT_APP_EXECUTE_TRAINING_ROUND;
+const server_status_four_update_Url =
+  process.env.REACT_APP_UPDATE_CLIENT_STATUS_FOUR_URL;
 
 export default function EventsAction({ socket, clientToken }) {
   const setUpModel = async (config, sessionId) => {
@@ -60,8 +60,7 @@ export default function EventsAction({ socket, clientToken }) {
       } else if (message.type === "start_training") {
         console.log("start training on client side...");
         train_model();
-      }
-      else if (message.type === "ping") {
+      } else if (message.type === "ping") {
         console.log("ping received from server");
         // Send pong response back to the server
         socket.send(JSON.stringify({ type: "pong" }));

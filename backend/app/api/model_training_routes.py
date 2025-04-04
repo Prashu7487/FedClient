@@ -4,7 +4,7 @@ import json
 import os
 import random
 
-router = APIRouter(tags = ["Model Training"])
+model_router = APIRouter(tags = ["Model Training"])
 
 # Paths for model configuration and training data
 # model_path = "/backend/app/storage/model_config"
@@ -28,7 +28,7 @@ def generate_random_hex(n):
     # Generate a random hex string
     return ''.join(random.choices('0123456789abcdef', k=n))
 
-@router.post("/initiate-model")
+@model_router.post("/initiate-model")
 def initiate_model(modelConfig: dict):
     local_model_id = None
 
@@ -43,7 +43,7 @@ def initiate_model(modelConfig: dict):
         "local_model_id": local_model_id
     }
 
-@router.get("/execute-round")
+@model_router.get("/execute-round")
 def run_script(local_model_id: str):
     # Run the script using subprocess
     model_path_with_id = f"{model_path}/{local_model_id}.json"

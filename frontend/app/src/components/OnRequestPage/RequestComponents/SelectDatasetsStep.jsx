@@ -11,10 +11,9 @@ import {
 import { useFormContext } from "react-hook-form";
 
 // Environment variables
-const CLIENT_DATASET_OVERVIEW =
-  process.env.REACT_APP_LOCAL_PROCESSED_DATASET_OVERVIEW_PATH;
+const CLIENT_DATASET_OVERVIEW = process.env.REACT_APP_PROCESSED_OVERVIEW_PATH;
 const SERVER_DATASET_OVERVIEW =
-  process.env.REACT_APP_PROCESSED_DATASET_OVERVIEW_PATH;
+  process.env.REACT_APP_SERVER_DATASET_OVERVIEW_PATH;
 const LIST_TASKS_WITH_DATASET_ID =
   process.env.REACT_APP_GET_TASKS_WITH_DATASET_ID;
 
@@ -35,10 +34,6 @@ export default function SelectDatasetsStep() {
   const clientFilename = watch("dataset_info.client_filename");
   const serverFilename = watch("dataset_info.server_filename");
   const selectedTaskId = watch("dataset_info.task_id");
-
-  // Fetch tasks when client dataset stats are loaded
-  // right now clientstats and serverstats are different due to table structure in FedClient and FedServer
-  // but they should be the same ideally
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -96,11 +91,13 @@ export default function SelectDatasetsStep() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      if (data.datastats.detail) {
-        throw new Error(data.detail);
-      }
 
+      // logging the data for debugging
       console.log("Client dataset stats received: ", data);
+
+      if (data.details) {
+        throw new Error(data.details);
+      }
 
       setClientStats(data);
       setValue("dataset_info.client_stats", data.datastats);
@@ -132,12 +129,14 @@ export default function SelectDatasetsStep() {
 
       const data = await response.json();
 
-      // cause instead of direct error server send it like this {"detail": "error"}
-      if (data.detail) {
-        throw new Error(data.detail);
+      // logging the data for debugging
+      console.log("Server dataset stats received: ", data);
+
+      // instead of direct error server send error like this {"detail": "error"}
+      if (data.details) {
+        throw new Error(data.details);
       }
 
-      console.log("Server dataset stats received: ", data);
       setServerStats(data);
       setValue("dataset_info.server_stats", data.datastats);
       setErrorServer(null);

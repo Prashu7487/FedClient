@@ -201,7 +201,7 @@ class SparkSessionManager:
                 return {"message": "Unsupported file type."}
 
             dataset_overview = self._get_overview(df)
-            dataset_overview["fileName"] = filename
+            dataset_overview["filename"] = filename
             return dataset_overview        
         return {"message": "Dataset created."}
     
@@ -277,12 +277,12 @@ class SparkSessionManager:
             print(f"Preprocessed dataset saved to: {HDFS_FILE_READ_URL}/{HDFS_PROCESSED_DATASETS_DIR}/{newfilename} and time taken: ",time.time()-t1)
 
             overview = self._get_overview(df)
-            overview["fileName"] = newfilename
+            overview["filename"] = newfilename
             return overview
 
 # the _get_overview  function will return something like this:
 # {
-#     "fileName": "sample.parquet",
+#     "filename": "sample.parquet",
 #     "numRows": 1000,
 #     "numColumns": 5,
 #     "columnStats": [

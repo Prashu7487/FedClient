@@ -161,11 +161,11 @@
 //   );
 // }
 
-// // later change all the paths for PrivateRoute authentication
+// // later "change" (don't uncommetn above) all the paths for PrivateRoute authentication
 import { Route, Routes } from "react-router-dom";
 import Home from "./Pages/Home";
 import Request from "./Pages/Request";
-import Register from "./Pages/Register";
+import Login from "./Pages/Login.jsx";
 import TrainingStatus from "./Pages/TrainingStatus";
 import TrainingDetails from "./Pages/TrainingDetails";
 import TrainingResults from "./Pages/Results";
@@ -187,7 +187,8 @@ import DatasetDetail from "./Pages/DatasetDetail";
 import ManageData from "./Pages/ManageData";
 import ViewRecentUploads from "./components/DataPipeline/ViewRecentUploads";
 import ViewAllDatasets from "./components/DataPipeline/ViewAllDatasets";
-import DataSetOverview from "./components/DataPipeline/DataSetVisuals/DataSetOverview";
+import RawDataSetOverview from "./components/DataPipeline/DataSetVisuals/RawDataSetOverview";
+import ProcessedDataSetOverview from "./components/DataPipeline/DataSetVisuals/ProcessedDataSetOverview";
 import PreprocessingDocs from "./components/DataPipeline/DataSetVisuals/ProcessingComponents/PreprocessingDocs.jsx";
 import Dashboard from "./Pages/Dashboard.jsx";
 /*
@@ -223,10 +224,10 @@ export default function App() {
             <Route path="/" exact element={<Dashboard />} />
 
             <Route
-              path="/Register"
+              path="/Login"
               element={
                 <OnlyGuestRoute>
-                  <Register
+                  <Login
                     clientToken={clientToken}
                     setClientToken={setClientToken}
                     setSocket={setSocket}
@@ -269,8 +270,12 @@ export default function App() {
             />
             <Route path="/view-all-datasets" element={<ViewAllDatasets />} />
             <Route
-              path="/dataset-overview/:dir/:filename"
-              element={<DataSetOverview />}
+              path="/raw-dataset-overview/:filename"
+              element={<RawDataSetOverview />}
+            />
+            <Route
+              path="/processed-dataset-overview/:filename"
+              element={<ProcessedDataSetOverview />}
             />
 
             <Route path="/dashboard" element={<Dashboard />} />
