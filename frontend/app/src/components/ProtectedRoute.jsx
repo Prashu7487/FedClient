@@ -5,7 +5,7 @@ export const PrivateRoute = ({ children }) => {
     const { user } = useAuth(); // Access user or authentication status from context
 
     // If the user is not authenticated, redirect to the login page
-    return user ? children : <Navigate to="/Register" />;
+    return user ? children : <Navigate to="/Login" />;
 };
 
 export const OnlyGuestRoute = ({ children }) => {

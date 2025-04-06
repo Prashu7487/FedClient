@@ -55,32 +55,6 @@ const NavBar = () => {
             <li>
               <NavLink
                 className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
-                to="/"
-              >
-                <HomeIcon className="w-5 h-5" /> Home
-              </NavLink>
-            </li>
-            {!user && (
-              <li>
-                <NavLink
-                  className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
-                  to="/Login"
-                >
-                  <UserPlusIcon className="w-5 h-5" /> Login
-                </NavLink>
-              </li>
-            )}
-            {/* <li>
-              <NavLink
-                className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
-                to="/Datasets"
-              >
-                <ClipboardDocumentListIcon className="w-5 h-5" /> Datasets
-              </NavLink>
-            </li> */}
-            <li>
-              <NavLink
-                className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
                 to="/Request"
               >
                 <DocumentArrowUpIcon className="w-5 h-5" /> Request
@@ -110,14 +84,16 @@ const NavBar = () => {
                 <ServerStackIcon className="w-5 h-5" /> Manage Data
               </NavLink>
             </li>
-            <li>
-              <NavLink
-                className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
-                to="/About"
-              >
-                <InformationCircleIcon className="w-5 h-5" /> About
-              </NavLink>
-            </li>
+            {!user && (
+              <li>
+                <NavLink
+                  className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
+                  to="/Login"
+                >
+                  <UserPlusIcon className="w-5 h-5" /> Login
+                </NavLink>
+              </li>
+            )}
             {user && (
               <li>
                 <button
@@ -128,6 +104,22 @@ const NavBar = () => {
                 </button>
               </li>
             )}
+            <li>
+              <NavLink
+                className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
+                to="/"
+              >
+                <HomeIcon className="w-5 h-5" /> Dashboard
+              </NavLink>
+            </li>
+            {/* <li>
+              <NavLink
+                className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
+                to="/About"
+              >
+                <InformationCircleIcon className="w-5 h-5" /> About
+              </NavLink>
+            </li> */}
           </ul>
         </div>
       </div>

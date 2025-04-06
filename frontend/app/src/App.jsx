@@ -221,8 +221,16 @@ export default function App() {
             }}
           > */}
           <Routes>
-            <Route path="/" exact element={<Dashboard />} />
-
+            <Route
+              path="/"
+              exact
+              element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route
               path="/Login"
               element={
@@ -277,8 +285,6 @@ export default function App() {
               path="/processed-dataset-overview/:filename"
               element={<ProcessedDataSetOverview />}
             />
-
-            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/preprocessing-docs" element={<PreprocessingDocs />} />
             <Route path="/*" element={<Error />} />
           </Routes>
