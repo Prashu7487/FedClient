@@ -288,11 +288,9 @@ export default function App() {
             <Route path="/preprocessing-docs" element={<PreprocessingDocs />} />
             <Route path="/*" element={<Error />} />
           </Routes>
-          {/* </div> */}
         </AuthProvider>
       </MyDataProvider>
     </>
   );
 }
 
-// later change all the paths for PrivateRoute authentication

@@ -26,18 +26,7 @@ const steps = [
 
 export default function Request() {
   const [currentStep, setCurrentStep] = useState(0);
-  const methods = useForm({
-    defaultValues: {
-      organisation_name: "",
-      dataset_info: {
-        about_dataset: "",
-        feature_list: [{}],
-      },
-      model_name: "",
-      std_mean: 0,
-      std_deviation: 0,
-    },
-  });
+  const methods = useForm({});
 
   const { api } = useAuth();
   const navigate = useNavigate();
@@ -50,7 +39,7 @@ export default function Request() {
   const handlePrev = () => setCurrentStep((prev) => Math.max(prev - 1, 0));
 
   const onSubmit = async (data) => {
-    console.log("Request JSON: ",data);
+    console.log("Request JSON: ", data);
     const requestData = {
       fed_info: data,
       // client_token: api.getAccessToken(),
@@ -496,7 +485,6 @@ export default function Request() {
 //     </div>
 //   );
 // }
-
 
 // ################# Don't delete  #################
 // {
