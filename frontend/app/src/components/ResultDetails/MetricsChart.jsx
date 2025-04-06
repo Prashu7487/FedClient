@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -9,9 +9,14 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler
 } from "chart.js";
+import {
+  ChartBarIcon,
+  ArrowsPointingOutIcon,
+  InformationCircleIcon
+} from '@heroicons/react/24/outline';
 
-// Register ChartJS components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -19,83 +24,98 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
-// Helper function to generate random color with optional alpha value
-const getRandomColor = (alpha = 1) => {
-  const r = Math.floor(Math.random() * 256);
-  const g = Math.floor(Math.random() * 256);
-  const b = Math.floor(Math.random() * 256);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-};
-
 const MetricsChart = ({ testResults }) => {
-  const labels = Object.keys(testResults);
   const [selectedMetric, setSelectedMetric] = useState("");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [metrics, setMetrics] = useState([]);
 
-  // Extract all unique metrics
-  const metricsSet = new Set();
-  labels.forEach((round) => {
-    Object.keys(testResults[round]).forEach((metric) => {
-      metricsSet.add(metric);
-    });
-  });
-  const metrics = Array.from(metricsSet);
+  // Extract labels and available metrics
+  useEffect(() => {
+    if (testResults && Object.keys(testResults).length > 0) {
+      const firstRound = testResults[Object.keys(testResults)[0]];
+      const availableMetrics = Object.keys(firstRound);
+      setMetrics(availableMetrics);
+      // Auto-select the first metric if none is selected
+      if (!selectedMetric && availableMetrics.length > 0) {
+        setSelectedMetric(availableMetrics[0]);
+      }
+    }
+  }, [testResults]);
 
-  // Prepare data for each metric
-  const datasets = selectedMetric
-    ? [
-        {
-          label: selectedMetric,
-          data: labels.map((round) => testResults[round][selectedMetric]),
-          fill: false,
-          borderColor: getRandomColor(0.4),
-          borderWidth: 1,
-          tension: 0,
-        },
-      ]
-    : [];
-
+  // Prepare chart data
   const data = {
-    labels: labels,
-    datasets: datasets,
+    labels: Object.keys(testResults),
+    datasets: selectedMetric ? [{
+      label: selectedMetric,
+      data: Object.keys(testResults).map(round => testResults[round][selectedMetric]),
+      borderColor: '#3b82f6',
+      backgroundColor: 'rgba(59, 130, 246, 0.1)',
+      pointBackgroundColor: '#1d4ed8',
+      borderWidth: 2,
+      tension: 0.1,
+      fill: true
+    }] : []
   };
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "top",
+        display: false
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
-            return `${context.dataset.label}: ${context.raw.toFixed(3)}`;
-          },
-        },
-      },
+          label: (context) => `${context.dataset.label}: ${context.raw.toFixed(4)}`
+        }
+      }
     },
+    scales: {
+      x: {
+        grid: {
+          display: false
+        }
+      },
+      y: {
+        grace: '10%',
+        beginAtZero: false
+      }
+    }
   };
 
   return (
-    <div className="d-flex justify-content-center mb-5 bg-light">
-      <div className="card mt-4" style={{ width: "60%" }}>
-        <div className="card-body">
-          <h4 className="text-center bg-dark text-white card-header">
-            Metrics Overview
-          </h4>
-          <div className="d-flex align-items-center mb-3 mt-3">
-            <label htmlFor="metricSelect" className="form-label me-2 mb-0">
-              Select Metric:
-            </label>
+    <div className={`bg-white rounded-xl shadow-sm border border-gray-200 ${
+      isFullscreen ? 'fixed inset-0 z-50 p-4' : 'w-full mb-6'
+    }`}>
+      <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+        <div className="flex items-center">
+          <ChartBarIcon className="h-5 w-5 text-blue-600 mr-2" />
+          <h3 className="text-lg font-semibold text-gray-800">Training Metrics</h3>
+        </div>
+        <button
+          onClick={() => setIsFullscreen(!isFullscreen)}
+          className="p-1 rounded-md hover:bg-gray-100"
+        >
+          <ArrowsPointingOutIcon className="h-5 w-5 text-gray-500" />
+        </button>
+      </div>
+
+      <div className="p-4">
+        <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="w-full sm:w-64">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Select Metric</label>
             <select
-              id="metricSelect"
-              className="form-select me-3"
+              className="block w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-base focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
               value={selectedMetric}
               onChange={(e) => setSelectedMetric(e.target.value)}
             >
-              <option value="">Select a Metric</option>
+              {metrics.length === 0 && (
+                <option value="">No metrics available</option>
+              )}
               {metrics.map((metric) => (
                 <option key={metric} value={metric}>
                   {metric.toUpperCase()}
@@ -103,11 +123,30 @@ const MetricsChart = ({ testResults }) => {
               ))}
             </select>
           </div>
-          <div className="d-flex justify-content-center">
-            <div style={{ width: "100%" }}>
-              <Line data={data} options={options} />
+          {selectedMetric && (
+            <div className="flex items-center text-sm text-gray-600">
+              <InformationCircleIcon className="h-4 w-4 mr-1" />
+              <span>Showing data for {selectedMetric}</span>
             </div>
-          </div>
+          )}
+        </div>
+
+        <div className={`relative ${isFullscreen ? 'h-[calc(100vh-180px)]' : 'h-80'}`}>
+          {selectedMetric ? (
+            <Line data={data} options={options} />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="text-center p-6 max-w-md">
+                <ChartBarIcon className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-2 text-sm font-medium text-gray-900">No metric selected</h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  {metrics.length > 0 
+                    ? "Please select a metric from the dropdown" 
+                    : "No metrics data available"}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
