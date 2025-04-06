@@ -196,18 +196,6 @@ export default function SelectDatasetsStep() {
       </div>
 
       <div className="space-y-6">
-        {/* <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Dataset Name
-          </label>
-          <input
-            type="text"
-            placeholder="Enter your dataset name"
-            {...register("dataset_info.name")}
-            className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div> */}
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Client Dataset Section */}
           <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
@@ -219,7 +207,9 @@ export default function SelectDatasetsStep() {
                 <input
                   type="text"
                   placeholder="Enter client filename"
-                  {...register("dataset_info.client_filename")}
+                  {...register("dataset_info.client_filename", {
+                    required: "*required",
+                  })}
                   className="flex-1 p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 <button
@@ -267,7 +257,9 @@ export default function SelectDatasetsStep() {
                 <input
                   type="text"
                   placeholder="Enter server filename"
-                  {...register("dataset_info.server_filename")}
+                  {...register("dataset_info.server_filename", {
+                    required: "*required",
+                  })}
                   className="flex-1 p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 <button

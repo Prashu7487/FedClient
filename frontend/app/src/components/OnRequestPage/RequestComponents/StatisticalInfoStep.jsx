@@ -19,7 +19,10 @@ export default function StatisticalInfoStep() {
             <input
               type="number"
               step="0.00001"
-              {...register("std_mean")}
+              {...register("expected_results.std_mean", {
+                required: "Expected Standard Mean is required",
+                min: { value: 0, message: "Value must be greater than 0" },
+              })}
               className="w-full p-2 border rounded-md mt-1"
             />
           </label>
@@ -30,7 +33,10 @@ export default function StatisticalInfoStep() {
             <input
               type="number"
               step="0.00001"
-              {...register("std_deviation")}
+              {...register("expected_results.std_deviation", {
+                required: "Expected Standard Deviation is required",
+                min: { value: 0, message: "Value must be greater than 0" },
+              })}
               className="w-full p-2 border rounded-md mt-1"
             />
           </label>
