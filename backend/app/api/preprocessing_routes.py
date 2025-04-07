@@ -50,7 +50,7 @@ async def process_create_dataset(filename: str, filetype: str):
         source_path = f"{RECENTLY_UPLOADED_DATASETS_DIR}/{filename}"
         processing_path = f"{source_path}__PROCESSING__"
         
-        await hdfs_client.rename_file_or_folder(source_path, processing_path)
+        # await hdfs_client.rename_file_or_folder(source_path, processing_path)
         dataset_overview = await spark_client.create_new_dataset(f"{filename}__PROCESSING__", filetype)
         description = f"Raw dataset created from {filename}"
 
@@ -59,9 +59,9 @@ async def process_create_dataset(filename: str, filetype: str):
         if isinstance(crud_result, dict) and "error" in crud_result:
             raise HTTPException(status_code=400, detail=crud_result["error"])
         
-        await hdfs_client.rename_file_or_folder(processing_path, source_path)
+        # await hdfs_client.rename_file_or_folder(processing_path, source_path)
     except Exception as e:
-        await hdfs_client.rename_file_or_folder(processing_path, source_path, ignore_missing=True)
+        # await hdfs_client.rename_file_or_folder(processing_path, source_path, ignore_missing=True)
         print("Error in processing the data is: ", str(e))
         return {"error": str(e)}
     finally:

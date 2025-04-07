@@ -21,6 +21,7 @@ HDFS_RAW_DATASETS_DIR = os.getenv("HDFS_RAW_DATASETS_DIR")
 HDFS_PROCESSED_DATASETS_DIR = os.getenv("HDFS_PROCESSED_DATASETS_DIR")
 HDFS_FILE_READ_URL = f"hdfs://{HDFS_NAME_NODE_URL}/user/{HADOOP_USER_NAME}"
 RECENTLY_UPLOADED_DATASETS_DIR = os.getenv("RECENTLY_UPLOADED_DATASETS_DIR")
+SPARK_MASTER_URL = os.getenv("SPARK_MASTER_URL")
 
 class SparkSessionManager:
     """
@@ -35,7 +36,7 @@ class SparkSessionManager:
     _reference_count = 0
     _config_lock = threading.Lock()  
 
-    def __new__(cls, app_name="default_app", master="yarn"):
+    def __new__(cls, app_name="default_app", master=SPARK_MASTER_URL):
         with cls._lock:
             if not cls._instance:
                 cls._instance = super().__new__(cls)
@@ -182,28 +183,32 @@ class SparkSessionManager:
         Notes:
         - ensure no same file name exists in the tmpuploads directory, or in uploads directory
         """
-        with SparkSessionManager() as spark:
-            # later create a switch case based on file type
-            if filetype == "csv":
-                df = spark.read.csv(f"{HDFS_FILE_READ_URL}/{RECENTLY_UPLOADED_DATASETS_DIR}/{filename}",header=True,inferSchema=True)
-                filename = filename[:-14].replace("csv", "parquet")
-                # if you write without parquet extension, it will create a directory with the filename and store the data in it
-                df.write.mode("overwrite").parquet(f"{HDFS_FILE_READ_URL}/{HDFS_RAW_DATASETS_DIR}/{filename}")
-                print(f"Successfully created new dataset in HDFS: {HDFS_RAW_DATASETS_DIR}/{filename}")
+        try:
+            with SparkSessionManager() as spark:
+                # later create a switch case based on file type
+                if filetype == "csv":
+                    df = spark.read.csv(f"{HDFS_FILE_READ_URL}/{RECENTLY_UPLOADED_DATASETS_DIR}/{filename}",header=True,inferSchema=True)
+                    filename = filename[:-14].replace("csv", "parquet")
+                    # if you write without parquet extension, it will create a directory with the filename and store the data in it
+                    df.write.mode("overwrite").parquet(f"{HDFS_FILE_READ_URL}/{HDFS_RAW_DATASETS_DIR}/{filename}")
+                    print(f"Successfully created new dataset in HDFS: {HDFS_RAW_DATASETS_DIR}/{filename}")
 
-            elif filetype == "parquet":
-                # we don't need inferSchema=True with parquet (as parquet stores the schema as metadata)
-                df = spark.read.parquet(f"{HDFS_FILE_READ_URL}/{RECENTLY_UPLOADED_DATASETS_DIR}/{filename}")
-                df.write.mode("overwrite").parquet(f"{HDFS_FILE_READ_URL}/{HDFS_RAW_DATASETS_DIR}/{filename}")
-                print(f"Successfully created new dataset in HDFS: {HDFS_RAW_DATASETS_DIR}/{filename}")
-            else:
-                print("Unsupported file type for creating new dataset.")
-                return {"message": "Unsupported file type."}
+                elif filetype == "parquet":
+                    # we don't need inferSchema=True with parquet (as parquet stores the schema as metadata)
+                    df = spark.read.parquet(f"{HDFS_FILE_READ_URL}/{RECENTLY_UPLOADED_DATASETS_DIR}/{filename}")
+                    df.write.mode("overwrite").parquet(f"{HDFS_FILE_READ_URL}/{HDFS_RAW_DATASETS_DIR}/{filename}")
+                    print(f"Successfully created new dataset in HDFS: {HDFS_RAW_DATASETS_DIR}/{filename}")
+                else:
+                    print("Unsupported file type for creating new dataset.")
+                    return {"message": "Unsupported file type."}
 
-            dataset_overview = self._get_overview(df)
-            dataset_overview["filename"] = filename
-            return dataset_overview        
-        return {"message": "Dataset created."}
+                dataset_overview = self._get_overview(df)
+                dataset_overview["filename"] = filename
+                return dataset_overview        
+            return {"message": "Dataset created."}
+        except Exception as e:
+            print(f"Error creating new dataset: {e}")
+            raise Exception(f"Error creating new dataset: {e}")
     
 
     async def preprocess_data(self, directory: str, filename: str, operations: list):
