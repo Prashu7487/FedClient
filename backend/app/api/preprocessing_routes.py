@@ -251,7 +251,9 @@ async def preprocess_dataset_endpoint(request: Request):
     )
     return {"message": "Preprocessing initiated"}
 
-
+@dataset_router.get("/list-recent-uploads")   
+async def list_recent_uploads():
+    return await hdfs_client.list_recent_uploads()
 
 
 
