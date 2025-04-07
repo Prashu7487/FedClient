@@ -150,7 +150,6 @@ export const AuthProvider = ({ children }) => {
         }
         else if (type == "get_model_parameters_start_background_process") {
             console.log("Config before initialising: ", data, session_id);
-
             console.log("building model on client side...");
             setUpModel(data, user, session_id, api); // Function to initialize training
         }

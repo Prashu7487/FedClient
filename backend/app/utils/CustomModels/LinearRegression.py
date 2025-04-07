@@ -64,6 +64,4 @@ class LinearRegression:
         local_parameter = {'m': self.m.tolist() if self.m is not None else None, 
                        'c': [self.c] if self.c is not None else None}
         return local_parameter
-    
-    def change_n_iters(self,client_iter):
-        self.n_iters = client_iter
+

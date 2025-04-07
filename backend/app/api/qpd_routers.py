@@ -19,6 +19,7 @@ def create_qpd_dataset_endpoint(transfer_data: TransferCreate, db: Session = Dep
 def create_transfer(db: Session, transfer_data: TransferCreate):
     # Logic to write file and return datastats to remote by taking values from transfer_data
     # update transfer_data with the datastats and path then send it to remote server
+    # include client toekn to authenticate the request
     overview = None
     transfer_data_dict = transfer_data.dict()
     transfer_data_dict["datastats"] = overview

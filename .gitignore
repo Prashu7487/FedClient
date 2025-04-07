@@ -23,24 +23,17 @@ Client/*.local
 *.sln
 *.sw?
 
-PrivateServer/__pycache__/
-PrivateServer/venv/
-./PrivateServer/venv/
-PrivateServer/data/
-PrivateServer/Extradata/
-PrivateServer/X_train.npy
-PrivateServer/Y_train.npy
-X_train.npy
-Y_train.npy
-model_config.json
-node_modules
-temp.py 
-
-
 
 /backend/app/__pycache__
+/backend/app/_pycache_
+/backend/app/alembic/_pycache_
+/backend/app/api/_pycache_
+/backend/app/models/_pycache_
+/backend/app/schemas/_pycache_
+/backend/app/services/_pycache_
+/backend/app/utils/_pycache_
+/backend/app/utils/CustomModels/_pycache_
 /backend/app/CustomModels/__pycache__
-/backend/app/data/*
 
 /frontend/app/node_modules
 /frontend/app/.env.example

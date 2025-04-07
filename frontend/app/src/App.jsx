@@ -174,7 +174,7 @@ import About from "./Pages/About";
 import Error from "./Pages/Error";
 import NavBar from "./components/OnWholeApp/NavBar";
 import MyDataProvider from "./GlobalContext";
-import EventsAction from "./EventsActions";
+// import EventsAction from "./EventsActions";
 import { useState } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 import { PrivateRoute, OnlyGuestRoute } from "./components/ProtectedRoute";
@@ -209,7 +209,7 @@ export default function App() {
         <AuthProvider>
           <ToastContainer />
 
-          <EventsAction socket={socket} clientToken={clientToken} />
+          {/* <EventsAction socket={socket} clientToken={clientToken} /> */}
 
           <NavBar />
 
@@ -293,4 +293,3 @@ export default function App() {
     </>
   );
 }
-
