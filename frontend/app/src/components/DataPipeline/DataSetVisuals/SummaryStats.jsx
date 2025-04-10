@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 const SummaryStats = ({ filename, numRows, numCols }) => {
+  console.log("SummaryStats component rendered with filename:", filename);
   return (
     <div className="p-6 bg-gray-100">
       <h1 className="text-3xl font-bold mb-6 text-center">Dataset Overview</h1>

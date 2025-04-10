@@ -17,7 +17,7 @@ const DataSetOverview = () => {
         `${RAW_DATASET_DETAILS_URL}/${filename}`
       );
       setData(overview.data.datastats);
-      console.log("file overview data received:", overview.data);
+      // console.log("filename:", overview.data.datastats.filename);
     };
 
     loadData();
@@ -34,15 +34,15 @@ const DataSetOverview = () => {
   return (
     <div>
       <SummaryStats
-        fileName={data.filename}
+        filename={filename}
         numRows={data.numRows}
         numCols={data.numColumns}
       />
       <ColumnDetails columnStats={data.columnStats} />
       <PreprocessingDetails
         columns={columnDetails}
-        fileName={data.filename}
-        directory="Uploads"
+        filename={filename}
+        directory="uploads"
       />
     </div>
   );

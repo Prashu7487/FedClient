@@ -16,41 +16,49 @@ export default function Dashboard() {
   const [sessions, setSessions] = useState([]);
   const { api } = useAuth();
 
+  // Update fetchInitiatedSession
   const fetchInitiatedSession = async () => {
     try {
       const res = await getUserInitiatedSessions(api);
-      setInitiatedSessions(res.data.slice(0, 5)); // Show latest 5
+      // Check if res.data is an array before slicing
+      const data = Array.isArray(res.data) ? res.data : [];
+      setInitiatedSessions(data.slice(0, 5));
     } catch (error) {
+      setInitiatedSessions([]);
       console.error("Error fetching initiated sessions:", error);
     }
   };
 
+  // Update fetchDatasets
   const fetchDatasets = async () => {
     try {
       const [raw, processed] = await Promise.all([
-        getRawDatasets(),
-        getProcessedDatasets(),
+        getRawDatasets().catch(() => ({ data: [] })), // Handle rejected promises
+        getProcessedDatasets().catch(() => ({ data: [] })),
       ]);
-      console.log("Raw Datasets: ", raw.data);
-      console.log("Processed Datasets: ", processed.data);
-      setDatasets({
-        uploads: raw.data,
-        processed: processed.data,
-      });
+
+      // Ensure data is an array
+      const uploads = Array.isArray(raw.data) ? raw.data : [];
+      const processedData = Array.isArray(processed.data) ? processed.data : [];
+
+      setDatasets({ uploads, processed: processedData });
     } catch (error) {
+      setDatasets({ uploads: [], processed: [] });
       console.error("Error fetching datasets:", error);
     }
   };
 
+  // Update fetchSessions
   const fetchSessions = async () => {
     try {
       const res = await getAllSessions(api);
-      setSessions(res.data.slice(0, 5)); // Show latest 5
+      const data = Array.isArray(res.data) ? res.data : [];
+      setSessions(data.slice(0, 5));
     } catch (error) {
+      setSessions([]);
       console.error("Error fetching sessions:", error);
     }
   };
-
   const statusMap = {
     1: { text: "Pre-Training", color: "bg-blue-100 text-blue-800" },
     4: { text: "Training", color: "bg-yellow-100 text-yellow-800" },
@@ -202,48 +210,50 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {initiatedSessions.map((session) => (
-                  <tr key={session.session_id}>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {session.session_id}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center">
-                        <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-blue-600"
-                            style={{
-                              width: `${
-                                (session.curr_round / session.max_round) * 100
-                              }%`,
-                            }}
-                          />
+                {initiatedSessions.length > 0 &&
+                  initiatedSessions.map((session) => (
+                    <tr key={session.session_id}>
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                        {session.session_id}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center">
+                          <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-blue-600"
+                              style={{
+                                width: `${
+                                  (session.curr_round / session.max_round) * 100
+                                }%`,
+                              }}
+                            />
+                          </div>
+                          <span className="ml-2 text-sm text-gray-600">
+                            {session.curr_round}/{session.max_round}
+                          </span>
                         </div>
-                        <span className="ml-2 text-sm text-gray-600">
-                          {session.curr_round}/{session.max_round}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium ${
+                            statusMap[session.training_status]?.color ||
+                            "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {statusMap[session.training_status]?.text ||
+                            "Unknown"}
                         </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium ${
-                          statusMap[session.training_status]?.color ||
-                          "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {statusMap[session.training_status]?.text || "Unknown"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <Link
-                        to={`/TrainingStatus/details/${session.session_id}`}
-                        className="text-blue-600 hover:text-blue-900 text-sm font-medium"
-                      >
-                        Details →
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-6 py-4">
+                        <Link
+                          to={`/TrainingStatus/details/${session.session_id}`}
+                          className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                        >
+                          Details →
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
             {!initiatedSessions.length && (

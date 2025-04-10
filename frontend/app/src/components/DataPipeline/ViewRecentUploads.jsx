@@ -20,6 +20,10 @@ const ViewRecentUploads = () => {
   useEffect(() => {
     const fetchFiles = async () => {
       try {
+        console.log(
+          "view recent uploads url",
+          REACT_APP_VIEW_RECENT_UPLOADS_URL
+        );
         const response = await axios.get(REACT_APP_VIEW_RECENT_UPLOADS_URL);
         const key = Object.keys(response.data.contents)[0];
         setContents(response.data.contents[key] || []);

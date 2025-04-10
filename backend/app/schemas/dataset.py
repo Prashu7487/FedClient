@@ -9,11 +9,18 @@ class DatasetCreate(BaseModel):
 class DatasetResponse(DatasetCreate):
     dataset_id: int
 
+class DatasetUpdate(BaseModel):
+    dataset_id: int
+    filename: str
+    description: Optional[str] = None
+
 class RawDatasetListResponse(BaseModel):
+    dataset_id: int
     filename: str
     description: Optional[str] = None
 
 class DatasetListResponse(BaseModel):
+    dataset_id: int
     filename: str
     description: Optional[str] = None
 

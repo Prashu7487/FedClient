@@ -33,6 +33,7 @@ const environmentVariables = [
   "REACT_APP_EXECUTE_TRAINING_ROUND",
   "REACT_APP_CREATE_NEW_DATASET_URL",
   "REACT_APP_PREPROCESS_DATASET_URL",
+  "REACT_APP_PRIVATE_SERVER_URL",
 ];
 
 export default defineConfig(({ mode }) => {

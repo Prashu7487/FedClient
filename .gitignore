@@ -37,3 +37,5 @@ Client/*.local
 
 /frontend/app/node_modules
 /frontend/app/.env.example
+/venv
+

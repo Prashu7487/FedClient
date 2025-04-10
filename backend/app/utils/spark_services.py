@@ -23,6 +23,11 @@ HDFS_FILE_READ_URL = f"hdfs://{HDFS_NAME_NODE_URL}/user/{HADOOP_USER_NAME}"
 RECENTLY_UPLOADED_DATASETS_DIR = os.getenv("RECENTLY_UPLOADED_DATASETS_DIR")
 SPARK_MASTER_URL = os.getenv("SPARK_MASTER_URL")
 
+# to see the docker hostname if running inside the docker container
+# import socket
+# host_ip = socket.gethostbyname(socket.gethostname())
+# print(f"Host IP of docker comtainer: {host_ip}")
+
 class SparkSessionManager:
     """
     Thread-safe singleton SparkSession manager with reference counting.
@@ -49,7 +54,12 @@ class SparkSessionManager:
         with self._config_lock:
             # Double-checked locking pattern
             if self._session is None:
+                # self.session = SparkSession.builder.getOrCreate()
                 self._session = SparkSession.builder.master(self.master).appName(self.app_name).getOrCreate()
+                    # .config("spark.driver.host", "172.23.135.77") \
+                    # .config("spark.driver.bindAddress", "0.0.0.0") \
+                    # .config("spark.driver.port", "44555") \
+                    
                 print("Spark session created...")  
                 # # for standalone cluster (will not use YARN as resource manager)
                 # spark = SparkSession.builder.remote("sc://localhost:8080").getOrCreate() 
@@ -175,6 +185,8 @@ class SparkSessionManager:
             "columnStats": column_stats
         }
 
+        # print(f"Overview of dataset: {overview}")
+
         return overview
 
     async def create_new_dataset(self, filename, filetype):
@@ -185,6 +197,7 @@ class SparkSessionManager:
         """
         try:
             with SparkSessionManager() as spark:
+                df = None
                 # later create a switch case based on file type
                 if filetype == "csv":
                     df = spark.read.csv(f"{HDFS_FILE_READ_URL}/{RECENTLY_UPLOADED_DATASETS_DIR}/{filename}",header=True,inferSchema=True)
@@ -203,9 +216,10 @@ class SparkSessionManager:
                     return {"message": "Unsupported file type."}
 
                 dataset_overview = self._get_overview(df)
+                print(f"Overview of dataset: {dataset_overview['numRows']} rows, {dataset_overview['numColumns']} columns")
                 dataset_overview["filename"] = filename
-                return dataset_overview        
-            return {"message": "Dataset created."}
+            return dataset_overview        
+
         except Exception as e:
             print(f"Error creating new dataset: {e}")
             raise Exception(f"Error creating new dataset: {e}")

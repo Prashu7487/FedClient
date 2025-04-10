@@ -12,6 +12,7 @@ services:
       - /app/node_modules
     env_file:
       - .env
+    network_mode: "host"
 
   backend:
     container_name: "backend"
@@ -26,5 +27,5 @@ services:
       - .env
     environment:
       - DB_URL=sqlite:////db_volume/database.db
-
+    network_mode: "host"
     # later remove volumes and uncomment copy code in individual Dockerfile

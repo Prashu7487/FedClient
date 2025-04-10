@@ -126,10 +126,15 @@ const ColumnDetails = ({ columnStats }) => {
                 </button>
               </div>
 
-              {["IntegerType", "DoubleType", "FloatType", "LongType"].includes(
-                currentColumn.type
-              ) && <NumericColumn column={currentColumn} />}
-              {currentColumn.type === "StringType" && (
+              {[
+                "IntegerType()",
+                "DoubleType()",
+                "FloatType()",
+                "LongType()",
+              ].includes(currentColumn.type) && (
+                <NumericColumn column={currentColumn} />
+              )}
+              {currentColumn.type === "StringType()" && (
                 <StringColumn column={currentColumn} />
               )}
             </div>
@@ -174,10 +179,13 @@ const ColumnDetails = ({ columnStats }) => {
                 </div>
               </div>
 
-              {["IntegerType", "DoubleType", "FloatType", "LongType"].includes(
-                col.type
-              ) && <NumericColumn column={col} />}
-              {col.type === "StringType" && <StringColumn column={col} />}
+              {[
+                "IntegerType()",
+                "DoubleType()",
+                "FloatType()",
+                "LongType()",
+              ].includes(col.type) && <NumericColumn column={col} />}
+              {col.type === "StringType()" && <StringColumn column={col} />}
             </div>
           ))}
         </div>
