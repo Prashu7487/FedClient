@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from utils.db import get_db
+from utility.db import get_db
 from schemas.training_data_transfer import TransferCreate
 import requests
 import os

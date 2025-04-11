@@ -5,7 +5,7 @@ from schemas.trainings import CreateTraining
 
 def create_training(db: Session, training_details: CreateTraining):
     try:
-        db_training = CurrentTrainings(**training_details)
+        db_training = CurrentTrainings(**training_details)  # or .model_dump() for Pydantic v2
         db.add(db_training)
         db.commit()
         db.refresh(db_training)
@@ -15,7 +15,7 @@ def create_training(db: Session, training_details: CreateTraining):
         return {"error": "Training with this ID already exists."}
     except SQLAlchemyError as e:
         db.rollback()
-        return {"error": f"Database error: {e}"}
+        return {"error": f"Database error: {str(e)}"}
     
 def get_training_details(db: Session, session_id: int):
     try:

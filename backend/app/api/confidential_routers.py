@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from utils.db import get_db
+from utility.db import get_db
 from schemas.dataset import DatasetCreate
 from crud.datasets_crud import create_dataset, create_raw_dataset
 import subprocess

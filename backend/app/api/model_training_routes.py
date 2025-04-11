@@ -1,13 +1,15 @@
 from fastapi import APIRouter
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
-from utils.db import get_db
+from utility.db import get_db
 from crud.trainings_crud import create_training, get_training_details
 import requests
 import subprocess
 import json
 import os
 import random
+import sys
+
 
 model_router = APIRouter(tags = ["Model Training"])
 BASE_URL = os.getenv("API_BASE_URL")
@@ -15,45 +17,109 @@ get_training_url = f"{BASE_URL}/get-federated-session"
 get_params_url = f"{BASE_URL}/get-model-parameters"
 post_params_url = f"{BASE_URL}/receive-client-parameters"
 
-@model_router.post("/initiate-model")
-def initiate_model(session_id: int, client_token: str, db: Session = Depends(get_db)):
-    try:
-        headers = {
-            'Authorization': f"Bearer {client_token}",  # Using Bearer token
-            'Content-Type': 'application/json',
-        }
-        response = requests.post(f"{get_training_url}/{session_id}",headers=headers)
-        response.raise_for_status() 
-        result = response.json()  
-        training_details = {"session_id": session_id, "training_details": result.federated_info}
+# federated_info_mock = {
+#     "organisation_name": "test-clinic",
+#     "dataset_info": {
+#         "client_filename": "test_data.parquet",
+#         "output_columns": ["pct_2013"],
+#         "task_id": 3,
+#         "metric": "MAE"
+#     },
+#     "model_name": "CNN",
+#     "model_info": {
+#         "input_shape": "(128,128,1)",
+#         "output_layer": {
+#             "num_nodes": "1",
+#             "activation_function": "sigmoid"
+#         },
+#         "loss": "mse",
+#         "optimizer": "adam",
+#         "test_metrics": ["mae"],
+#         "layers": [
+#             {
+#                 "layer_type": "convolution",
+#                 "filters": "8",
+#                 "kernel_size": "(3,3)",
+#                 "stride": "(1,1)",
+#                 "activation_function": "relu"
+#             },
+#             {
+#                 "layer_type": "pooling",
+#                 "pooling_type": "max",
+#                 "pool_size": "(2,2)",
+#                 "stride": "(2,2)"
+#             },
+#             {
+#                 "layer_type": "flatten"
+#             },
+#             {
+#                 "layer_type": "dense",
+#                 "num_nodes": "64",
+#                 "activation_function": "relu"
+#             }
+#         ]
+#     }
+# }
 
-        # Create a new training session in the database
+@model_router.post("/initiate-model")
+def initiate_model(session_id: str, client_token: str, db: Session = Depends(get_db)):
+    try:
+        # ------------------------------------------
+        # Fetch client_data from hdfs to data folder
+        # ------------------------------------------
+        
+        headers = {
+            "Authorization": f"Bearer {client_token}",
+            "Content-Type": "application/json",
+        }
+
+        get_url = f"http://host.docker.internal:8000/get-federated-session/{session_id}"
+        response = requests.get(get_url, headers=headers)
+        response.raise_for_status()  # Raises HTTPError if not 2xx
+
+        result = response.json()
+
+        training_details = {
+            "session_id": session_id,
+            "training_details": result.get("federated_info")  # safer with .get
+        }
+        
+        # Store in DB
         db_training = create_training(db, training_details)
 
-        if db_training is dict and "error" in db_training:
+        if isinstance(db_training, dict) and "error" in db_training:
             raise HTTPException(status_code=400, detail=db_training["error"])
+
+        return {"message": "Model initiation successful", "training": db_training}
+
+    except requests.exceptions.HTTPError as http_err:
+        raise HTTPException(status_code=response.status_code, detail=str(http_err))
     except Exception as e:
         print(f"Error initiating model: {e}")
-        return {"error": str(e)}
+        raise HTTPException(status_code=500, detail="Internal server error")
     
 
 @model_router.get("/execute-round")
-def run_script(session_id: int, client_token: str, db: Session = Depends(get_db)):
+def run_script(session_id: str, client_token: str, db: Session = Depends(get_db)):
+    env = os.environ.copy()
     try:
-        # Fetch the training details from the database
-        training_details = get_training_details(db, session_id)
-
-        if training_details is dict and "error" in training_details:
-            raise HTTPException(status_code=404, detail=training_details["error"])
-        
-        # Construct the command to run the script
-        model_path = f"/backend/app/storage/model_config/{session_id}.json"
-        result = subprocess.run(["python", "/backend/app/utils/training_script.py", model_path, client_token], capture_output=True, text=True, encoding='utf-8')
-        
-        return {"stdout": result.stdout, "stderr": result.stderr, "returncode": result.returncode}  
+        result = subprocess.run(
+            [sys.executable, "-m", "utility.training_script", "--session_id", session_id, "--client_token", client_token],
+            capture_output=True,
+            text=True,
+            check=True,
+            env=env
+        )
+        return {
+            "message": "Script executed successfully",
+            "stdout": result.stdout,
+            "stderr": result.stderr
+        }
     except Exception as e:
-        print(f"Error executing round: {e}")
-        return {"error": str(e)}
+        return {
+            "error": "Unexpected error",
+            "detail": str(e)
+        }
 
 
 
