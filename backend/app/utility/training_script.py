@@ -42,11 +42,17 @@ def send_updated_parameters(url, payload, client_token):
             "Authorization": f"Bearer {client_token}",  # Using Bearer token
             "Content-Type": "application/json"         # Specify the payload format
         }
+        print("Payload : ", type(payload["client_parameter"]))
         response = requests.post(url, json=payload, headers=headers)
+        # Debug output
+        print("Status Code:", response.status_code)
+        print("Response Text:", response.text)
+        
         response.raise_for_status()  # Raise an HTTPError for bad responses
-        result = response.json()  # Assuming the response is in JSON format
+        print("Response.json() - ", response.json())  # Assuming the response is in JSON format
     except requests.exceptions.RequestException as e:
         print(f"Error posting data to {url}: {e}")
+
 
 
 def main(session_id, client_token):
@@ -63,8 +69,8 @@ def main(session_id, client_token):
         model = model_instance_from_config(model_config)
         print("Model built successfully")
 
-        X_path = os.path.join("data", f"X_{session_id}.npy")
-        Y_path = os.path.join("data", f"Y_{session_id}.npy")
+        X_path = os.path.join("data", f"X_1.npy")
+        Y_path = os.path.join("data", f"Y_1.npy")
 
         X = np.load(X_path)
         Y = np.load(Y_path)
@@ -72,7 +78,9 @@ def main(session_id, client_token):
 
         # ==== Load and update global parameters ====
         global_parameters = receive_global_parameters(get_url, session_id, client_token)
+        print("Checkpoint isFirst : ", global_parameters["is_first"])
         if global_parameters and global_parameters['is_first'] == 0:
+            print("Checkpint global_parameters: ", len)
             model.update_parameters(global_parameters['global_parameters'])
 
         # ==== Save current local parameters ====
@@ -93,8 +101,9 @@ def main(session_id, client_token):
             f.write("\n")
         # ==== Send updated parameters ====
         updated_parameters = model.get_parameters()
+        print("Checkpoint Updated_parameters: ", updated_parameters)
         payload = {
-            "session_id": session_id,
+            "session_id": int(session_id),
             "client_parameter": updated_parameters
         }
 

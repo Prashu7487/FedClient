@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { useAuth } from "../contexts/AuthContext";
 import {
   getFederatedSession,
-  respondToSession,
 } from "../services/federatedService";
 import axios from "axios";
 import FederatedSessionLogs from "../components/Training/FederatedSessionLogs";
@@ -113,7 +112,7 @@ export default function TrainingDetails({ clientToken }) {
   ];
 
   const renderStatusBadge = () => {
-    const status = federatedSessionData?.federated_info?.training_status;
+    const status = federatedSessionData?.training_status;
     const config = statusConfig[status] || statusConfig["-1"];
     
     return (
@@ -124,128 +123,6 @@ export default function TrainingDetails({ clientToken }) {
     );
   };
 
-  const renderActionSection = () => {
-    const status = federatedSessionData?.federated_info?.training_status;
-    const clientStatus = federatedSessionData?.federated_info?.client_status;
-    const price = federatedSessionData?.federated_info?.session_price;
-
-    if (status === 1 || status === 2 || status === 3) {
-      return (
-        <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
-          <div className="flex items-center">
-            <InformationCircleIcon className="h-5 w-5 text-blue-500 mr-2" />
-            <h3 className="text-lg font-medium text-blue-800">Session Not Started</h3>
-          </div>
-          <p className="mt-2 text-sm text-blue-700">
-            The training session has not yet begun. Please check back later or wait for
-            the organizer to start the session.
-          </p>
-        </div>
-      );
-    }
-
-    if (status === 4) {
-      if (clientStatus === 1) {
-        return (
-          <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Join Training Session</h3>
-            <div className="space-y-4">
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <h4 className="font-medium text-gray-700">Training Price</h4>
-                <p className="text-2xl font-bold text-blue-600 mt-1">{price || 0} Data Points</p>
-              </div>
-              
-              <form onSubmit={handleSubmit(onSubmitPriceAcceptance)}>
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <label className="inline-flex items-center">
-                      <input
-                        type="radio"
-                        value="accepted"
-                        {...register("decision", { required: true })}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500"
-                      />
-                      <span className="ml-2 text-gray-700">Accept</span>
-                    </label>
-                    <label className="inline-flex items-center">
-                      <input
-                        type="radio"
-                        value="rejected"
-                        {...register("decision", { required: true })}
-                        className="h-4 w-4 text-red-600 focus:ring-red-500"
-                      />
-                      <span className="ml-2 text-gray-700">Reject</span>
-                    </label>
-                  </div>
-                  
-                  <button
-                    type="submit"
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                  >
-                    Submit Response
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        );
-      } else if (clientStatus === 2) {
-        return (
-          <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg">
-            <div className="flex items-center">
-              <CheckCircleIcon className="h-5 w-5 text-green-500 mr-2" />
-              <h3 className="text-lg font-medium text-green-800">Participation Confirmed</h3>
-            </div>
-            <p className="mt-2 text-sm text-green-700">
-              You have accepted to participate in this training session. The training is currently in progress.
-            </p>
-          </div>
-        );
-      } else if (clientStatus === 3) {
-        return (
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
-            <div className="flex items-center">
-              <XCircleIcon className="h-5 w-5 text-yellow-500 mr-2" />
-              <h3 className="text-lg font-medium text-yellow-800">Participation Declined</h3>
-            </div>
-            <p className="mt-2 text-sm text-yellow-700">
-              You have chosen not to participate in this training session.
-            </p>
-          </div>
-        );
-      }
-    }
-
-    if (status === 5) {
-      return (
-        <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded-lg">
-          <div className="flex items-center">
-            <CheckCircleIcon className="h-5 w-5 text-green-500 mr-2" />
-            <h3 className="text-lg font-medium text-green-800">Training Completed</h3>
-          </div>
-          <p className="mt-2 text-sm text-green-700">
-            This training session has been successfully completed. You can review the results and metrics.
-          </p>
-        </div>
-      );
-    }
-
-    if (status === -1) {
-      return (
-        <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
-          <div className="flex items-center">
-            <ExclamationTriangleIcon className="h-5 w-5 text-red-500 mr-2" />
-            <h3 className="text-lg font-medium text-red-800">Training Failed</h3>
-          </div>
-          <p className="mt-2 text-sm text-red-700">
-            This training session encountered an error and could not be completed.
-          </p>
-        </div>
-      );
-    }
-
-    return null;
-  };
 
   if (!federatedSessionData) {
     return (
@@ -302,7 +179,7 @@ export default function TrainingDetails({ clientToken }) {
       <div className="flex-1 p-6">
         <div className="bg-white rounded-lg shadow-sm p-6">
           {currentSection === "session-info" && (
-            <SessionInfo data={federatedSessionData.federated_info} />
+            <SessionInfo data={federatedSessionData} />
           )}
           {currentSection === "session-logs" && (
             <FederatedSessionLogs sessionId={sessionId} />
@@ -316,6 +193,8 @@ export default function TrainingDetails({ clientToken }) {
           {currentSection === "actions" && (
             <ActionSection
             data={federatedSessionData}
+            clientToken={clientToken}
+            sessionId={sessionId}
           />
           )}
         </div>

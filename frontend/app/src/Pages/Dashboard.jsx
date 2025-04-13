@@ -488,16 +488,16 @@ export default function Dashboard() {
 //   const [datasets, setDatasets] = useState({ uploads: [], processed: [] });
 //   const [sessions, setSessions] = useState([]);
 //   const { api } = useAuth();
-//   const fetchInitiatedSession = async () => {
-//     try {
-//       getUserInitiatedSessions(api).then((res) => {
-//         console.log("Initiated Sessions fetched: ", res.data);
-//         setInitiatedSessions(res.data);
-//       });
-//     } catch (error) {
-//       console.error("Error fetching initiated sessions:", error);
-//     }
-//   };
+  // const fetchInitiatedSession = async () => {
+  //   try {
+  //     getUserInitiatedSessions(api).then((res) => {
+  //       console.log("Initiated Sessions fetched: ", res.data);
+  //       setInitiatedSessions(res.data);
+  //     });
+  //   } catch (error) {
+  //     console.error("Error fetching initiated sessions:", error);
+  //   }
+  // };
 //   const fetchDatasets = async () => {
 //     try {
 //       getLocalDatasets().then((res) => {

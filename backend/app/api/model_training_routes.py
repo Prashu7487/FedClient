@@ -3,6 +3,7 @@ from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
 from utility.db import get_db
 from crud.trainings_crud import create_training, get_training_details
+from schemas.trainings import InitiateModelRequest
 import requests
 import subprocess
 import json
@@ -61,12 +62,16 @@ post_params_url = f"{BASE_URL}/receive-client-parameters"
 #     }
 # }
 
+  
+
 @model_router.post("/initiate-model")
-def initiate_model(session_id: str, client_token: str, db: Session = Depends(get_db)):
+def initiate_model(request: InitiateModelRequest, db: Session = Depends(get_db)):
     try:
         # ------------------------------------------
         # Fetch client_data from hdfs to data folder
         # ------------------------------------------
+        session_id = request.session_id
+        client_token = request.client_token
         
         headers = {
             "Authorization": f"Bearer {client_token}",
@@ -100,16 +105,28 @@ def initiate_model(session_id: str, client_token: str, db: Session = Depends(get
     
 
 @model_router.get("/execute-round")
-def run_script(session_id: str, client_token: str, db: Session = Depends(get_db)):
+def run_script(session_id: int, client_token: str, db: Session = Depends(get_db)):
     env = os.environ.copy()
     try:
         result = subprocess.run(
-            [sys.executable, "-m", "utility.training_script", "--session_id", session_id, "--client_token", client_token],
+            [sys.executable, "-m", "utility.training_script", "--session_id", str(session_id), "--client_token", client_token],
             capture_output=True,
             text=True,
             check=True,
             env=env
         )
+        # Save stdout to file
+        with open("stdout_output.txt", "a") as out_file:
+            out_file.write("\n---\n")
+            out_file.write(result.stdout)
+            out_file.write("\n---\n")
+
+        # Save stderr to file
+        with open("stderr_output.txt", "a") as err_file:
+            err_file.write("\n---\n")
+            err_file.write(result.stderr)
+            err_file.write("\n---\n")
+            
         return {
             "message": "Script executed successfully",
             "stdout": result.stdout,

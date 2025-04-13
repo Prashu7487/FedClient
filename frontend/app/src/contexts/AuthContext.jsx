@@ -149,13 +149,14 @@ export const AuthProvider = ({ children }) => {
             })
         }
         else if (type == "get_model_parameters_start_background_process") {
-            console.log("Config before initialising: ", data, session_id);
-            console.log("building model on client side...");
-            setUpModel(data, user, session_id, api); // Function to initialize training
+            // console.log("Config before initialising: ", data, session_id);
+            console.log("Building model on client side...");
+            setUpModel(user, session_id, api); // Function to initialize training
         }
         else if (type == "start_training"){
             console.log("start training on client side...");
-            trainModel(data["local_model_id"]);
+            console.log("Checkpoint 1: ",session_id)
+            trainModel(user, session_id);
         }
     }
 
@@ -242,12 +243,10 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => useContext(AuthContext);
 
-const setUpModel = async (config, user, sessionId, api) => {
-    console.log("config received by setUpModel: ", config);
+const setUpModel = async (user, sessionId, api) => {
     const data = {
-        model_config: config,
         session_id: sessionId,
-        client_id: user.access_token,
+        client_token: user.access_token,
     };
 
     initializeModel(data)
@@ -256,8 +255,6 @@ const setUpModel = async (config, user, sessionId, api) => {
 
             const status_four_data = {
                 session_id: sessionId,
-                decision: 1,
-                local_model_id: data.local_model_id
             };
 
             sendModelInitiation(api, status_four_data)
@@ -266,8 +263,12 @@ const setUpModel = async (config, user, sessionId, api) => {
         })
 };
 
-const trainModel = (local_model_id) => {
-    trainModelService(local_model_id)
+const trainModel = (user, sessionId) => {
+    const data = {
+        session_id: sessionId,
+        client_token: user.access_token,
+    };
+    trainModelService(data)
         .then(({ data }) => {
             if (data && data.status === 200) {
                 console.log("output:", data.stdout);

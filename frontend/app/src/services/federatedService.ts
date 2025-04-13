@@ -21,20 +21,39 @@ export const getFederatedSession = (api: AxiosInstance, session_id) => {
   return api.get(`get-federated-session/${session_id}`);
 };
 
-export const respondToSession = (
+export const submitTrainingAcceptanceResponse = (
   api: AxiosInstance,
   data: { session_id: number; decision: number }
 ) => {
-  return api.post("submit-client-federated-response", data);
+  return api.post("submit-client-training-acceptance-response", data);
+};
+
+export const submitPriceAcceptanceResponse = (
+  api: AxiosInstance,
+  data: { session_id: number; decision: number }
+) => {
+  return api.post("submit-client-price-acceptance-response", data);
 };
 
 export const sendModelInitiation = (
   api: AxiosInstance,
-  data: { session_id: number; decision: number }
+  data: { session_id: number }
 ) => {
-  return api.post("update-client-status-four", data);
+  return api.post("client-initialize-model", data);
 };
 
 export const getUserInitiatedSessions = (api: AxiosInstance) => {
   return api.get("get-all-initiated-sessions");
 };
+
+export const getLogsSession = (api: AxiosInstance, session_id) => {
+  return api.get(`logs/${session_id}`);
+};
+
+
+export const getTrainingResults = (api: AxiosInstance, session_id) => {
+  return api.get(`training-result/${session_id}`);
+};
+
+
+
