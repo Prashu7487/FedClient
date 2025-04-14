@@ -37,7 +37,7 @@ def run_spark_job():
             [
                 "spark-submit",
                 "--master", SPARK_MASTER_URL,
-                "--deploy-mode", "cluster",
+                "--deploy-mode", "client",
                 "api/testjob.py",
             ],
             capture_output=True,

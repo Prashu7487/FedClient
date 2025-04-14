@@ -163,7 +163,6 @@ def edit_dataset_details(db: Session, newdetails: DatasetUpdate):
         dataset = db.query(Dataset).filter(Dataset.dataset_id == newdetails.dataset_id).first()
         if not dataset:
             return {"error": "Dataset not found."}
-        print(dataset.filename, dataset.description, dataset.datastats)
         dataset.filename = newdetails.filename
         dataset.description = newdetails.description
         print(dataset.datastats)
