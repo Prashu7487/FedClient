@@ -6,6 +6,7 @@ from crud.trainings_crud import create_training, get_training_details
 from schemas.trainings import InitiateModelRequest
 import requests
 import subprocess
+from subprocess import CalledProcessError
 import json
 import os
 import random
@@ -78,7 +79,7 @@ def initiate_model(request: InitiateModelRequest, db: Session = Depends(get_db))
             "Content-Type": "application/json",
         }
 
-        get_url = f"http://host.docker.internal:8000/get-federated-session/{session_id}"
+        get_url = f"{get_training_url}/{session_id}"
         response = requests.get(get_url, headers=headers)
         response.raise_for_status()  # Raises HTTPError if not 2xx
 
@@ -103,7 +104,6 @@ def initiate_model(request: InitiateModelRequest, db: Session = Depends(get_db))
         print(f"Error initiating model: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
     
-
 @model_router.get("/execute-round")
 def run_script(session_id: int, client_token: str, db: Session = Depends(get_db)):
     env = os.environ.copy()
@@ -115,29 +115,46 @@ def run_script(session_id: int, client_token: str, db: Session = Depends(get_db)
             check=True,
             env=env
         )
-        # Save stdout to file
+
         with open("stdout_output.txt", "a") as out_file:
             out_file.write("\n---\n")
             out_file.write(result.stdout)
             out_file.write("\n---\n")
 
-        # Save stderr to file
         with open("stderr_output.txt", "a") as err_file:
             err_file.write("\n---\n")
             err_file.write(result.stderr)
             err_file.write("\n---\n")
-            
+
         return {
             "message": "Script executed successfully",
             "stdout": result.stdout,
             "stderr": result.stderr
         }
+
+    except CalledProcessError as e:
+        # Log exact stdout/stderr from the failing subprocess
+        with open("stdout_output.txt", "a") as out_file:
+            out_file.write("\n--- ERROR ---\n")
+            out_file.write(e.stdout or "No stdout")
+            out_file.write("\n---\n")
+
+        with open("stderr_output.txt", "a") as err_file:
+            err_file.write("\n--- ERROR ---\n")
+            err_file.write(e.stderr or "No stderr")
+            err_file.write("\n---\n")
+
+        return {
+            "error": "Script failed",
+            "stdout": e.stdout,
+            "stderr": e.stderr
+        }
+
     except Exception as e:
         return {
             "error": "Unexpected error",
             "detail": str(e)
         }
-
 
 
 

@@ -119,9 +119,9 @@ def delete_dataset(db: Session, dataset_id: int):
         db.rollback()
         return {"error": f"Database error: {e}"}
 
-def rename_dataset(db: Session, old_file_name: str, new_file_name: str):
+def rename_dataset(db: Session, filename: str, new_file_name: str):
     try:
-        dataset = db.query(Dataset).filter(Dataset.filename == old_file_name).first()
+        dataset = db.query(Dataset).filter(Dataset.filename == filename).first()
         if not dataset:
             return {"error": "Dataset not found."}
         dataset.filename = new_file_name
@@ -165,7 +165,6 @@ def edit_dataset_details(db: Session, newdetails: DatasetUpdate):
             return {"error": "Dataset not found."}
         dataset.filename = newdetails.filename
         dataset.description = newdetails.description
-        print(dataset.datastats)
         # it's repeated but it's required for some reason
         dataset.datastats['filename'] = newdetails.filename
         db.commit()

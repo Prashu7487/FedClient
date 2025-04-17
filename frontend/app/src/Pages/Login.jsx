@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import LoginImg from "../assets/login.svg";
 import SignupImg from "../assets/signup.svg";
 import { createUser, login } from "../services/authService";
 import { useAuth } from "../contexts/AuthContext";
+import { toast } from "react-toastify";
 
-export default function Register({ setSocket }) {
+export default function Register({ clientToken, setClientToken, setSocket }) {
   const [isLogin, setIsLogin] = useState(true); // Default to login form
   const navigate = useNavigate();
 
@@ -29,7 +30,11 @@ export default function Register({ setSocket }) {
       const res = await createUser(clientData);
 
       if (res.status >= 200 && res.status < 300) {
-        alert("User created successfully");
+        // alert("User created successfully");
+        toast.success("User created successfully", {
+          position: "bottom-center",
+          autoClose: 3000,
+        });
         reset();
         setIsLogin(true);
       }
@@ -38,7 +43,11 @@ export default function Register({ setSocket }) {
         error.response?.data?.detail ||
         error.response?.data?.message ||
         "Registration failed. Please try again.";
-      alert(errorMessage);
+      // alert(errorMessage);
+      toast.error(errorMessage, {
+        position: "bottom-center",
+        autoClose: 3000,
+      });
     }
   };
 
@@ -194,13 +203,20 @@ const LoginForm = ({ navigate }) => {
         username: formData.clientName,
       });
 
+      // console.log("")
+      // setClientToken(response.data.access_token);
+
       navigate("/dashboard");
     } catch (error) {
       const errorMessage =
         error.response?.data?.detail ||
         error.message ||
         "Login failed. Please check your credentials";
-      alert(errorMessage);
+      // alert(errorMessage);
+      toast.error(errorMessage, {
+        position: "bottom-center",
+        autoClose: 3000,
+      });
     }
   };
 

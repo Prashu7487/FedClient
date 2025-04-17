@@ -7,6 +7,9 @@ import argparse
 from .db import get_db
 from sqlalchemy.orm import Session
 from models.Trainings import CurrentTrainings
+from dotenv import load_dotenv
+load_dotenv()
+
 
 # Start from the current script's file location
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -14,7 +17,7 @@ print("SCRIPT_Working_DIR",SCRIPT_DIR)
 
 # Go three directories up
 BASE_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "..", ".."))
-
+BASE_URL = os.getenv("API_BASE_URL")
 
 def get_model_config(session_id: int):
     db: Session = next(get_db())
@@ -58,7 +61,9 @@ def send_updated_parameters(url, payload, client_token):
 def main(session_id, client_token):
     try:
         # ==== HARDCODED CONFIGURATION ====
-        BASE_URL = "http://host.docker.internal:8000"
+        # BASE_URL = "http://host.docker.internal:8000"
+
+        print("Starting training script...")
         get_url = f"{BASE_URL}/get-model-parameters"
         post_url = f"{BASE_URL}/receive-client-parameters"
         

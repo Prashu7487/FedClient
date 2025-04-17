@@ -1,7 +1,6 @@
 from pyspark.sql import SparkSession
 from dotenv import load_dotenv
-from pyspark.sql.functions import col, count, mean, stddev, min, max, approx_count_distinct, lit, rank, when
-from pyspark.sql.window import Window
+from pyspark.sql.functions import col, count, mean, stddev, min, max, approx_count_distinct, lit, rand, when
 from pyspark.sql.types import NumericType, StringType
 from utility.processing_helper_functions import All_Column_Operations, Column_Operations
 from utility.hdfs_services import HDFSServiceManager
@@ -22,6 +21,8 @@ HDFS_PROCESSED_DATASETS_DIR = os.getenv("HDFS_PROCESSED_DATASETS_DIR")
 HDFS_FILE_READ_URL = f"hdfs://{HDFS_NAME_NODE_URL}/user/{HADOOP_USER_NAME}"
 RECENTLY_UPLOADED_DATASETS_DIR = os.getenv("RECENTLY_UPLOADED_DATASETS_DIR")
 SPARK_MASTER_URL = os.getenv("SPARK_MASTER_URL")
+BUCKET_NAME = os.getenv("BUCKET_NAME")  # "qpd-data"  
+S3_PREFIX = os.getenv("S3_PREFIX")  # "temp"  
 
 # to see the docker hostname if running inside the docker container
 # import socket
@@ -54,15 +55,11 @@ class SparkSessionManager:
         with self._config_lock:
             # Double-checked locking pattern
             if self._session is None:
-                # self.session = SparkSession.builder.getOrCreate()
-                self._session = SparkSession.builder.master(self.master).appName(self.app_name).getOrCreate()
-                    # .config("spark.driver.host", "172.23.135.77") \
-                    # .config("spark.driver.bindAddress", "0.0.0.0") \
-                    # .config("spark.driver.port", "44555") \
-                    
+                self._session = SparkSession.builder.master(self.master).appName(self.app_name).getOrCreate()                   
                 print("Spark session created...")  
                 # # for standalone cluster (will not use YARN as resource manager)
                 # spark = SparkSession.builder.remote("sc://localhost:8080").getOrCreate() 
+
         with self._lock:
             self._reference_count += 1
         return self._session
@@ -170,7 +167,14 @@ class SparkSessionManager:
                         .limit(10)
                         .collect()
                     )
-                    stats["topCategories"] = [{"value": row[column], "count": row["count"]} for row in top_categories]
+
+                    stats["topCategories"] = [
+                        {   "value": row[column][:50] + "..." if isinstance(row[column], str) and len(row[column]) > 50 else row[column],
+                            "count": row["count"]
+                        }
+                        for row in top_categories
+                    ]
+
 
                 # Add the column stats to the list
                 column_stats.append(stats)
@@ -222,7 +226,7 @@ class SparkSessionManager:
 
         except Exception as e:
             print(f"Error creating new dataset: {e}")
-            raise Exception(f"Error creating new dataset: {e}")
+            raise e  
     
 
     async def preprocess_data(self, directory: str, filename: str, operations: list):
@@ -262,42 +266,84 @@ class SparkSessionManager:
         
         # don't put try except here, if any error occurs, it will be printed and counted as no error ..
         # so wherever this function is called next step will continue even after this error (put try except there instead)
-        with SparkSessionManager() as spark:
-            # Load the dataset from HDFS
-            print(f"Starting preprocessing for {HDFS_FILE_READ_URL}/{directory}/{filename}...")
-            df = spark.read.parquet(f"{HDFS_FILE_READ_URL}/{directory}/{filename}")
+        try:
+            with SparkSessionManager() as spark:
+                # Load the dataset from HDFS
+                print(f"Starting preprocessing for {HDFS_FILE_READ_URL}/{directory}/{filename}...")
+                df = spark.read.parquet(f"{HDFS_FILE_READ_URL}/{directory}/{filename}")
+                
+                # Record the time, and get the numeric columns
+                t1 = time.time()
+                All_Columns = df.columns
+                numericCols = [c for c in All_Columns if isinstance(df.schema[c].dataType, NumericType)]
+
+                # Apply the preprocessing steps
+                for step in operations:
+                    if step["operation"] == "Exclude from All Columns list":
+                        All_Columns.remove(step['column'])
+                        if step['column'] in numericCols:
+                            numericCols.remove(step['column'])
+                            
+                    elif step["column"] == "All Columns":
+                        try:
+                            df = All_Column_Operations(df, step, numericCols, All_Columns)
+                        except Exception as e:
+                            print(f"error: Error in {step['operation']} operation for {step['column']} column: {str(e)} \n")       
+                    else:
+                        try:
+                            df = Column_Operations(df, step)
+                        except Exception as e:
+                            print(f"error: Error in {step['operation']} operation for {step['column']} column: {str(e)} \n")
+
+                newfilename = f"{filename}_{uuid.uuid4().hex}.parquet"
+                df.write.mode("overwrite").parquet(f"{HDFS_FILE_READ_URL}/{HDFS_PROCESSED_DATASETS_DIR}/{newfilename}")
+
+                print(f"Preprocessed dataset saved to: {HDFS_FILE_READ_URL}/{HDFS_PROCESSED_DATASETS_DIR}/{newfilename} and time taken: ",time.time()-t1)
+
+                overview = self._get_overview(df)
+                overview["filename"] = newfilename
+                return overview
+        except Exception as e:
+            print(f"Error preprocessing dataset: {e}")
+            raise e  # Raise the exception to be handled by the caller
+
+    async def create_qpd_dataset(self, filename: str, num_points:int):
+        """
+        Creating Dataset for QPD (Quality preserving Database) from the original dataset.
+        """      
+ 
+        try:
+            with SparkSessionManager() as spark:
+                # Load the dataset from HDFS
+                print(f"Starting creating qpd dataset from {HDFS_FILE_READ_URL}/{HDFS_PROCESSED_DATASETS_DIR}/{filename}...")
+                df = spark.read.parquet(f"{HDFS_FILE_READ_URL}/{HDFS_PROCESSED_DATASETS_DIR}/{filename}")
+                
+                # Create a new dataset with the specified number of points
+                df_subset = df.orderBy(rand()).limit(num_points)
+
+                # write the subset to S3 bucket
+                newfilename = f"{uuid.uuid4()}_{filename}"
+                write_path = f"s3a://{BUCKET_NAME}/{S3_PREFIX}/{newfilename}" 
+                df_subset.write.parquet(write_path) # no overwrite since it will be unique path
+                print(f"Created QPD dataset saved to: {write_path}")
+
+                overview = self._get_overview(df_subset)
+                overview["datapath"] = write_path
+                return overview
+        except Exception as e:
+            print(f"Error creating QPD dataset: {e}")
+            raise e
             
-            # Record the time, and get the numeric columns
-            t1 = time.time()
-            All_Columns = df.columns
-            numericCols = [c for c in All_Columns if isinstance(df.schema[c].dataType, NumericType)]
 
-            # Apply the preprocessing steps
-            for step in operations:
-                if step["operation"] == "Exclude from All Columns list":
-                    All_Columns.remove(step['column'])
-                    if step['column'] in numericCols:
-                        numericCols.remove(step['column'])
-                        
-                elif step["column"] == "All Columns":
-                    try:
-                        df = All_Column_Operations(df, step, numericCols, All_Columns)
-                    except Exception as e:
-                        print(f"error: Error in {step['operation']} operation for {step['column']} column: {str(e)} \n")       
-                else:
-                    try:
-                        df = Column_Operations(df, step)
-                    except Exception as e:
-                        print(f"error: Error in {step['operation']} operation for {step['column']} column: {str(e)} \n")
 
-            newfilename = f"{filename}_{uuid.uuid4().hex}"
-            df.write.mode("overwrite").parquet(f"{HDFS_FILE_READ_URL}/{HDFS_PROCESSED_DATASETS_DIR}/{newfilename}")
 
-            print(f"Preprocessed dataset saved to: {HDFS_FILE_READ_URL}/{HDFS_PROCESSED_DATASETS_DIR}/{newfilename} and time taken: ",time.time()-t1)
 
-            overview = self._get_overview(df)
-            overview["filename"] = newfilename
-            return overview
+
+
+
+
+
+
 
 # the _get_overview  function will return something like this:
 # {

@@ -27,17 +27,26 @@ Client/*.local
 /backend/app/__pycache__
 /backend/app/_pycache_
 /backend/app/alembic/_pycache_
-/backend/app/api/_pycache_
-/backend/app/models/_pycache_
-/backend/app/schemas/_pycache_
-/backend/app/services/_pycache_
-/backend/app/utils/_pycache_
-/backend/app/utils/CustomModels/_pycache_
+/backend/app/api/__pycache__
+/backend/app/models/__pycache__
+/backend/app/schemas/__pycache__
+/backend/app/services/__pycache__
+/backend/app/utils/__pycache__
+/backend/app/utils/CustomModels/__pycache__
 /backend/app/CustomModels/__pycache__
+/backend/app/stderr_output.txt
+/backend/app/stdout_output.txt
+/backend/app/updated_parameters.txt
+/backend/app/local_parameters.txt
+backend/app/api/__pycache__
+
+
 
 /frontend/app/node_modules
 /frontend/app/.env.example
 /venv
+/testenv
 __pycache__
 data
+logs
 

@@ -7,9 +7,9 @@ WORKDIR /app
 COPY ./app/requirements.txt ./
 
 # Install dependencies including OpenJDK 8 and required tools
-RUN apt-get update && \
-    apt-get install -y openjdk-8-jdk curl && \
-    apt-get clean
+# RUN apt-get update && \
+#     apt-get install -y openjdk-8-jdk curl && \
+#     apt-get clean
 
 # Set JAVA_HOME environment variable for Spark
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64

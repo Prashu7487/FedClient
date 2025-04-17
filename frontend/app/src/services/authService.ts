@@ -13,7 +13,6 @@ export const login = async (credentials: {
   username: String;
   password: String;
 }) => {
-  console.log("HTTPService", HTTPService);
   console.log("Sent details for login of:", credentials.username);
   return HTTPService.post("/login", credentials);
 };

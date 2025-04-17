@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+// import { toast } from "react-toastify";
+// toast.error(`Approval failed: ${err.message}`);
+
 import {
   getAllSessions,
   getUserInitiatedSessions,
@@ -75,9 +78,9 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
+        {/* <h1 className="text-3xl font-bold text-gray-900 mb-8">
           FedClient Dashboard
-        </h1>
+        </h1> */}
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -488,16 +491,16 @@ export default function Dashboard() {
 //   const [datasets, setDatasets] = useState({ uploads: [], processed: [] });
 //   const [sessions, setSessions] = useState([]);
 //   const { api } = useAuth();
-  // const fetchInitiatedSession = async () => {
-  //   try {
-  //     getUserInitiatedSessions(api).then((res) => {
-  //       console.log("Initiated Sessions fetched: ", res.data);
-  //       setInitiatedSessions(res.data);
-  //     });
-  //   } catch (error) {
-  //     console.error("Error fetching initiated sessions:", error);
-  //   }
-  // };
+// const fetchInitiatedSession = async () => {
+//   try {
+//     getUserInitiatedSessions(api).then((res) => {
+//       console.log("Initiated Sessions fetched: ", res.data);
+//       setInitiatedSessions(res.data);
+//     });
+//   } catch (error) {
+//     console.error("Error fetching initiated sessions:", error);
+//   }
+// };
 //   const fetchDatasets = async () => {
 //     try {
 //       getLocalDatasets().then((res) => {
