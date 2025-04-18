@@ -1,5 +1,4 @@
-from fastapi import APIRouter
-from fastapi import Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.orm import Session
 from utility.db import get_db
 from crud.trainings_crud import create_training, get_training_details
@@ -11,6 +10,9 @@ import json
 import os
 import random
 import sys
+from typing import Dict
+import uuid
+from datetime import datetime
 
 
 model_router = APIRouter(tags = ["Model Training"])
@@ -104,57 +106,94 @@ def initiate_model(request: InitiateModelRequest, db: Session = Depends(get_db))
         print(f"Error initiating model: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
     
-@model_router.get("/execute-round")
-def run_script(session_id: int, client_token: str, db: Session = Depends(get_db)):
+# In-memory process store (replace with DB in production)
+process_store: Dict[str, dict] = {}
+
+def _run_script(process_id: str, session_id: int, client_token: str):
+    """Background task function that executes the script"""
     env = os.environ.copy()
+    process_store[process_id] = {
+        "status": "running",
+        "start_time": datetime.now(),
+        "session_id": session_id,
+        "output": {"stdout": "", "stderr": ""}
+    }
+    
     try:
-        result = subprocess.run(
-            [sys.executable, "-m", "utility.training_script", "--session_id", str(session_id), "--client_token", client_token],
-            capture_output=True,
+        proc = subprocess.Popen(
+            [sys.executable, "-m", "utility.training_script", 
+             "--session_id", str(session_id),
+             "--client_token", client_token],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            check=True,
             env=env
         )
-
-        with open("stdout_output.txt", "a") as out_file:
-            out_file.write("\n---\n")
-            out_file.write(result.stdout)
-            out_file.write("\n---\n")
-
-        with open("stderr_output.txt", "a") as err_file:
-            err_file.write("\n---\n")
-            err_file.write(result.stderr)
-            err_file.write("\n---\n")
-
-        return {
-            "message": "Script executed successfully",
-            "stdout": result.stdout,
-            "stderr": result.stderr
-        }
-
-    except CalledProcessError as e:
-        # Log exact stdout/stderr from the failing subprocess
-        with open("stdout_output.txt", "a") as out_file:
-            out_file.write("\n--- ERROR ---\n")
-            out_file.write(e.stdout or "No stdout")
-            out_file.write("\n---\n")
-
-        with open("stderr_output.txt", "a") as err_file:
-            err_file.write("\n--- ERROR ---\n")
-            err_file.write(e.stderr or "No stderr")
-            err_file.write("\n---\n")
-
-        return {
-            "error": "Script failed",
-            "stdout": e.stdout,
-            "stderr": e.stderr
-        }
-
+        
+        # Stream output while process runs
+        stdout, stderr = proc.communicate()
+        
+        process_store[process_id].update({
+            "status": "completed" if proc.returncode == 0 else "failed",
+            "end_time": datetime.now(),
+            "return_code": proc.returncode,
+            "output": {"stdout": stdout, "stderr": stderr}
+        })
+        
     except Exception as e:
-        return {
-            "error": "Unexpected error",
-            "detail": str(e)
-        }
+        process_store[process_id].update({
+            "status": "failed",
+            "end_time": datetime.now(),
+            "error": str(e)
+        })
+
+@model_router.get("/execute-round")
+async def execute_round(
+    session_id: int, 
+    client_token: str,
+    background_tasks: BackgroundTasks
+):
+    """Launch script in background and return process ID"""
+    process_id = str(uuid.uuid4())
+    background_tasks.add_task(
+        _run_script, 
+        process_id=process_id,
+        session_id=session_id,
+        client_token=client_token
+    )
+    
+    return {
+        "message": "Script execution started",
+        "process_id": process_id,
+        "status_endpoint": f"/process-status/{process_id}"
+    }
+
+@model_router.get("/process-status/{process_id}")
+def get_process_status(process_id: str):
+    """Check status of a background process"""
+    if process_id not in process_store:
+        return {"error": "Process not found"}, 404
+    
+    process_info = process_store[process_id]
+    response = {
+        "process_id": process_id,
+        "status": process_info["status"],
+        "start_time": process_info["start_time"],
+        "session_id": process_info["session_id"]
+    }
+    
+    if "end_time" in process_info:
+        response["duration_seconds"] = (
+            process_info["end_time"] - process_info["start_time"]
+        ).total_seconds()
+        response["return_code"] = process_info.get("return_code")
+    
+    if process_info["status"] in ("completed", "failed"):
+        response.update({
+            "output": process_info["output"]
+        })
+    
+    return response
 
 
 

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { getAllSessions } from "../services/federatedService";
-import { TrainingStatuses } from "../helpers/constants";
 import {
   ArrowPathIcon,
   ExclamationTriangleIcon,
@@ -43,10 +42,35 @@ export default function TrainingStatus() {
 
   const getStatusColor = (status) => {
     switch(status) {
-      case 1: return 'bg-blue-100 text-blue-800'; // In Progress
-      case 2: return 'bg-green-100 text-green-800'; // Completed
-      case 3: return 'bg-red-100 text-red-800'; // Failed
-      default: return 'bg-gray-100 text-gray-800'; // Unknown
+      case 0: return 'bg-gray-100 text-gray-800';      // Session Created
+      case 1: return 'bg-yellow-100 text-yellow-800';   // Price Negotiation
+      case 2: return 'bg-blue-100 text-blue-800';       // Client Recruitment
+      case 3: return 'bg-indigo-100 text-indigo-800';   // Model Initialization
+      case 4: return 'bg-purple-100 text-purple-800';   // Training Active
+      case 5: return 'bg-green-100 text-green-800';     // Completed
+      case -1: return 'bg-red-100 text-red-800';        // Failed
+      default: return 'bg-gray-100 text-gray-800';      // Unknown
+    }
+  };
+
+  const TrainingStatuses = {
+    0: "Session Created",
+    1: "Price Negotiation",
+    2: "Client Recruitment",
+    3: "Model Initialization",
+    4: "Training Active",
+    5: "Completed",
+    [-1]: "Failed"
+  };
+  const formatTimestamp = (timestamp) => {
+    try {
+      const date = new Date(timestamp);
+      return date.toLocaleString("en-IN", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      });
+    } catch (e) {
+      return timestamp;
     }
   };
 
@@ -145,7 +169,7 @@ export default function TrainingStatus() {
                   <div className="flex items-center text-sm text-gray-500">
                     <ChartBarIcon className="flex-shrink-0 h-4 w-4 mr-1.5" />
                     <span>
-                      Created: {new Date(session.created_at).toLocaleString()}
+                      Created: {formatTimestamp(session.created_at)}
                     </span>
                   </div>
                 </div>

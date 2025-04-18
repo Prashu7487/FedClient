@@ -238,10 +238,8 @@ const ActionSection = ({ data, clientToken, sessionId }) => {
         </h3>
       </div>
       <p className="mt-2 text-sm text-green-700">
-        The training is complete. View the results below.
+        The training is complete.
       </p>
-
-      <Result sessionId={sessionId} />
     </div>
   );
 

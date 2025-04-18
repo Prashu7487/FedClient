@@ -120,7 +120,7 @@ const FederatedSessionLogs = ({ sessionId }) => {
                     logs.map((log) => (
                       <tr key={log.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatTimestamp(log.timestamp)}
+                          {formatTimestamp(log.created_at)}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-900">
                           {log.message}

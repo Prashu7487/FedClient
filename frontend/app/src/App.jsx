@@ -168,8 +168,6 @@ import Request from "./Pages/Request";
 import Login from "./Pages/Login.jsx";
 import TrainingStatus from "./Pages/TrainingStatus";
 import TrainingDetails from "./Pages/TrainingDetails";
-import TrainingResults from "./Pages/Results";
-import ResultDetails from "./Pages/ResultDetails";
 import About from "./Pages/About";
 import Error from "./Pages/Error";
 import NavBar from "./components/OnWholeApp/NavBar";
@@ -260,13 +258,6 @@ export default function App() {
               element={
                 <TrainingDetails clientToken={clientToken} socket={socket} />
               }
-            />
-
-            <Route path="/Results" element={<TrainingResults />} />
-
-            <Route
-              path="/TrainingResults/details/:sessionId"
-              element={<ResultDetails />}
             />
             <Route path="/Datasets" element={<DatasetList />} />
             <Route path="/Datasets/:code" element={<DatasetDetail />} />

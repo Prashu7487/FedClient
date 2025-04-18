@@ -6,7 +6,7 @@ export const PRIVATE_BASE_URL = process.env.REACT_APP_PRIVATE_SERVER_BASE_URL
 
 export const HTTPService = axios.create({
     baseURL: BASE_URL,
-    timeout: 50000,
+    // timeout: 50000,
     headers: {
         "Content-Type": "application/json",
     },
@@ -14,7 +14,7 @@ export const HTTPService = axios.create({
 
 export const PrivateHTTPService = axios.create({
     baseURL: PRIVATE_BASE_URL,
-    timeout: 50000,
+    // timeout: 50000,
     headers: {
         "Content-Type": "application/json"
     }

@@ -21,6 +21,7 @@ import {
   BoltIcon,
 } from "@heroicons/react/24/outline";
 import ActionSection from "../components/Training/ActionSection";
+import Result from "../components/Training/Result";
 
 const clientPriceResponseEndpoint =
   process.env.REACT_APP_SUBMIT_CLIENT_PRICE_RESPONSE_URL;
@@ -83,22 +84,6 @@ export default function TrainingDetails({ clientToken }) {
     fetchFederatedSessionData();
   }, [sessionId]);
 
-  const onSubmitPriceAcceptance = async (data) => {
-    const requestData = {
-      client_id: clientToken,
-      session_id: sessionId,
-      decision: data.decision === "accepted" ? 1 : -1,
-    };
-
-    try {
-      const res = await axios.post(clientPriceResponseEndpoint, requestData);
-      if (res.status === 200) {
-        await fetchFederatedSessionData();
-      }
-    } catch (error) {
-      console.error("Error submitting price acceptance:", error);
-    }
-  };
 
   const sections = [
     {
@@ -121,7 +106,17 @@ export default function TrainingDetails({ clientToken }) {
       label: "Logs",
       icon: <ChartBarIcon className="h-5 w-5" />,
     },
+    ...(federatedSessionData?.training_status === 5
+      ? [
+          {
+            id: "results",
+            label: "Results",
+            icon: <ChartBarIcon className="h-5 w-5" />,
+          },
+        ]
+      : []),
     { id: "actions", label: "Actions", icon: <BoltIcon className="h-5 w-5" /> },
+
   ];
 
   const renderStatusBadge = () => {
@@ -214,6 +209,9 @@ export default function TrainingDetails({ clientToken }) {
               clientToken={clientToken}
               sessionId={sessionId}
             />
+          )}
+          {currentSection === "results"  && (
+            <Result sessionId={sessionId} />  
           )}
         </div>
       </div>
