@@ -13,6 +13,7 @@ import sys
 from typing import Dict
 import uuid
 from datetime import datetime
+from utility.federated_services import process_parquet_and_save_xy
 
 
 model_router = APIRouter(tags = ["Model Training"])
@@ -21,51 +22,8 @@ get_training_url = f"{BASE_URL}/get-federated-session"
 get_params_url = f"{BASE_URL}/get-model-parameters"
 post_params_url = f"{BASE_URL}/receive-client-parameters"
 
-# federated_info_mock = {
-#     "organisation_name": "test-clinic",
-#     "dataset_info": {
-#         "client_filename": "test_data.parquet",
-#         "output_columns": ["pct_2013"],
-#         "task_id": 3,
-#         "metric": "MAE"
-#     },
-#     "model_name": "CNN",
-#     "model_info": {
-#         "input_shape": "(128,128,1)",
-#         "output_layer": {
-#             "num_nodes": "1",
-#             "activation_function": "sigmoid"
-#         },
-#         "loss": "mse",
-#         "optimizer": "adam",
-#         "test_metrics": ["mae"],
-#         "layers": [
-#             {
-#                 "layer_type": "convolution",
-#                 "filters": "8",
-#                 "kernel_size": "(3,3)",
-#                 "stride": "(1,1)",
-#                 "activation_function": "relu"
-#             },
-#             {
-#                 "layer_type": "pooling",
-#                 "pooling_type": "max",
-#                 "pool_size": "(2,2)",
-#                 "stride": "(2,2)"
-#             },
-#             {
-#                 "layer_type": "flatten"
-#             },
-#             {
-#                 "layer_type": "dense",
-#                 "num_nodes": "64",
-#                 "activation_function": "relu"
-#             }
-#         ]
-#     }
-# }
-
-  
+# In-memory process store (replace with DB in production)
+process_store: Dict[str, dict] = {}
 
 @model_router.post("/initiate-model")
 def initiate_model(request: InitiateModelRequest, db: Session = Depends(get_db)):
@@ -86,7 +44,13 @@ def initiate_model(request: InitiateModelRequest, db: Session = Depends(get_db))
         response.raise_for_status()  # Raises HTTPError if not 2xx
 
         result = response.json()
-
+        
+        # Read output column from it
+        dataset_info = result.get("dataset_info")
+        client_filename = dataset_info.get("client_filename")
+        output_columns = dataset_info.get("output_columns")
+        process_parquet_and_save_xy(client_filename, session_id, output_columns)
+        
         training_details = {
             "session_id": session_id,
             "training_details": result.get("federated_info")  # safer with .get
@@ -106,8 +70,7 @@ def initiate_model(request: InitiateModelRequest, db: Session = Depends(get_db))
         print(f"Error initiating model: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
     
-# In-memory process store (replace with DB in production)
-process_store: Dict[str, dict] = {}
+
 
 def _run_script(process_id: str, session_id: int, client_token: str):
     """Background task function that executes the script"""
