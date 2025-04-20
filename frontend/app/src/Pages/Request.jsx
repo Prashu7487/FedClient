@@ -47,7 +47,7 @@ export default function Request() {
 
     try {
       const res = await createSession(api, requestData);
-      navigate(`/TrainingStatus/details/${res.data.session_id}`);
+      navigate(`/trainings/${res.data.session_id}`);
     } catch (error) {
       console.error("Submission error:", error);
     }

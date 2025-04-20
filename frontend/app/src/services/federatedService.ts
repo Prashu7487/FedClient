@@ -13,8 +13,8 @@ export const createSession = async (
   return api.post("create-federated-session", session_data);
 };
 
-export const getAllSessions = (api: AxiosInstance) => {
-  return api.get("get-all-federated-sessions");
+export const getAllSessions = async (api, page = 1, perPage = 6) => {
+  return api.get(`/get-all-federated-sessions?page=${page}&per_page=${perPage}`);
 };
 
 export const getFederatedSession = (api: AxiosInstance, session_id) => {

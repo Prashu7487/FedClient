@@ -18,9 +18,8 @@ import {
 import { createQPDataset } from "../../services/privateService";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import Result from "./Result";
 
-const ActionSection = ({ data, clientToken, sessionId }) => {
+const ActionSection = ({ data, sessionId }) => {
   const { register, handleSubmit } = useForm();
   const [isQpdCreated, setIsQpdCreated] = useState(false);
   const {

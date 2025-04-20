@@ -166,7 +166,7 @@ import { Route, Routes } from "react-router-dom";
 import Home from "./Pages/Home";
 import Request from "./Pages/Request";
 import Login from "./Pages/Login.jsx";
-import TrainingStatus from "./Pages/TrainingStatus";
+import Trainings from "./Pages/Trainings.jsx";
 import TrainingDetails from "./Pages/TrainingDetails";
 import About from "./Pages/About";
 import Error from "./Pages/Error";
@@ -250,13 +250,13 @@ export default function App() {
             />
 
             <Route
-              path="/TrainingStatus"
-              element={<TrainingStatus sessions={sessions} />}
+              path="/trainings"
+              element={<Trainings />}
             />
             <Route
-              path="/TrainingStatus/details/:sessionId"
+              path="/trainings/:sessionId"
               element={
-                <TrainingDetails clientToken={clientToken} socket={socket} />
+                <TrainingDetails clientToken={clientToken} />
               }
             />
             <Route path="/Datasets" element={<DatasetList />} />

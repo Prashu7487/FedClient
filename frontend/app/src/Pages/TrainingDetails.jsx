@@ -59,10 +59,9 @@ const statusConfig = {
   },
 };
 
-export default function TrainingDetails({ clientToken }) {
+export default function TrainingDetails() {
   const { sessionId } = useParams();
   const { api } = useAuth();
-  const { register, handleSubmit } = useForm();
   const [federatedSessionData, setFederatedSessionData] = useState({});
   const [currentSection, setCurrentSection] = useState("session-info");
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -72,7 +71,6 @@ export default function TrainingDetails({ clientToken }) {
       setIsRefreshing(true);
       const response = await getFederatedSession(api, sessionId);
       setFederatedSessionData(response.data);
-      console.log("Checkpoint 1: ", response.data);
     } catch (error) {
       console.error("Error fetching session data:", error);
     } finally {
@@ -206,7 +204,6 @@ export default function TrainingDetails({ clientToken }) {
           {currentSection === "actions" && (
             <ActionSection
               data={federatedSessionData}
-              clientToken={clientToken}
               sessionId={sessionId}
             />
           )}

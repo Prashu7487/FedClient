@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-// import { toast } from "react-toastify";
-// toast.error(`Approval failed: ${err.message}`);
+
 
 import {
   getAllSessions,
