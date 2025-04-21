@@ -25,6 +25,8 @@ post_params_url = f"{BASE_URL}/receive-client-parameters"
 # In-memory process store (replace with DB in production)
 process_store: Dict[str, dict] = {}
 
+
+
 @model_router.post("/initiate-model")
 def initiate_model(request: InitiateModelRequest, db: Session = Depends(get_db)):
     try:
@@ -46,14 +48,15 @@ def initiate_model(request: InitiateModelRequest, db: Session = Depends(get_db))
         result = response.json()
         
         # Read output column from it
-        dataset_info = result.get("dataset_info")
+        federated_info = result.get("federated_info")
+        dataset_info = federated_info.get("dataset_info")
         client_filename = dataset_info.get("client_filename")
         output_columns = dataset_info.get("output_columns")
         process_parquet_and_save_xy(client_filename, session_id, output_columns)
         
         training_details = {
             "session_id": session_id,
-            "training_details": result.get("federated_info")  # safer with .get
+            "training_details": federated_info 
         }
         
         # Store in DB
@@ -62,7 +65,7 @@ def initiate_model(request: InitiateModelRequest, db: Session = Depends(get_db))
         if isinstance(db_training, dict) and "error" in db_training:
             raise HTTPException(status_code=400, detail=db_training["error"])
 
-        return {"message": "Model initiation successful", "training": db_training}
+        return {"message": "Model initiation successful"}
 
     except requests.exceptions.HTTPError as http_err:
         raise HTTPException(status_code=response.status_code, detail=str(http_err))

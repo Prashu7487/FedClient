@@ -58,11 +58,16 @@ def process_parquet_and_save_xy(filename: str, session_id: str, output_column: l
     print(f"Combined DataFrame Shape: {combined_df.shape}")
     print(f"DataFrame Column Labels: {combined_df.columns.tolist()}")
 
-    if output_column not in combined_df.columns:
-        raise Exception(f"Output column '{output_column}' not found in the DataFrame")
+    print(combined_df.dtypes)
+        
+    # Check if all output columns exist
+    missing_cols = [col for col in output_column if col not in combined_df.columns]
+    if missing_cols:
+        raise Exception(f"Output column(s) not found in the DataFrame: {missing_cols}")
 
+    
     # Extract features and target
-    X = combined_df.drop(columns=output_column).values
+    X = combined_df['image'].values
     Y = combined_df[output_column].values
 
     print(f"X shape: {X.shape}")
@@ -75,12 +80,4 @@ def process_parquet_and_save_xy(filename: str, session_id: str, output_column: l
     np.save(X_filename, X)
     np.save(Y_filename, Y)
 
-    return {
-        "message": "Data downloaded, combined, and saved successfully",
-        "parquet_files_count": len(parquet_files),
-        "shape": combined_df.shape,
-        "columns": combined_df.columns.tolist(),
-        "session_id": session_id,
-        "X_filename": X_filename,
-        "Y_filename": Y_filename
-    }
+    return 

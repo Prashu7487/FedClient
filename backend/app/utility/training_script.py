@@ -219,8 +219,8 @@ def main(session_id, client_token):
         filename = "model_config.txt"
         print_model_config(model.model,filename)
 
-        X_path = os.path.join("data", f"X_1.npy")
-        Y_path = os.path.join("data", f"Y_1.npy")
+        X_path = os.path.join("data", f"X_{session_id}.npy")
+        Y_path = os.path.join("data", f"Y_{session_id}.npy")
         
         # Load data
         X = np.load(X_path)
