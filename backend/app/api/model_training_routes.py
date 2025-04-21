@@ -52,7 +52,7 @@ def initiate_model(request: InitiateModelRequest, db: Session = Depends(get_db))
         dataset_info = federated_info.get("dataset_info")
         client_filename = dataset_info.get("client_filename")
         output_columns = dataset_info.get("output_columns")
-        process_parquet_and_save_xy(client_filename, session_id, output_columns)
+        process_parquet_and_save_xy(client_filename, session_id, output_columns,client_token)
         
         training_details = {
             "session_id": session_id,

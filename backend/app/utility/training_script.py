@@ -200,7 +200,6 @@ def print_model_config(model, file_path: str = "model_config.txt"):
 def main(session_id, client_token):
     try:
         # ==== HARDCODED CONFIGURATION ====
-        # BASE_URL = "http://host.docker.internal:8000"
 
         print("Starting training script...")
         get_url = f"{BASE_URL}/get-model-parameters"
@@ -245,6 +244,7 @@ def main(session_id, client_token):
         before_training = model.get_parameters()
         
         print(f"X dtype: {X.dtype}, Y dtype: {Y.dtype}")
+        print(f"X shape: {X.shape}, Y shape: {Y.shape}")
         
         # ==== Train ====
         model.fit(X, Y)

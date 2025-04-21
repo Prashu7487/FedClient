@@ -3,11 +3,37 @@ from utility.hdfs_services import HDFSServiceManager
 import pandas as pd
 import shutil
 import numpy as np
-
+import requests
 
 HDFS_PROCESSED_DATASETS_DIR = os.getenv('HDFS_PROCESSED_DATASETS_DIR')
+REACT_APP_SERVER_BASE_URL = os.getenv('REACT_APP_SERVER_BASE_URL')
 
-def process_parquet_and_save_xy(filename: str, session_id: str, output_column: list):
+def send_client_initialize_model_signal(session_id: int, client_token: str) -> bool:
+    """
+    Notify remote server about successful model initialization
+    Returns True if successful, False otherwise
+    """
+    try:
+        headers = {
+            "Authorization": f"Bearer {client_token}",
+            "Content-Type": "application/json",
+        }
+        
+        data = {"session_id": session_id}
+        
+        response = requests.post(
+            f"{REACT_APP_SERVER_BASE_URL}/client-initialize-model",
+            json=data,
+            headers=headers
+        )
+        response.raise_for_status()
+        return True
+        
+    except Exception as e:
+        print(f"Error notifying remote server: {e}")
+        return False
+
+def process_parquet_and_save_xy(filename: str, session_id: str, output_column: list, client_token: str):
     """
     Download and combine multiple parquet files from HDFS,
     extract X and Y arrays, save them, and return metadata.
@@ -59,19 +85,21 @@ def process_parquet_and_save_xy(filename: str, session_id: str, output_column: l
     print(f"DataFrame Column Labels: {combined_df.columns.tolist()}")
 
     print(combined_df.dtypes)
-        
-    # Check if all output columns exist
-    missing_cols = [col for col in output_column if col not in combined_df.columns]
-    if missing_cols:
-        raise Exception(f"Output column(s) not found in the DataFrame: {missing_cols}")
-
     
-    # Extract features and target
-    X = combined_df['image'].values
-    Y = combined_df[output_column].values
+    def reshape_image(img_array):
+        stacked = np.stack(img_array, axis=0)  # shape: (224, 224, 1)
+        stacked = np.expand_dims(stacked, axis=-1)
+        return stacked.astype(np.float32)
 
+    X = np.array([reshape_image(img) for img in combined_df['image']])
     print(f"X shape: {X.shape}")
+    
+    Y = combined_df[output_column].values
+    if len(Y.shape) == 1:
+        Y = Y.reshape(-1, 1)  # Ensure 2D shape
     print(f"Y shape: {Y.shape}")
+    
+    
 
     # Save to local_dir
     X_filename = os.path.join(local_dir, f"X_{session_id}.npy")
@@ -80,4 +108,6 @@ def process_parquet_and_save_xy(filename: str, session_id: str, output_column: l
     np.save(X_filename, X)
     np.save(Y_filename, Y)
 
+    # Sending Model Initialization signal to server
+    send_client_initialize_model_signal(session_id, client_token)
     return 

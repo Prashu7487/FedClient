@@ -35,12 +35,12 @@ export const submitPriceAcceptanceResponse = (
   return api.post("submit-client-price-acceptance-response", data);
 };
 
-export const sendModelInitiation = (
-  api: AxiosInstance,
-  data: { session_id: number }
-) => {
-  return api.post("client-initialize-model", data);
-};
+// export const sendModelInitiation = (
+//   api: AxiosInstance,
+//   data: { session_id: number }
+// ) => {
+//   return api.post("client-initialize-model", data);
+// };
 
 export const getUserInitiatedSessions = (api: AxiosInstance) => {
   return api.get("get-all-initiated-sessions");

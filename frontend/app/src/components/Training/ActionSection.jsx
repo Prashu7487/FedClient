@@ -81,13 +81,13 @@ const ActionSection = ({ data, sessionId }) => {
         session_id: sessionId,
         decision: data.decision === "accepted" ? 1 : 0,
       };
-      await submitPriceAcceptanceResponse(api, requestData);
+      const response = await submitPriceAcceptanceResponse(api, requestData);
       // alert(response?.data?.message);
       toast.success(response?.data?.message, {
         position: "bottom-center",
         autoClose: 4000,
       });
-      navigate(`/TrainingStatus/details/${sessionId}`);
+      navigate(`/trainings/${sessionId}`);
     } catch (error) {
       console.error("Error submitting price decision:", error);
     }
