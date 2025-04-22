@@ -163,7 +163,6 @@
 
 // // later "change" (don't uncommetn above) all the paths for PrivateRoute authentication
 import { Route, Routes } from "react-router-dom";
-import Home from "./Pages/Home";
 import Request from "./Pages/Request";
 import Login from "./Pages/Login.jsx";
 import Trainings from "./Pages/Trainings.jsx";
@@ -180,8 +179,6 @@ import { ToastContainer } from "react-toastify";
 
 import "./index.css";
 import "react-toastify/dist/ReactToastify.min.css";
-import DatasetList from "./Pages/DatasetList";
-import DatasetDetail from "./Pages/DatasetDetail";
 import ManageData from "./Pages/ManageData";
 import ViewRecentUploads from "./components/DataPipeline/ViewRecentUploads";
 import ViewAllDatasets from "./components/DataPipeline/ViewAllDatasets";
@@ -259,8 +256,6 @@ export default function App() {
                 <TrainingDetails clientToken={clientToken} />
               }
             />
-            <Route path="/Datasets" element={<DatasetList />} />
-            <Route path="/Datasets/:code" element={<DatasetDetail />} />
             <Route path="/About" element={<About />} />
             <Route path="/ManageData" element={<ManageData />} />
             <Route
