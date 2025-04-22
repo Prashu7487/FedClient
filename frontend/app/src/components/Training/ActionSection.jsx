@@ -68,7 +68,7 @@ const ActionSection = ({ data, sessionId }) => {
           position: "bottom-center",
           autoClose: 4000,
         });
-        navigate(`/TrainingStatus/details/${sessionId}`);
+        navigate(`/trainings/${sessionId}`);
       });
     } catch (error) {
       console.error("Error submitting decision:", error);

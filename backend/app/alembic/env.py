@@ -4,7 +4,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
-from models.Base import Base
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -18,9 +18,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-print('✅ Available Tables in Alembic',Base.metadata.tables.keys())
-url = config.get_main_option("sqlalchemy.url")
-print('✅ URL in Alembic',url)
+from models.Base import Base
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

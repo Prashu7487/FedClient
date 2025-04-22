@@ -162,7 +162,7 @@ export const AuthProvider = ({ children }) => {
 
       toast.info(message, {
         onClick: () => {
-          navigate(`/TrainingStatus/details/${session_id}`);
+          navigate(`/trainings/${session_id}`);
         },
       });
     } else if (type == "get_model_parameters_start_background_process") {
