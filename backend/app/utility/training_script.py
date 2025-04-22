@@ -18,7 +18,7 @@ print("SCRIPT_Working_DIR",SCRIPT_DIR)
 
 # Go three directories up
 BASE_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "..", ".."))
-BASE_URL = os.getenv("API_BASE_URL")
+BASE_URL = os.getenv("REACT_APP_SERVER_BASE_URL")
 
 
 def sanitize_parameters(params):

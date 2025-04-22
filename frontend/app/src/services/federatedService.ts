@@ -1,9 +1,5 @@
 import { AxiosInstance } from "axios";
 
-// const get_all_initiated_sessions =
-//   process.env.REACT_APP_GET_ALL_INITIATED_SESSIONS ||
-//   "http://localhost:8000/get-all-initiated-sessions"; // this is the default value
-
 export const createSession = async (
   api: AxiosInstance,
   session_data: {
@@ -54,6 +50,8 @@ export const getLogsSession = (api: AxiosInstance, session_id) => {
 export const getTrainingResults = (api: AxiosInstance, session_id) => {
   return api.get(`training-result/${session_id}`);
 };
+
+
 
 
 

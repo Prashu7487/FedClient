@@ -23,8 +23,6 @@ import {
 import ActionSection from "../components/Training/ActionSection";
 import Result from "../components/Training/Result";
 
-const clientPriceResponseEndpoint =
-  process.env.REACT_APP_SUBMIT_CLIENT_PRICE_RESPONSE_URL;
 
 const statusConfig = {
   1: {

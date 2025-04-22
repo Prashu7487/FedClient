@@ -17,7 +17,7 @@ from utility.federated_services import process_parquet_and_save_xy
 
 
 model_router = APIRouter(tags = ["Model Training"])
-BASE_URL = os.getenv("API_BASE_URL")
+BASE_URL = os.getenv("REACT_APP_SERVER_BASE_URL")
 get_training_url = f"{BASE_URL}/get-federated-session"
 get_params_url = f"{BASE_URL}/get-model-parameters"
 post_params_url = f"{BASE_URL}/receive-client-parameters"

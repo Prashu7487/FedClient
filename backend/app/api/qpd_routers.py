@@ -15,7 +15,7 @@ executor = ThreadPoolExecutor(max_workers=os.cpu_count())
 
 qpd_router = APIRouter(tags=["QPD"])
 
-BASE_URL = os.getenv("API_BASE_URL")
+BASE_URL = os.getenv("REACT_APP_SERVER_BASE_URL")
 spark_client = SparkSessionManager()
 
 
