@@ -215,8 +215,8 @@ def main(session_id, client_token):
         print("Model built successfully")
         
         # Save Model Config
-        filename = "model_config.txt"
-        print_model_config(model.model,filename)
+        # filename = "model_config.txt"
+        # print_model_config(model.model,filename)
 
         X_path = os.path.join("data", f"X_{session_id}.npy")
         Y_path = os.path.join("data", f"Y_{session_id}.npy")
@@ -234,13 +234,13 @@ def main(session_id, client_token):
             model.update_parameters(global_parameters['global_parameters'])
 
         # ==== Save current local parameters ====
-        with open("local_parameters.txt", "a", encoding="utf-8") as f:
-            f.write("\n---\n")
-            f.write(json.dumps(model.get_parameters()))
-            f.write("\n")
+        # with open("local_parameters.txt", "a", encoding="utf-8") as f:
+        #     f.write("\n---\n")
+        #     f.write(json.dumps(model.get_parameters()))
+        #     f.write("\n")
          
 
-        print("Local parameters saved to local_parameters.txt")
+        # print("Local parameters saved to local_parameters.txt")
         before_training = model.get_parameters()
         
         print(f"X dtype: {X.dtype}, Y dtype: {Y.dtype}")
@@ -254,10 +254,10 @@ def main(session_id, client_token):
         
 
         # Save updated parameters after training
-        with open("updated_parameters.txt", "a", encoding="utf-8") as f:
-            f.write("\n--- Updated Parameters After Training ---\n")
-            f.write(json.dumps(model.get_parameters()))
-            f.write("\n")
+        # with open("updated_parameters.txt", "a", encoding="utf-8") as f:
+        #     f.write("\n--- Updated Parameters After Training ---\n")
+        #     f.write(json.dumps(model.get_parameters()))
+        #     f.write("\n")
         # ==== Send updated parameters ====
         updated_parameters = model.get_parameters()
         payload = {
