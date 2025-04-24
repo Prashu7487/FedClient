@@ -22,6 +22,7 @@ import {
 } from "@heroicons/react/24/outline";
 import ActionSection from "../components/Training/ActionSection";
 import Result from "../components/Training/Result";
+import TrainingProgress from "../components/Training/TrainingProgress";
 
 
 const statusConfig = {
@@ -112,7 +113,11 @@ export default function TrainingDetails() {
         ]
       : []),
     { id: "actions", label: "Actions", icon: <BoltIcon className="h-5 w-5" /> },
-
+    {
+      id: "training-progress",  // New section
+      label: "Training Progress",
+      icon: <ArrowPathIcon className="h-5 w-5" />,
+    }
   ];
 
   const renderStatusBadge = () => {
@@ -207,6 +212,9 @@ export default function TrainingDetails() {
           )}
           {currentSection === "results"  && (
             <Result sessionId={sessionId} />  
+          )}
+          {currentSection === "training-progress" && (
+            <TrainingProgress sessionId={sessionId} />
           )}
         </div>
       </div>

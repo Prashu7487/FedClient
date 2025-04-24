@@ -17,6 +17,10 @@ export const getFederatedSession = (api: AxiosInstance, session_id) => {
   return api.get(`get-federated-session/${session_id}`);
 };
 
+export const getFederatedSessionStatus = (api: AxiosInstance, session_id) => {
+  return api.get(`/session/${session_id}/status`);
+};
+
 export const submitTrainingAcceptanceResponse = (
   api: AxiosInstance,
   data: { session_id: number; decision: number }
