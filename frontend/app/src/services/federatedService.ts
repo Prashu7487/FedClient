@@ -21,6 +21,12 @@ export const getFederatedSessionStatus = (api: AxiosInstance, session_id) => {
   return api.get(`/session/${session_id}/status`);
 };
 
+export const downloadModelParameters = (api: AxiosInstance, session_id: number) => {
+  return api.get(`/download-model-parameters/${session_id}`, {
+    responseType: 'blob' // This is crucial for file downloads
+  });
+};
+
 export const submitTrainingAcceptanceResponse = (
   api: AxiosInstance,
   data: { session_id: number; decision: number }
