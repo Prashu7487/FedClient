@@ -41,6 +41,7 @@ Client/*.local
 /backend/app/local_parameters.txt
 /backend/app/wslenv
 /backend/app/api/__pycache__
+/backend/app/storage/database.db
 
 
 
