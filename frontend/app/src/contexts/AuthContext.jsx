@@ -19,7 +19,7 @@ import { initializeModel, trainModelService } from "../services/privateService";
 
 const AuthContext = createContext();
 
-const REFRESH_INTERVAL = 1000 * 60 * 15;
+const REFRESH_INTERVAL = 1000 * 60 * 60 * 6;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
