@@ -103,15 +103,11 @@ export default function TrainingDetails() {
       label: "Logs",
       icon: <ChartBarIcon className="h-5 w-5" />,
     },
-    ...(federatedSessionData?.training_status === 5
-      ? [
-          {
-            id: "results",
-            label: "Results",
-            icon: <ChartBarIcon className="h-5 w-5" />,
-          },
-        ]
-      : []),
+      {
+        id: "results",
+        label: "Results",
+        icon: <ChartBarIcon className="h-5 w-5" />,
+      },
     { id: "actions", label: "Actions", icon: <BoltIcon className="h-5 w-5" /> },
     {
       id: "training-progress",  // New section

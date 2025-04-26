@@ -25,6 +25,7 @@ const Result = ({ sessionId }) => {
   const [activeTab, setActiveTab] = useState("chart");
   const [selectedMetrics, setSelectedMetrics] = useState([]);
   const { api } = useAuth();
+  const [refreshInterval, setRefreshInterval] = useState(null);
 
   const fetchResultsData = async () => {
     if (!sessionId) {
@@ -37,11 +38,14 @@ const Result = ({ sessionId }) => {
     setError("");
     try {
       const response = await getTrainingResults(api, sessionId);
-      setResults(response.data);
+      // Ensure response.data is an array
+      const data = Array.isArray(response.data) ? response.data : [];
+      setResults(data);
       
       // Initialize selected metrics with all available metrics
-      if (response.data.length > 0) {
-        setSelectedMetrics(Object.keys(response.data[0].metrics));
+      if (data.length > 0 && data[0].metrics) {
+        const firstMetricKey = Object.keys(data[0].metrics)[0]; // Get first key
+        setSelectedMetrics([firstMetricKey]);
       }
     } catch (err) {
       console.error("Error fetching training results:", err);
@@ -53,25 +57,48 @@ const Result = ({ sessionId }) => {
 
   useEffect(() => {
     fetchResultsData();
+    
+    // Set up real-time refresh every 5 seconds when sessionId is present
+    if (sessionId) {
+      const interval = setInterval(fetchResultsData, 30000);
+      setRefreshInterval(interval);
+      
+      // Clean up interval on unmount or when sessionId changes
+      return () => {
+        if (interval) clearInterval(interval);
+      };
+    }
   }, [sessionId]);
 
+  // Clean up interval on component unmount
+  useEffect(() => {
+    return () => {
+      if (refreshInterval) clearInterval(refreshInterval);
+    };
+  }, [refreshInterval]);
+
   const formatMetricValue = (value, isPercentage = false) => {
+    if (typeof value !== 'number') return value;
     if (isPercentage) {
       return `${(value * 100).toFixed(2)}%`;
     }
     return value.toFixed(4);
   };
 
-  // Prepare data for charts
-  const chartData = results.map((result) => ({
-    round: `Round ${result.round_number}`,
-    ...Object.entries(result.metrics).reduce((acc, [key, value]) => {
-      acc[key] = key === "accuracy" ? value * 100 : value;
-      return acc;
-    }, {}),
-  }));
+  // Prepare data for charts - only if results is an array and has items
+  const chartData = Array.isArray(results) && results.length > 0 
+    ? results.map((result) => ({
+        round: `Round ${result.round_number}`,
+        ...Object.entries(result.metrics || {}).reduce((acc, [key, value]) => {
+          acc[key] = key === "accuracy" ? value * 100 : value;
+          return acc;
+        }, {}),
+      }))
+    : [];
 
-  const metricKeys = results.length > 0 ? Object.keys(results[0].metrics) : [];
+  const metricKeys = results.length > 0 && results[0].metrics 
+    ? Object.keys(results[0].metrics) 
+    : [];
 
   const toggleMetric = (metric) => {
     setSelectedMetrics(prev =>
@@ -79,6 +106,16 @@ const Result = ({ sessionId }) => {
         ? prev.filter(m => m !== metric)
         : [...prev, metric]
     );
+  };
+
+  // Generate consistent colors for metrics
+  const getMetricColor = (metric) => {
+    const colors = [
+      '#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#0088FE', 
+      '#00C49F', '#FFBB28', '#FF8042', '#A4DE6C', '#D0ED57'
+    ];
+    const index = metricKeys.indexOf(metric) % colors.length;
+    return colors[index];
   };
 
   return (
@@ -113,6 +150,14 @@ const Result = ({ sessionId }) => {
               }`}
             >
               Table View
+            </button>
+            <button
+              onClick={fetchResultsData}
+              className="px-3 py-1 text-sm rounded-md text-gray-600 hover:bg-gray-100 flex items-center"
+              disabled={loading}
+            >
+              <ArrowPathIcon className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
             </button>
           </div>
         </div>
@@ -170,7 +215,7 @@ const Result = ({ sessionId }) => {
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-500">
                             <div className="space-y-1">
-                              {Object.entries(result.metrics).map(([key, value]) => (
+                              {Object.entries(result.metrics || {}).map(([key, value]) => (
                                 <div key={key} className="flex">
                                   <span className="font-medium text-gray-700 w-24 capitalize">
                                     {key}:
@@ -250,7 +295,7 @@ const Result = ({ sessionId }) => {
                             key={metric}
                             type="monotone"
                             dataKey={metric}
-                            stroke={`#${((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0")}`}
+                            stroke={getMetricColor(metric)}
                             activeDot={{ r: 8 }}
                           />
                         ))}
@@ -265,6 +310,11 @@ const Result = ({ sessionId }) => {
 
         <div className="px-6 py-3 bg-gray-50 text-right text-xs text-gray-500 border-t border-gray-200">
           {sessionId && `Session ID #${sessionId}`}
+          {sessionId && (
+            <span className="ml-2">
+              {loading ? 'Updating...' : 'Auto-refresh every 5 seconds'}
+            </span>
+          )}
         </div>
       </div>
     </div>
