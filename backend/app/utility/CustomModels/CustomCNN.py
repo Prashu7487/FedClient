@@ -95,13 +95,7 @@ class CustomCNN:
             else:
                 optimizer = optimizer_config['type']  # assume it's a string like 'adam'
                 
-            metrics_config = config.get('metrics', {})
-            metrics = [m for m, enabled in metrics_config.items() if enabled] if isinstance(metrics_config, dict) else (
-                [metrics_config] if isinstance(metrics_config, str) else metrics_config
-            )
-            if not metrics:  # Default if empty
-                metrics = ['mae']
-                
+            metrics = config.get('test_metrics', [])  
             self.model.compile(
                 loss=config.get('loss', 'mean_squared_error'),
                 optimizer=optimizer,
