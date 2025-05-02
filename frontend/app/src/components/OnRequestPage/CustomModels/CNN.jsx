@@ -36,21 +36,20 @@ const optimizers = {
   adamax: "Adamax",
   nadam: "Nadam (Nesterov-accelerated Adaptive Moment Estimation)",
   ftrl: "FTRL (Follow-The-Regularized-Leader)",
-  proximalSGD: "ProximalSGD",
-  rmspropGraves: "RMSpropGraves",
+  proximal_sgd: "ProximalSGD",
 };
 
 const lossFunctions = {
   mse: "Mean Squared Error",
   mae: "Mean Absolute Error",
-  binaryCrossentropy: "Binary Crossentropy",
-  categoricalCrossentropy: "Categorical Crossentropy",
+  binary_crossentropy: "Binary Crossentropy",
+  categorical_crossentropy: "Categorical Crossentropy",
   hinge: "Hinge",
   huber: "Huber",
-  klDivergence: "Kullback-Leibler Divergence",
+  kld: "Kullback-Leibler Divergence",
   logCosh: "Log-Cosh",
   poisson: "Poisson",
-  sparseCategoricalCrossentropy: "Sparse Categorical Crossentropy",
+  sparse_categorical_crossentropy: "Sparse Categorical Crossentropy",
 };
 
 const layerTypes = {
