@@ -44,11 +44,6 @@ const lossFunctions = {
   mae: "Mean Absolute Error",
   binary_crossentropy: "Binary Crossentropy",
   categorical_crossentropy: "Categorical Crossentropy",
-  hinge: "Hinge",
-  huber: "Huber",
-  kld: "Kullback-Leibler Divergence",
-  logCosh: "Log-Cosh",
-  poisson: "Poisson",
   sparse_categorical_crossentropy: "Sparse Categorical Crossentropy",
 };
 
