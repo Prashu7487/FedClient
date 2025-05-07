@@ -678,7 +678,7 @@ const CNN = () => {
       </div>
   
       {/* Metrics Selection */}
-      <div className="mb-3 p-3 bg-white rounded-lg border">
+      {/* <div className="mb-3 p-3 bg-white rounded-lg border">
         <label className="block text-xs font-medium text-gray-600 mb-1">
           Metrics:
         </label>
@@ -696,7 +696,7 @@ const CNN = () => {
             </label>
           ))}
         </div>
-      </div>
+      </div> */}
   
       {/* Test Metrics Selection */}
       <div className="p-3 bg-white rounded-lg border">

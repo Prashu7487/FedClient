@@ -3,16 +3,16 @@
 const testMetricsOptions = [
   { value: "mse", label: "Mean Squared Error" },
   { value: "mae", label: "Mean Absolute Error" },
-  { value: "rmse", label: "Root Mean Squared Error" },
-  { value: "msle", label: "Mean Squared Logarithmic Error" },
-  { value: "mape", label: "Mean Absolute Percentage Error" },
+  // { value: "rmse", label: "Root Mean Squared Error" },
+  // { value: "msle", label: "Mean Squared Logarithmic Error" },
+  // { value: "mape", label: "Mean Absolute Percentage Error" },
   { value: "accuracy", label: "Accuracy" },
   { value: "precision", label: "Precision" },
   { value: "recall", label: "Recall" },
   { value: "f1_score", label: "F1 Score" },
-  { value: "auc", label: "Area Under Curve (AUC)" },
-  { value: "log_loss", label: "Log Loss" },
-  { value: "r2_score", label: "R^2 Score" },
+  // { value: "auc", label: "Area Under Curve (AUC)" },
+  // { value: "log_loss", label: "Log Loss" },
+  // { value: "r2_score", label: "R^2 Score" },
 ];
 
 // Multiselect Component for Test Metrics

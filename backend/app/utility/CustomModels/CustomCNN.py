@@ -6,9 +6,46 @@ from tensorflow.keras.layers import (Input, Dense, Flatten, Conv2D, Reshape,
                                     Dropout)
 import numpy as np
 import ast
+from tensorflow.keras import metrics
 
+class BinaryF1Score(metrics.Metric):
+    def __init__(self, name='f1_score', threshold=0.5, **kwargs):
+        super().__init__(name=name, **kwargs)
+        self.threshold = threshold
+        self.precision = metrics.Precision(thresholds=threshold)
+        self.recall = metrics.Recall(thresholds=threshold)
 
+    def update_state(self, y_true, y_pred, sample_weight=None):
+        self.precision.update_state(y_true, y_pred)
+        self.recall.update_state(y_true, y_pred)
 
+    def result(self):
+        p = self.precision.result()
+        r = self.recall.result()
+        return 2 * ((p * r) / (p + r + tf.keras.backend.epsilon()))
+
+    def reset_state(self):
+        self.precision.reset_state()
+        self.recall.reset_state()
+        
+def get_metric_mapping():
+    """Returns all available metrics without validation"""
+    return {
+        # Universal metrics (work for any task)
+        'mae': 'mae',
+        'mse': 'mse',
+        'accuracy': 'accuracy',
+        
+        # Classification metrics
+        'precision': metrics.Precision(name='precision'),
+        'recall': metrics.Recall(name='recall'),
+        'f1_score': BinaryF1Score(name='f1_score'),   
+    }
+
+def resolve_metrics(metric_names):
+    """Simple metric name to implementation mapping"""
+    mapping = get_metric_mapping()
+    return [mapping[name] for name in metric_names if name in mapping]
 
 def handle_error(error):
     error_message = f"An error occurred: {error}"
@@ -95,7 +132,7 @@ class CustomCNN:
             else:
                 optimizer = optimizer_config['type']  # assume it's a string like 'adam'
                 
-            metrics = config.get('test_metrics', [])  
+            metrics = resolve_metrics(config.get("test_metrics", [])) 
             self.model.compile(
                 loss=config.get('loss', 'mean_squared_error'),
                 optimizer=optimizer,

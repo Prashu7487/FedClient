@@ -9,6 +9,7 @@ from .db import get_db
 from sqlalchemy.orm import Session
 from models.Trainings import CurrentTrainings
 from dotenv import load_dotenv
+import tensorflow as tf
 load_dotenv()
 
 
@@ -37,8 +38,31 @@ def sanitize_parameters(params):
     elif isinstance(params, (np.int32, np.int64)):
         # Convert numpy ints to Python ints
         return int(params)
+    elif isinstance(params, (tf.Tensor, tf.Variable)):
+        params = params.numpy()  # Convert to NumPy array
+        params = np.nan_to_num(params, nan=0.0, posinf=1e10, neginf=-1e10)
+        return params.tolist()
     else:
         return params
+
+def sanitize_history(history):
+    """Convert history metrics to JSON-serializable format"""
+    sanitized = {}
+    for metric, values in history.items():
+        sanitized_values = []
+        for value in values:
+            if hasattr(value, 'numpy'):
+                value = value.numpy()
+            if isinstance(value, np.ndarray):
+                if value.size == 1:
+                    sanitized_values.append(float(value))
+                else:
+                    sanitized_values.append([float(x) for x in value])
+            else:
+                sanitized_values.append(float(value))
+        sanitized[metric] = sanitized_values[0] if len(sanitized_values) == 1 else sanitized_values
+    return sanitized
+
 
 def get_model_config(session_id: int):
     db: Session = next(get_db())
@@ -206,6 +230,8 @@ def main(session_id, client_token):
         post_url = f"{BASE_URL}/receive-client-parameters"
         
         model_config = get_model_config(session_id)
+        test_metrics = model_config.get('model_info').get('test_metrics')
+        print("Test Metrics : ", test_metrics)
         
 
         # ==== Load model ====
@@ -260,13 +286,12 @@ def main(session_id, client_token):
         #     f.write("\n")
         # ==== Send updated parameters ====
         updated_parameters = model.get_parameters()
+        print("Check History : ", history.history)
         payload = {
             "session_id": int(session_id),
             "client_parameter": sanitize_parameters(updated_parameters),
-            "training_history": history.history
+            "training_history": sanitize_history(history.history)
         }
-        print("History: ", history.history)
-        
 
         send_updated_parameters(post_url, payload, client_token)
         print("Parameters sent to server")
