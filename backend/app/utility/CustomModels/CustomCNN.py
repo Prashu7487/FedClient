@@ -158,7 +158,8 @@ class CustomCNN:
                 epochs=epochs, 
                 batch_size=batch_size,
                 validation_data=validation_data,
-                callbacks=callbacks
+                callbacks=callbacks,
+                verbose=0
             )
         except Exception as e:
             error_message = f"An error occurred in Fit Function: {e}"
@@ -188,3 +189,17 @@ class CustomCNN:
                 layer.set_weights([np.array(w) for w in layer_params])
         except Exception as e:
             handle_error(e)
+    
+    def evaluate(self, x_test, y_test, batch_size=32):
+        try:
+            if x_test is None or y_test is None:
+                print("Error: x_test and y_test cannot be None")
+                return None
+            
+            results = self.model.evaluate(x_test, y_test, batch_size=batch_size)
+            # Return a dictionary of metric names and their values
+            metrics = ['loss'] + self.config.get('test_metrics', [])
+            return dict(zip(metrics, results))
+        except Exception as e:
+            error_message = f"An error occurred in Evaluate Function: {e}"
+            print(error_message) 

@@ -273,7 +273,7 @@ def main(session_id, client_token):
         print(f"X shape: {X.shape}, Y shape: {Y.shape}")
         
         # ==== Train ====
-        history = model.fit(X, Y)
+        model.fit(X, Y)
         
         after_training = model.get_parameters()  
         compare_parameters(before_training, after_training)
@@ -286,13 +286,16 @@ def main(session_id, client_token):
         #     f.write("\n")
         # ==== Send updated parameters ====
         updated_parameters = model.get_parameters()
-        print("Check History : ", history.history)
+        
+        # Model Evaluation
+        results = model.evaluate(X,Y)
+        
         payload = {
             "session_id": int(session_id),
             "client_parameter": sanitize_parameters(updated_parameters),
-            "training_history": sanitize_history(history.history)
+            "metrics_report": results
         }
-
+        print("Payload : ", results)
         send_updated_parameters(post_url, payload, client_token)
         print("Parameters sent to server")
 

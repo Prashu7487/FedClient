@@ -17,13 +17,13 @@ import { useFormContext } from "react-hook-form";
 const activationFunctions = {
   relu: "ReLU",
   sigmoid: "Sigmoid",
-  tanh: "Tanh",
+  // tanh: "Tanh",
   softmax: "Softmax",
-  leakyRelu: "Leaky ReLU",
-  prelu: "PReLU",
-  thresholdedRelu: "Thresholded ReLU",
-  hardSigmoid: "Hard Sigmoid",
-  exponential: "Exponential",
+  // leakyRelu: "Leaky ReLU",
+  // prelu: "PReLU",
+  // thresholdedRelu: "Thresholded ReLU",
+  // hardSigmoid: "Hard Sigmoid",
+  // exponential: "Exponential",
   linear: "Linear",
 };
 
