@@ -7,6 +7,9 @@ Client/yarn-error.log*
 Client/pnpm-debug.log*
 Client/lerna-debug.log*
 
+**/venv
+**/__pycache__
+
 Client/node_modules
 Client/dist
 Client/dist-ssr
@@ -50,3 +53,4 @@ __pycache__
 data
 logs
 
+**/.env.bkp

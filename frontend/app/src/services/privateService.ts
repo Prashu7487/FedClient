@@ -31,3 +31,25 @@ export const createQPDataset = (data: {
 }) => {
   return PrivateHTTPService.post("/create-qpdataset", data);
 };
+
+export const listRecentUploads = () => {
+  return PrivateHTTPService.get('/list-recent-uploads')
+}
+
+export const getRawDatasetDetails = (datasetId: string) => {
+  return PrivateHTTPService.get(`/raw-dataset-details/${datasetId}`);
+}
+
+export const getDatasetDetails = (datasetId: string) => {
+  return PrivateHTTPService.get(`/dataset-details/${datasetId}`);
+}
+
+export const createNewDataset = (data: {
+  filename: string;
+}) => {
+  return PrivateHTTPService.post("/create-new-dataset", data);
+}
+
+export const preprocessDataset = (data: any) => {
+  return PrivateHTTPService.post("/preprocess-dataset", data);
+}

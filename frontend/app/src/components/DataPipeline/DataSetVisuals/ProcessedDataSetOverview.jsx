@@ -5,8 +5,9 @@ import SummaryStats from "./SummaryStats.jsx";
 import ColumnDetails from "./ColumnDetails.jsx";
 import PreprocessingDetails from "./PreprocessingDetails.jsx";
 
-const PROCESSED_DATASET_DETAILS_URL =
-  process.env.REACT_APP_PROCESSED_OVERVIEW_PATH;
+import { getDatasetDetails } from "../../../services/privateService";
+// const PROCESSED_DATASET_DETAILS_URL =
+//   process.env.REACT_APP_PROCESSED_OVERVIEW_PATH;
 
 const DataSetOverview = () => {
   const [data, setData] = useState(null);
@@ -14,9 +15,7 @@ const DataSetOverview = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      const overview = await axios.get(
-        `${PROCESSED_DATASET_DETAILS_URL}/${filename}`
-      );
+      const overview = await getDatasetDetails(filename);
       setData(overview.data.datastats);
       console.log("file overview data received:", overview.data.datastats);
     };
