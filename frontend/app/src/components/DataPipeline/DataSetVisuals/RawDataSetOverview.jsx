@@ -4,8 +4,9 @@ import { useParams } from "react-router-dom";
 import SummaryStats from "./SummaryStats.jsx";
 import ColumnDetails from "./ColumnDetails.jsx";
 import PreprocessingDetails from "./PreprocessingDetails.jsx";
+import { getRawDatasetDetails } from "../../../services/privateService";
 
-const RAW_DATASET_DETAILS_URL = process.env.REACT_APP_RAW_OVERVIEW_PATH;
+// const RAW_DATASET_DETAILS_URL = process.env.REACT_APP_RAW_OVERVIEW_PATH;
 
 const DataSetOverview = () => {
   const [data, setData] = useState(null);
@@ -13,9 +14,7 @@ const DataSetOverview = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      const overview = await axios.get(
-        `${RAW_DATASET_DETAILS_URL}/${filename}`
-      );
+      const overview = await getRawDatasetDetails(filename);
       setData(overview.data.datastats);
       // console.log("filename:", overview.data.datastats.filename);
     };
