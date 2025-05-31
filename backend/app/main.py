@@ -8,6 +8,7 @@ from api import preprocessing_routes
 from api import model_training_routes
 from api import confidential_routers    
 from api import qpd_routers
+from api import testing_routers
 """
   Don't start this server from terminal without specifying port (9000 or something unused) in the command,
   otherwise by default 8000 port will conflict with federated server
@@ -37,6 +38,7 @@ app.include_router(preprocessing_routes.dataset_router)
 app.include_router(model_training_routes.model_router)
 app.include_router(confidential_routers.confidential_router)
 app.include_router(qpd_routers.qpd_router)
+app.include_router(testing_routers.test_router)
 
 # Temporary testing endpoints
 @app.get("/testing")

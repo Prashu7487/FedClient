@@ -15,11 +15,11 @@ import { BASE_URL, PRIVATE_BASE_URL } from "../services/config";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
 import { initializeModel, trainModelService } from "../services/privateService";
-import { sendModelInitiation } from "../services/federatedService";
+// import { sendModelInitiation } from "../services/federatedService";
 
 const AuthContext = createContext();
 
-const REFRESH_INTERVAL = 1000 * 60 * 15;
+const REFRESH_INTERVAL = 1000 * 60 * 60 * 6;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -162,7 +162,7 @@ export const AuthProvider = ({ children }) => {
 
       toast.info(message, {
         onClick: () => {
-          navigate(`/TrainingStatus/details/${session_id}`);
+          navigate(`/trainings/${session_id}`);
         },
       });
     } else if (type == "get_model_parameters_start_background_process") {
@@ -288,13 +288,15 @@ const setUpModel = async (user, sessionId, api) => {
   initializeModel(data).then(({ data }) => {
     console.log(data.message);
 
-    const status_four_data = {
-      session_id: sessionId,
-    };
 
-    sendModelInitiation(api, status_four_data)
-      .then(({ data: { message } }) => console.log(message))
-      .catch(console.error);
+    // Send Model Initiation is now done by backend
+    // const status_four_data = {
+    //   session_id: sessionId,
+    // };
+
+    // sendModelInitiation(api, status_four_data)
+    //   .then(({ data: { message } }) => console.log(message))
+    //   .catch(console.error);
   });
 };
 

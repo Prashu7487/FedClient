@@ -7,12 +7,9 @@ import {
   HomeIcon,
   UserMinusIcon,
   UserPlusIcon,
-  ClipboardDocumentListIcon,
   DocumentArrowUpIcon,
   ChartBarSquareIcon,
-  ChartPieIcon,
   ServerStackIcon,
-  InformationCircleIcon,
 } from "@heroicons/react/24/solid";
 
 const NavBar = () => {
@@ -63,17 +60,9 @@ const NavBar = () => {
             <li>
               <NavLink
                 className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
-                to="/TrainingStatus"
+                to="/trainings"
               >
-                <ChartBarSquareIcon className="w-5 h-5" /> Training Status
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
-                to="/Results"
-              >
-                <ChartPieIcon className="w-5 h-5" /> Training Results
+                <ChartBarSquareIcon className="w-5 h-5" /> Trainings
               </NavLink>
             </li>
             <li>

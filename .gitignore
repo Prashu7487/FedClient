@@ -6,6 +6,7 @@ Client/yarn-debug.log*
 Client/yarn-error.log*
 Client/pnpm-debug.log*
 Client/lerna-debug.log*
+.env
 
 Client/node_modules
 Client/dist
@@ -54,4 +55,3 @@ backend/app/api/__pycache__
 __pycache__
 data
 logs
-

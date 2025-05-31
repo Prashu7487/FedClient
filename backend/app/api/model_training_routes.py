@@ -1,5 +1,4 @@
-from fastapi import APIRouter
-from fastapi import Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.orm import Session
 from utility.db import get_db
 from crud.trainings_crud import create_training, get_training_details
@@ -11,59 +10,22 @@ import json
 import os
 import random
 import sys
+from typing import Dict
+import uuid
+from datetime import datetime
+from utility.federated_services import process_parquet_and_save_xy
 
 
 model_router = APIRouter(tags = ["Model Training"])
-BASE_URL = os.getenv("API_BASE_URL")
+BASE_URL = os.getenv("REACT_APP_SERVER_BASE_URL")
 get_training_url = f"{BASE_URL}/get-federated-session"
 get_params_url = f"{BASE_URL}/get-model-parameters"
 post_params_url = f"{BASE_URL}/receive-client-parameters"
 
-# federated_info_mock = {
-#     "organisation_name": "test-clinic",
-#     "dataset_info": {
-#         "client_filename": "test_data.parquet",
-#         "output_columns": ["pct_2013"],
-#         "task_id": 3,
-#         "metric": "MAE"
-#     },
-#     "model_name": "CNN",
-#     "model_info": {
-#         "input_shape": "(128,128,1)",
-#         "output_layer": {
-#             "num_nodes": "1",
-#             "activation_function": "sigmoid"
-#         },
-#         "loss": "mse",
-#         "optimizer": "adam",
-#         "test_metrics": ["mae"],
-#         "layers": [
-#             {
-#                 "layer_type": "convolution",
-#                 "filters": "8",
-#                 "kernel_size": "(3,3)",
-#                 "stride": "(1,1)",
-#                 "activation_function": "relu"
-#             },
-#             {
-#                 "layer_type": "pooling",
-#                 "pooling_type": "max",
-#                 "pool_size": "(2,2)",
-#                 "stride": "(2,2)"
-#             },
-#             {
-#                 "layer_type": "flatten"
-#             },
-#             {
-#                 "layer_type": "dense",
-#                 "num_nodes": "64",
-#                 "activation_function": "relu"
-#             }
-#         ]
-#     }
-# }
+# In-memory process store (replace with DB in production)
+process_store: Dict[str, dict] = {}
 
-  
+
 
 @model_router.post("/initiate-model")
 def initiate_model(request: InitiateModelRequest, db: Session = Depends(get_db)):
@@ -84,10 +46,17 @@ def initiate_model(request: InitiateModelRequest, db: Session = Depends(get_db))
         response.raise_for_status()  # Raises HTTPError if not 2xx
 
         result = response.json()
-
+        
+        # Read output column from it
+        federated_info = result.get("federated_info")
+        dataset_info = federated_info.get("dataset_info")
+        client_filename = dataset_info.get("client_filename")
+        output_columns = dataset_info.get("output_columns")
+        process_parquet_and_save_xy(client_filename, session_id, output_columns,client_token)
+        
         training_details = {
             "session_id": session_id,
-            "training_details": result.get("federated_info")  # safer with .get
+            "training_details": federated_info 
         }
         
         # Store in DB
@@ -96,7 +65,7 @@ def initiate_model(request: InitiateModelRequest, db: Session = Depends(get_db))
         if isinstance(db_training, dict) and "error" in db_training:
             raise HTTPException(status_code=400, detail=db_training["error"])
 
-        return {"message": "Model initiation successful", "training": db_training}
+        return {"message": "Model initiation successful"}
 
     except requests.exceptions.HTTPError as http_err:
         raise HTTPException(status_code=response.status_code, detail=str(http_err))
@@ -104,57 +73,93 @@ def initiate_model(request: InitiateModelRequest, db: Session = Depends(get_db))
         print(f"Error initiating model: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
     
-@model_router.get("/execute-round")
-def run_script(session_id: int, client_token: str, db: Session = Depends(get_db)):
+
+
+def _run_script(process_id: str, session_id: int, client_token: str):
+    """Background task function that executes the script"""
     env = os.environ.copy()
+    process_store[process_id] = {
+        "status": "running",
+        "start_time": datetime.now(),
+        "session_id": session_id,
+        "output": {"stdout": "", "stderr": ""}
+    }
+    
     try:
-        result = subprocess.run(
-            [sys.executable, "-m", "utility.training_script", "--session_id", str(session_id), "--client_token", client_token],
-            capture_output=True,
+        proc = subprocess.Popen(
+            [sys.executable, "-m", "utility.training_script", 
+             "--session_id", str(session_id),
+             "--client_token", client_token],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            check=True,
             env=env
         )
-
-        with open("stdout_output.txt", "a") as out_file:
-            out_file.write("\n---\n")
-            out_file.write(result.stdout)
-            out_file.write("\n---\n")
-
-        with open("stderr_output.txt", "a") as err_file:
-            err_file.write("\n---\n")
-            err_file.write(result.stderr)
-            err_file.write("\n---\n")
-
-        return {
-            "message": "Script executed successfully",
-            "stdout": result.stdout,
-            "stderr": result.stderr
-        }
-
-    except CalledProcessError as e:
-        # Log exact stdout/stderr from the failing subprocess
-        with open("stdout_output.txt", "a") as out_file:
-            out_file.write("\n--- ERROR ---\n")
-            out_file.write(e.stdout or "No stdout")
-            out_file.write("\n---\n")
-
-        with open("stderr_output.txt", "a") as err_file:
-            err_file.write("\n--- ERROR ---\n")
-            err_file.write(e.stderr or "No stderr")
-            err_file.write("\n---\n")
-
-        return {
-            "error": "Script failed",
-            "stdout": e.stdout,
-            "stderr": e.stderr
-        }
-
+        
+        # Stream output while process runs
+        stdout, stderr = proc.communicate()
+        
+        process_store[process_id].update({
+            "status": "completed" if proc.returncode == 0 else "failed",
+            "end_time": datetime.now(),
+            "return_code": proc.returncode,
+            "output": {"stdout": stdout, "stderr": stderr}
+        })
+        
     except Exception as e:
-        return {
-            "error": "Unexpected error",
-            "detail": str(e)
-        }
+        process_store[process_id].update({
+            "status": "failed",
+            "end_time": datetime.now(),
+            "error": str(e)
+        })
+
+@model_router.get("/execute-round")
+async def execute_round(
+    session_id: int, 
+    client_token: str,
+    background_tasks: BackgroundTasks
+):
+    """Launch script in background and return process ID"""
+    process_id = str(uuid.uuid4())
+    background_tasks.add_task(
+        _run_script, 
+        process_id=process_id,
+        session_id=session_id,
+        client_token=client_token
+    )
+    
+    return {
+        "message": "Script execution started",
+        "process_id": process_id,
+        "status_endpoint": f"/process-status/{process_id}"
+    }
+
+@model_router.get("/process-status/{process_id}")
+def get_process_status(process_id: str):
+    """Check status of a background process"""
+    if process_id not in process_store:
+        return {"error": "Process not found"}, 404
+    
+    process_info = process_store[process_id]
+    response = {
+        "process_id": process_id,
+        "status": process_info["status"],
+        "start_time": process_info["start_time"],
+        "session_id": process_info["session_id"]
+    }
+    
+    if "end_time" in process_info:
+        response["duration_seconds"] = (
+            process_info["end_time"] - process_info["start_time"]
+        ).total_seconds()
+        response["return_code"] = process_info.get("return_code")
+    
+    if process_info["status"] in ("completed", "failed"):
+        response.update({
+            "output": process_info["output"]
+        })
+    
+    return response
 
 
 

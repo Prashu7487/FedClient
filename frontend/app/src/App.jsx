@@ -163,13 +163,10 @@
 
 // // later "change" (don't uncommetn above) all the paths for PrivateRoute authentication
 import { Route, Routes } from "react-router-dom";
-import Home from "./Pages/Home";
 import Request from "./Pages/Request";
 import Login from "./Pages/Login.jsx";
-import TrainingStatus from "./Pages/TrainingStatus";
+import Trainings from "./Pages/Trainings.jsx";
 import TrainingDetails from "./Pages/TrainingDetails";
-import TrainingResults from "./Pages/Results";
-import ResultDetails from "./Pages/ResultDetails";
 import About from "./Pages/About";
 import Error from "./Pages/Error";
 import NavBar from "./components/OnWholeApp/NavBar";
@@ -182,8 +179,6 @@ import { ToastContainer } from "react-toastify";
 
 import "./index.css";
 import "react-toastify/dist/ReactToastify.min.css";
-import DatasetList from "./Pages/DatasetList";
-import DatasetDetail from "./Pages/DatasetDetail";
 import ManageData from "./Pages/ManageData";
 import ViewRecentUploads from "./components/DataPipeline/ViewRecentUploads";
 import ViewAllDatasets from "./components/DataPipeline/ViewAllDatasets";
@@ -252,24 +247,15 @@ export default function App() {
             />
 
             <Route
-              path="/TrainingStatus"
-              element={<TrainingStatus sessions={sessions} />}
+              path="/trainings"
+              element={<Trainings />}
             />
             <Route
-              path="/TrainingStatus/details/:sessionId"
+              path="/trainings/:sessionId"
               element={
-                <TrainingDetails clientToken={clientToken} socket={socket} />
+                <TrainingDetails clientToken={clientToken} />
               }
             />
-
-            <Route path="/Results" element={<TrainingResults />} />
-
-            <Route
-              path="/TrainingResults/details/:sessionId"
-              element={<ResultDetails />}
-            />
-            <Route path="/Datasets" element={<DatasetList />} />
-            <Route path="/Datasets/:code" element={<DatasetDetail />} />
             <Route path="/About" element={<About />} />
             <Route path="/ManageData" element={<ManageData />} />
             <Route

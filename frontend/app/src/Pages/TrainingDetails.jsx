@@ -21,9 +21,9 @@ import {
   BoltIcon,
 } from "@heroicons/react/24/outline";
 import ActionSection from "../components/Training/ActionSection";
+import Result from "../components/Training/Result";
+import TrainingProgress from "../components/Training/TrainingProgress";
 
-const clientPriceResponseEndpoint =
-  process.env.REACT_APP_SUBMIT_CLIENT_PRICE_RESPONSE_URL;
 
 const statusConfig = {
   1: {
@@ -58,10 +58,9 @@ const statusConfig = {
   },
 };
 
-export default function TrainingDetails({ clientToken }) {
+export default function TrainingDetails() {
   const { sessionId } = useParams();
   const { api } = useAuth();
-  const { register, handleSubmit } = useForm();
   const [federatedSessionData, setFederatedSessionData] = useState({});
   const [currentSection, setCurrentSection] = useState("session-info");
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -71,7 +70,6 @@ export default function TrainingDetails({ clientToken }) {
       setIsRefreshing(true);
       const response = await getFederatedSession(api, sessionId);
       setFederatedSessionData(response.data);
-      console.log("Checkpoint 1: ", response.data);
     } catch (error) {
       console.error("Error fetching session data:", error);
     } finally {
@@ -83,22 +81,6 @@ export default function TrainingDetails({ clientToken }) {
     fetchFederatedSessionData();
   }, [sessionId]);
 
-  const onSubmitPriceAcceptance = async (data) => {
-    const requestData = {
-      client_id: clientToken,
-      session_id: sessionId,
-      decision: data.decision === "accepted" ? 1 : -1,
-    };
-
-    try {
-      const res = await axios.post(clientPriceResponseEndpoint, requestData);
-      if (res.status === 200) {
-        await fetchFederatedSessionData();
-      }
-    } catch (error) {
-      console.error("Error submitting price acceptance:", error);
-    }
-  };
 
   const sections = [
     {
@@ -121,7 +103,17 @@ export default function TrainingDetails({ clientToken }) {
       label: "Logs",
       icon: <ChartBarIcon className="h-5 w-5" />,
     },
+      {
+        id: "results",
+        label: "Results",
+        icon: <ChartBarIcon className="h-5 w-5" />,
+      },
     { id: "actions", label: "Actions", icon: <BoltIcon className="h-5 w-5" /> },
+    {
+      id: "training-progress",  // New section
+      label: "Training Progress",
+      icon: <ArrowPathIcon className="h-5 w-5" />,
+    }
   ];
 
   const renderStatusBadge = () => {
@@ -211,9 +203,14 @@ export default function TrainingDetails({ clientToken }) {
           {currentSection === "actions" && (
             <ActionSection
               data={federatedSessionData}
-              clientToken={clientToken}
               sessionId={sessionId}
             />
+          )}
+          {currentSection === "results"  && (
+            <Result sessionId={sessionId} />  
+          )}
+          {currentSection === "training-progress" && (
+            <TrainingProgress sessionId={sessionId} />
           )}
         </div>
       </div>

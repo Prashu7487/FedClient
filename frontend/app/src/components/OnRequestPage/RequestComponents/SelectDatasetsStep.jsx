@@ -392,47 +392,89 @@ export default function SelectDatasetsStep() {
                   </div>
                 </div>
               ) : tasks.length > 0 ? (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Select Task
-                    </label>
-                    <select
-                      {...register("dataset_info.task_id")}
-                      onChange={(e) =>
-                        handleTaskChange(parseInt(e.target.value))
-                      }
-                      className="w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      {tasks.map((task) => (
-                        <option key={task.task_id} value={task.task_id}>
-                          {task.task_name} (ID: {task.task_id})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                
+                
+                <div className="space-y-6">
+  <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+    <div className="px-6 py-4 border-b border-gray-200">
+      <h3 className="text-lg font-medium text-gray-900">Available Tasks</h3>
+    </div>
+    <div className="px-6 py-4">
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Task Name
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Metric
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Benchmark (Std Mean)
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Benchmark (Std Dev)
+              </th>
+              <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {tasks.map((task) => (
+              <tr 
+                key={task.task_id}
+                className={selectedTaskId === task.task_id ? 'bg-blue-50' : ''}
+              >
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {task.task_name}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {task.metric}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {task.benchmark[task.metric]?.std_mean || 'N/A'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {task.benchmark[task.metric]?.std_dev || 'N/A'}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button
+                    onClick={() => {
+                      handleTaskChange(task.task_id);
+                      setValue("dataset_info.task_id", task.task_id); // Update form value if using react-hook-form
+                    }}
+                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${
+                      selectedTaskId === task.task_id
+                        ? 'bg-blue-600 text-white hover:bg-blue-700'
+                        : 'text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100'
+                    }`}
+                  >
+                    {selectedTaskId === task.task_id ? 'Selected' : 'Select'}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {selectedTaskId && (
+      <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
+        <div className="flex items-center">
+          <InformationCircleIcon className="h-5 w-5 text-blue-500 mr-2 flex-shrink-0" />
+          <p className="text-sm text-gray-600">
+            Selected task uses <strong className="font-medium">{getSelectedTaskMetric()}</strong> as its evaluation metric. 
+            Please ensure you select this metric in the model selection step.
+          </p>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
 
-                  {selectedTaskId && (
-                    <div className="bg-blue-50 p-4 rounded-md border border-blue-100">
-                      <div className="flex items-start">
-                        <InformationCircleIcon className="h-5 w-5 text-blue-500 mr-3 mt-0.5 flex-shrink-0" />
-                        <div>
-                          <h4 className="text-sm font-medium text-blue-800">
-                            Task Information
-                          </h4>
-                          <p className="text-sm text-blue-700 mt-1">
-                            This task uses{" "}
-                            <strong className="font-semibold">
-                              {getSelectedTaskMetric()}
-                            </strong>{" "}
-                            as its evaluation metric. Please ensure you select
-                            this metric in model selection step.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                
               ) : (
                 <div className="p-3 bg-yellow-50 text-yellow-700 rounded-md flex items-start">
                   <ExclamationTriangleIcon className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
@@ -445,6 +487,8 @@ export default function SelectDatasetsStep() {
                 </div>
               )}
             </div>
+
+
           </div>
         )}
       </div>
