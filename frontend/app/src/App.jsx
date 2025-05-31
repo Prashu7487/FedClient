@@ -246,15 +246,10 @@ export default function App() {
               }
             />
 
-            <Route
-              path="/trainings"
-              element={<Trainings />}
-            />
+            <Route path="/trainings" element={<Trainings />} />
             <Route
               path="/trainings/:sessionId"
-              element={
-                <TrainingDetails clientToken={clientToken} />
-              }
+              element={<TrainingDetails clientToken={clientToken} />}
             />
             <Route path="/About" element={<About />} />
             <Route path="/ManageData" element={<ManageData />} />

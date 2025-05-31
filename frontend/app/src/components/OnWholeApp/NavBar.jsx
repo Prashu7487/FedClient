@@ -73,6 +73,16 @@ const NavBar = () => {
                 <ServerStackIcon className="w-5 h-5" /> Manage Data
               </NavLink>
             </li>
+            
+            <li>
+              <NavLink
+                className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
+                to="/"
+              >
+                <HomeIcon className="w-5 h-5" /> Dashboard
+              </NavLink>
+            </li>
+
             {!user && (
               <li>
                 <NavLink
@@ -93,14 +103,7 @@ const NavBar = () => {
                 </button>
               </li>
             )}
-            <li>
-              <NavLink
-                className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
-                to="/"
-              >
-                <HomeIcon className="w-5 h-5" /> Dashboard
-              </NavLink>
-            </li>
+
             {/* <li>
               <NavLink
                 className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
