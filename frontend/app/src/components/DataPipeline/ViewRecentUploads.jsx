@@ -6,12 +6,13 @@ import {
   ArrowPathIcon,
   Cog6ToothIcon,
 } from "@heroicons/react/24/solid";
+import { createNewDataset, listRecentUploads } from "../../services/privateService";
 
-const REACT_APP_VIEW_RECENT_UPLOADS_URL =
-  process.env.REACT_APP_VIEW_RECENT_UPLOADS_URL;
+// const REACT_APP_VIEW_RECENT_UPLOADS_URL =
+//   process.env.REACT_APP_VIEW_RECENT_UPLOADS_URL;
 const REACT_APP_DELETE_DATAFILE_URL = process.env.REACT_APP_DELETE_DATAFILE_URL;
-const REACT_APP_CREATE_NEW_DATASET_URL =
-  process.env.REACT_APP_CREATE_NEW_DATASET_URL;
+// const REACT_APP_CREATE_NEW_DATASET_URL =
+//   process.env.REACT_APP_CREATE_NEW_DATASET_URL;
 
 const ViewRecentUploads = () => {
   const [contents, setContents] = useState([]);
@@ -20,11 +21,11 @@ const ViewRecentUploads = () => {
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        console.log(
-          "view recent uploads url",
-          REACT_APP_VIEW_RECENT_UPLOADS_URL
-        );
-        const response = await axios.get(REACT_APP_VIEW_RECENT_UPLOADS_URL);
+        // console.log(
+        //   "view recent uploads url",
+        //   REACT_APP_VIEW_RECENT_UPLOADS_URL
+        // );
+        const response = await listRecentUploads();
         const key = Object.keys(response.data.contents)[0];
         setContents(response.data.contents[key] || []);
         console.log("Files fetched successfully");
@@ -49,7 +50,7 @@ const ViewRecentUploads = () => {
     if (!confirmMove) return;
 
     try {
-      await axios.post(REACT_APP_CREATE_NEW_DATASET_URL, {
+      await createNewDataset({
         fileName: file,
       });
       setContents((prevContents) =>

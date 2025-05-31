@@ -8,9 +8,9 @@ import {
 import EditDatasetModal from "./EditDatasetModal";
 
 const RAW_DATASET_RENAME_URL =
-  process.env.REACT_APP_PRIVATE_SERVER_URL + "/edit-raw-dataset-details";
+  process.env.REACT_APP_PRIVATE_SERVER_BASE_URL + "/edit-raw-dataset-details";
 const PROCESSED_DATASET_RENAME_URL =
-  process.env.REACT_APP_PRIVATE_SERVER_URL + "/edit-dataset-details";
+  process.env.REACT_APP_PRIVATE_SERVER_BASE_URL + "/edit-dataset-details";
 
 const FileCard = ({ dataset, isRaw, onDelete, onClick, onEditSuccess }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);

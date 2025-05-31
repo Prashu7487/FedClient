@@ -10,12 +10,15 @@ import {
 } from "@heroicons/react/24/outline";
 import { useFormContext } from "react-hook-form";
 
+import { getDatasetOverview, getDatasetTasksById } from "../../../services/fedServerService";
+import { getDatasetDetails } from "../../../services/privateService";
+
 // Environment variables
-const CLIENT_DATASET_OVERVIEW = process.env.REACT_APP_PROCESSED_OVERVIEW_PATH;
-const SERVER_DATASET_OVERVIEW =
-  process.env.REACT_APP_SERVER_DATASET_OVERVIEW_PATH;
-const LIST_TASKS_WITH_DATASET_ID =
-  process.env.REACT_APP_GET_TASKS_WITH_DATASET_ID;
+// const CLIENT_DATASET_OVERVIEW = process.env.REACT_APP_PROCESSED_OVERVIEW_PATH;
+// const SERVER_DATASET_OVERVIEW =
+//   process.env.REACT_APP_SERVER_DATASET_OVERVIEW_PATH;
+// const LIST_TASKS_WITH_DATASET_ID =
+//   process.env.REACT_APP_GET_TASKS_WITH_DATASET_ID;
 
 export default function SelectDatasetsStep() {
   const { register, setValue, watch } = useFormContext();
@@ -41,15 +44,8 @@ export default function SelectDatasetsStep() {
       setLoadingTasks(true);
       setErrorTasks(null);
       try {
-        const response = await fetch(
-          `${LIST_TASKS_WITH_DATASET_ID}/${serverStats.dataset_id}`
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
+        const response = await getDatasetTasksById(serverStats.dataset_id);
+        const data = response.data;
         console.log("Tasks data received: ", data);
         if (data.detail) {
           throw new Error(data.detail);
@@ -67,7 +63,9 @@ export default function SelectDatasetsStep() {
           setTasks([]);
         }
       } catch (err) {
-        setErrorTasks(err.message || "Failed to fetch tasks for this dataset");
+        console.error("Error fetching tasks: ", err);
+        const errorMessage = err.response?.data?.detail || err.message || "Failed to fetch tasks for this dataset";
+        setErrorTasks(errorMessage);
         setTasks([]);
       } finally {
         setLoadingTasks(false);
@@ -84,15 +82,9 @@ export default function SelectDatasetsStep() {
     setErrorClient(null);
 
     try {
-      const response = await fetch(
-        `${CLIENT_DATASET_OVERVIEW}/${clientFilename}`
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
+      const response = await getDatasetDetails(clientFilename);
+      const data = response.data;
 
-      // logging the data for debugging
       console.log("Client dataset stats received: ", data);
 
       if (data.details) {
@@ -103,8 +95,8 @@ export default function SelectDatasetsStep() {
       setValue("dataset_info.client_stats", data.datastats);
       setErrorClient(null);
     } catch (err) {
-      // error will nvr occur as it is handled in backend
-      setErrorClient(err.message || "Failed to fetch client dataset stats");
+      const errorMessage = err.response?.data?.details || err.message || "Failed to fetch client dataset stats";
+      setErrorClient(errorMessage);
       setClientStats(null);
       setValue("dataset_info.client_stats", null);
     } finally {
@@ -119,20 +111,12 @@ export default function SelectDatasetsStep() {
     setErrorServer(null);
 
     try {
-      const response = await fetch(
-        `${SERVER_DATASET_OVERVIEW}/${serverFilename}`
-      );
+      const response = await getDatasetOverview(serverFilename);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      const data = response.data;
 
-      const data = await response.json();
-
-      // logging the data for debugging
       console.log("Server dataset stats received: ", data);
 
-      // instead of direct error server send error like this {"detail": "error"}
       if (data.details) {
         throw new Error(data.details);
       }
@@ -142,7 +126,8 @@ export default function SelectDatasetsStep() {
       setErrorServer(null);
     } catch (err) {
       console.error("Error fetching server dataset stats: ", err);
-      setErrorServer(err.message || "Failed to fetch server dataset stats");
+      const errorMessage = err.response?.data?.details || err.message || "Failed to fetch server dataset stats";
+      setErrorServer(errorMessage);
       setServerStats(null);
       setValue("dataset_info.server_stats", null);
     } finally {

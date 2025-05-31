@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import { TrashIcon, ArrowUpOnSquareIcon } from "@heroicons/react/24/solid";
 import PreprocessingOptions from "./ProcessingComponents/PreprocessingOptions.jsx";
+import { preprocessDataset } from "../../../services/privateService";
 
-const REACT_APP_PREPROCESS_DATASET_URL =
-  process.env.REACT_APP_PREPROCESS_DATASET_URL;
+// const REACT_APP_PREPROCESS_DATASET_URL =
+//   process.env.REACT_APP_PREPROCESS_DATASET_URL;
 
 const PreprocessingDetails = ({ columns, filename, directory }) => {
   const [selectedColumn, setSelectedColumn] = useState("");
@@ -40,7 +41,7 @@ const PreprocessingDetails = ({ columns, filename, directory }) => {
     };
 
     try {
-      axios.post(REACT_APP_PREPROCESS_DATASET_URL, payload);
+      preprocessDataset(payload);
       console.log("Data submitted for preprocessing:", payload);
     } catch (error) {
       console.error("Error in submitting data for preprocessing:", error);
