@@ -39,6 +39,11 @@ Client/*.local
 /backend/app/updated_parameters.txt
 /backend/app/local_parameters.txt
 backend/app/api/__pycache__
+/.env
+.env
+
+
+
 
 
 
