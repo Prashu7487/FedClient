@@ -8,7 +8,7 @@ import {
   ExclamationTriangleIcon,
   InformationCircleIcon,
   CogIcon,
-  ArrowDownTrayIcon
+  ArrowDownTrayIcon,
 } from "@heroicons/react/24/outline";
 
 import {
@@ -115,7 +115,7 @@ const ActionSection = ({ data, sessionId }) => {
               onClick={handleCreateQpd}
               className="h-fit py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
-              Create QPD Dataset
+              Contribute Dataset
             </button>
           </div>
 
@@ -234,25 +234,27 @@ const ActionSection = ({ data, sessionId }) => {
   const handleDownload = async () => {
     setIsDownloading(true);
     setError(null);
-    
+
     try {
       const response = await downloadModelParameters(api, sessionId);
-      
+
       // Create download link
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `model_parameters_${sessionId}.json`);
+      link.setAttribute("download", `model_parameters_${sessionId}.json`);
       document.body.appendChild(link);
       link.click();
-      
+
       // Clean up
       setTimeout(() => {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
       }, 100);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to download model parameters');
+      setError(
+        err.response?.data?.detail || "Failed to download model parameters"
+      );
     } finally {
       setIsDownloading(false);
     }
@@ -267,21 +269,35 @@ const ActionSection = ({ data, sessionId }) => {
         </h3>
       </div>
       <div className="mt-3">
-        <p className="text-sm text-green-700 mb-3">
-          The training is complete.
-        </p>
+        <p className="text-sm text-green-700 mb-3">The training is complete.</p>
         <button
           onClick={handleDownload}
           disabled={isDownloading}
           className={`inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
-            isDownloading ? 'opacity-75 cursor-not-allowed' : ''
+            isDownloading ? "opacity-75 cursor-not-allowed" : ""
           }`}
         >
           {isDownloading ? (
             <>
-              <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               Downloading...
             </>
@@ -292,11 +308,7 @@ const ActionSection = ({ data, sessionId }) => {
             </>
           )}
         </button>
-        {error && (
-          <p className="mt-2 text-sm text-red-600">
-            Error: {error}
-          </p>
-        )}
+        {error && <p className="mt-2 text-sm text-red-600">Error: {error}</p>}
       </div>
     </div>
   );
