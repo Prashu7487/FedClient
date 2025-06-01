@@ -107,9 +107,10 @@ class SparkSessionManager:
         column_stats = []
         for column in df.columns:
             try:
-                column_expr = col(f"`{column}`")
+                column_expr = col(f"`{column}`") #useful if col name contains special characters or spaces
                 column_type = df.schema[column].dataType
-                stats = {"name": column, "type": str(column_type), "entries": df.select(column_expr).count()}
+                num_rows = df.select(column_expr).count()
+                stats = {"name": column, "type": str(column_type), "entries": num_rows}
                 
                 # Common statistics for all columns 
                 stats["nullCount"] = df.filter(column_expr.isNull()).count()
@@ -174,7 +175,74 @@ class SparkSessionManager:
                         }
                         for row in top_categories
                     ]
-
+                
+                elif "ArrayType" in str(column_type):
+                    # Get first non-null entry
+                    row = df.select(column_expr).filter(col(column).isNotNull()).limit(1).first()
+                    arr = row[column] if row else None
+                
+                    # Infer shape
+                    shape = []
+                    temp = arr
+                    while isinstance(temp, list):
+                        shape.append(len(temp))
+                        if len(temp) == 0:
+                            break
+                        temp = temp[0] if isinstance(temp[0], list) else None
+                    stats["Shape"] = tuple(shape) if shape else None
+                    
+                
+                    # Length Distribution (top level)
+                    length_stats = df.select(size(col(column)).alias("len")) \
+                        .summary("count", "min", "max", "mean", "stddev") \
+                        .toPandas().set_index("summary").to_dict()["len"]
+                
+                    stats["LengthStats"] = {
+                        "min": int(length_stats.get("min", 0)),
+                        "max": int(length_stats.get("max", 0)),
+                        "mean": float(length_stats.get("mean", 0)),
+                        "std": float(length_stats.get("stddev", 0))
+                    }
+                
+                    # Check if inner elements are numeric — if so, calculate value statistics
+                    def flatten_all(x):
+                        """Recursively flatten list to 1D"""
+                        if isinstance(x, list):
+                            for i in x:
+                                yield from flatten_all(i)
+                        else:
+                            yield x
+                
+                    if row and isinstance(row[column], list):
+                        flat_sample = list(flatten_all(row[column]))
+                        if flat_sample and isinstance(flat_sample[0], (int, float)):
+                            # Only compute value-level stats if numeric
+                            # Use RDD for optimized distributed stat collection
+                            rdd = df.select(column_expr).rdd \
+                                .filter(lambda row: row[column] is not None) \
+                                .flatMap(lambda row: flatten_all(row[column]) if row[column] else [])
+                
+                            try:
+                                num_samples = int(np.minimum(num_rows * 0.2, 100000))
+                                stats["sampleSize"] = f"{int(np.minimum(num_rows * 0.2, 100000))} samples"
+                                sampled = rdd.take(num_samples)  # Safe sample
+                                
+                                if sampled:
+                                    arr_np = np.array(sampled)
+                                    stats["valueStats"] = {
+                                        "min": float(np.min(arr_np)),
+                                        "max": float(np.max(arr_np)),
+                                        "mean": float(np.mean(arr_np)),
+                                        "std": float(np.std(arr_np)),
+                                        "median": float(np.median(arr_np)),
+                                        "sparsity": float(np.mean(arr_np == 0))  # Fraction of zeros
+                                    }
+                            except Exception as e:
+                                stats["valueStats"] = None
+                        else:
+                            stats["valueStats"] = "Not numeric"
+                    else:
+                        stats["valueStats"] = "Not detected"
 
                 # Add the column stats to the list
                 column_stats.append(stats)
@@ -188,8 +256,6 @@ class SparkSessionManager:
             "numColumns": len(df.columns),
             "columnStats": column_stats
         }
-
-        # print(f"Overview of dataset: {overview}")
 
         return overview
 
