@@ -1,21 +1,11 @@
-// import { CheckCircleIcon } from "@heroicons/react/24/outline";
-
 const testMetricsOptions = [
-  { value: "mse", label: "Mean Squared Error" },
-  { value: "mae", label: "Mean Absolute Error" },
-  // { value: "rmse", label: "Root Mean Squared Error" },
-  // { value: "msle", label: "Mean Squared Logarithmic Error" },
-  // { value: "mape", label: "Mean Absolute Percentage Error" },
   { value: "accuracy", label: "Accuracy" },
+  { value: "f1_score", label: "F1 Score" },
+  { value: "mae", label: "Mean Absolute Error" },
+  { value: "mse", label: "Mean Squared Error" },
   { value: "precision", label: "Precision" },
   { value: "recall", label: "Recall" },
-  { value: "f1_score", label: "F1 Score" },
-  // { value: "auc", label: "Area Under Curve (AUC)" },
-  // { value: "log_loss", label: "Log Loss" },
-  // { value: "r2_score", label: "R^2 Score" },
-];
-
-// Multiselect Component for Test Metrics
+].sort((a, b) => a.label.localeCompare(b.label)); // Alphabetically sorted by label
 
 const SelectTestMetrics = ({ register }) => {
   return (
@@ -23,7 +13,7 @@ const SelectTestMetrics = ({ register }) => {
       <h5 className="text-lg font-semibold text-gray-700 mb-3">
         Select Test Metrics:
       </h5>
-      <div className="flex flex-wrap gap-x-4 gap-y-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-3">
         {testMetricsOptions.map((option) => (
           <label
             key={option.value}
@@ -45,7 +35,3 @@ const SelectTestMetrics = ({ register }) => {
 };
 
 export default SelectTestMetrics;
-
-// multi import and export
-// export { TestMetricsMultiselect, LossSelect, ActivationSelect };
-// import { TestMetricsMultiselect, LossSelect, ActivationSelect } from './Components';

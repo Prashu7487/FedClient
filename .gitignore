@@ -40,12 +40,9 @@ Client/*.local
 /backend/app/stdout_output.txt
 /backend/app/updated_parameters.txt
 /backend/app/local_parameters.txt
-backend/app/api/__pycache__
+/backend/app/storage/*
 /.env
 .env
-
-
-
 
 
 

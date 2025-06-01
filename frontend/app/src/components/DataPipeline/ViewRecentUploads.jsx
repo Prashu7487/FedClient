@@ -6,13 +6,11 @@ import {
   ArrowPathIcon,
   Cog6ToothIcon,
 } from "@heroicons/react/24/solid";
-import { createNewDataset, listRecentUploads } from "../../services/privateService";
-
-// const REACT_APP_VIEW_RECENT_UPLOADS_URL =
-//   process.env.REACT_APP_VIEW_RECENT_UPLOADS_URL;
-const REACT_APP_DELETE_DATAFILE_URL = process.env.REACT_APP_DELETE_DATAFILE_URL;
-// const REACT_APP_CREATE_NEW_DATASET_URL =
-//   process.env.REACT_APP_CREATE_NEW_DATASET_URL;
+import {
+  createNewDataset,
+  listRecentUploads,
+  deleteRecentUpload,
+} from "../../services/privateService";
 
 const ViewRecentUploads = () => {
   const [contents, setContents] = useState([]);
@@ -21,10 +19,6 @@ const ViewRecentUploads = () => {
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        // console.log(
-        //   "view recent uploads url",
-        //   REACT_APP_VIEW_RECENT_UPLOADS_URL
-        // );
         const response = await listRecentUploads();
         const key = Object.keys(response.data.contents)[0];
         setContents(response.data.contents[key] || []);
@@ -72,9 +66,10 @@ const ViewRecentUploads = () => {
     if (!confirmDelete) return;
 
     try {
-      await axios.delete(REACT_APP_DELETE_DATAFILE_URL, {
-        params: { directory: dir, fileName: file },
-      });
+      deleteRecentUpload({ directory: dir, filename: file });
+      // await axios.delete(REACT_APP_DELETE_DATAFILE_URL, {
+      //   params: { directory: dir, fileName: file },
+      // });
       setContents((prevContents) =>
         prevContents.filter((f) => f.filename !== file)
       );
