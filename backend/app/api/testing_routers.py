@@ -2,20 +2,22 @@ from fastapi import APIRouter, HTTPException
 import os
 from fastapi.responses import JSONResponse
 from utility.federated_services import process_parquet_and_save_xy
-
+from schema import DownloadCombineRequest
 test_router = APIRouter(
     prefix="/test",
     tags=["Test Router"]
 )
-    
+
 @test_router.post("/download-and-combine")
-async def download_and_combine(
-    filename: str,
-    session_id: str,
-    output_column: str
-):
+async def download_and_combine(request: DownloadCombineRequest):
     try:
-        result = process_parquet_and_save_xy(filename, session_id, output_column)
+        client_token = "123"
+        result = process_parquet_and_save_xy(
+            request.filename,
+            request.session_id,
+            request.output_column,
+            client_token
+        )
         return JSONResponse(
             status_code=200,
             content=result

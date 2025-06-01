@@ -15,6 +15,11 @@ class ModelConfig(BaseModel):
     model: str
     config: dict
 
+# Define the request body schema
+class DownloadCombineRequest(BaseModel):
+    filename: str
+    session_id: str
+    output_column: list
 
     
 # modelConfig = {
