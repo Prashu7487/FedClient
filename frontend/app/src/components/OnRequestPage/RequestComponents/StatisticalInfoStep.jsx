@@ -15,7 +15,7 @@ export default function StatisticalInfoStep() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1">
-            Expected Value
+            Target Value
             <input
               type="number"
               step="0.00001"
@@ -29,7 +29,7 @@ export default function StatisticalInfoStep() {
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">
-            Expected Standard Deviation
+            Target Standard Deviation
             <input
               type="number"
               step="0.00001"
