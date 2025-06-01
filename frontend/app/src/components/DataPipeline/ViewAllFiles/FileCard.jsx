@@ -6,6 +6,8 @@ import {
   Cog6ToothIcon,
 } from "@heroicons/react/24/solid";
 import EditDatasetModal from "./EditDatasetModal";
+import { DocumentDuplicateIcon,  CheckCircleIcon } from "@heroicons/react/24/outline";
+import { toast } from "react-toastify";
 
 const RAW_DATASET_RENAME_URL =
   process.env.REACT_APP_PRIVATE_SERVER_BASE_URL + "/edit-raw-dataset-details";
@@ -16,6 +18,7 @@ const FileCard = ({ dataset, isRaw, onDelete, onClick, onEditSuccess }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isProcessing] = useState(dataset.filename.endsWith("__PROCESSING__"));
   const displayName = dataset.filename.replace(/__PROCESSING__$/, "");
+  const [copied, setCopied] = useState(false);
 
   const handleEdit = async (newFilename, newDescription) => {
     try {
@@ -40,7 +43,16 @@ const FileCard = ({ dataset, isRaw, onDelete, onClick, onEditSuccess }) => {
       console.error("Error updating dataset:", error);
     }
   };
-
+  const handleCopy = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      toast.success("File name copied!");
+      setTimeout(() => setCopied(false), 500);
+    } catch (err) {
+      console.error("Failed to copy text:", err);
+    }
+  };
   return (
     <div
       className={`group relative p-5 rounded-xl border transition-all
@@ -63,6 +75,22 @@ const FileCard = ({ dataset, isRaw, onDelete, onClick, onEditSuccess }) => {
                 ? `${displayName.slice(0, 30)}...`
                 : displayName}
             </h3>
+            {copied ? (
+              <DocumentDuplicateIcon 
+              className="h-5 w-5" 
+              onClick={(e) => {
+                e.stopPropagation();
+              }} 
+            />
+            ) : (
+              <DocumentDuplicateIcon 
+                className="h-5 w-5" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCopy(displayName);
+                }} 
+              />
+            )}
             {!isRaw && (
               <span className="text-xs font-medium text-gray-500 px-2 py-1 bg-gray-100 rounded-full">
                 ID: {dataset.dataset_id}

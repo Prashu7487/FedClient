@@ -202,7 +202,7 @@ export default function App() {
     <>
       <MyDataProvider>
         <AuthProvider>
-          <ToastContainer />
+          <ToastContainer position="bottom-center" autoClose={3000} />
 
           {/* <EventsAction socket={socket} clientToken={clientToken} /> */}
 
