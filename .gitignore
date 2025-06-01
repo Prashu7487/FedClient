@@ -6,8 +6,7 @@ Client/yarn-debug.log*
 Client/yarn-error.log*
 Client/pnpm-debug.log*
 Client/lerna-debug.log*
-.env
-
+**/.env
 Client/node_modules
 Client/dist
 Client/dist-ssr
@@ -41,13 +40,8 @@ Client/*.local
 /backend/app/updated_parameters.txt
 /backend/app/local_parameters.txt
 /backend/app/storage/*
-/.env
-.env
-
-
 
 /frontend/app/node_modules
-/frontend/app/.env.example
 /venv
 /testenv
 __pycache__
