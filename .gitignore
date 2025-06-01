@@ -24,6 +24,7 @@ Client/*.local
 *.sw?
 
 **/venv
+**/__pycache__
 
 /backend/app/__pycache__
 /backend/app/_pycache_
