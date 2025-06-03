@@ -54,7 +54,7 @@ const NavBar = () => {
                 className="flex items-center gap-2 py-2 px-4 hover:text-gray-400"
                 to="/Request"
               >
-                <DocumentArrowUpIcon className="w-5 h-5" /> Request
+                <DocumentArrowUpIcon className="w-5 h-5" /> New Training
               </NavLink>
             </li>
             <li>
