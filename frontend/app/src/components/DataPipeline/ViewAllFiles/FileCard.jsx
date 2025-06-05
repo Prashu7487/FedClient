@@ -6,7 +6,7 @@ import {
   Cog6ToothIcon,
 } from "@heroicons/react/24/solid";
 import EditDatasetModal from "./EditDatasetModal";
-import { DocumentDuplicateIcon,  CheckCircleIcon } from "@heroicons/react/24/outline";
+import { ClipboardDocumentListIcon,  CheckCircleIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 
 const RAW_DATASET_RENAME_URL =
@@ -55,7 +55,7 @@ const FileCard = ({ dataset, isRaw, onDelete, onClick, onEditSuccess }) => {
   };
   return (
     <div
-      className={`group relative p-5 rounded-xl border transition-all
+      className={`group relative px-4 py-3 rounded-xl border transition-all
         ${
           isProcessing
             ? "border-yellow-200 bg-yellow-50 cursor-wait"
@@ -68,34 +68,18 @@ const FileCard = ({ dataset, isRaw, onDelete, onClick, onEditSuccess }) => {
       }}
     >
       <div className="flex justify-between items-start gap-3">
-        <div className="flex-1 min-w-0">
+        <div className="flex-col flex gap-1 items-start min-w-0">
+          {(
+            <span className="text-xs font-medium text-gray-500 px-2 py-1 bg-gray-100 rounded-full">
+              ID: {dataset.dataset_id}
+            </span>
+          )}
           <div className="flex items-center gap-2">
             <h3 className="text-lg font-semibold text-gray-800 truncate">
               {displayName.length > 30
                 ? `${displayName.slice(0, 30)}...`
                 : displayName}
             </h3>
-            {copied ? (
-              <DocumentDuplicateIcon 
-              className="h-5 w-5" 
-              onClick={(e) => {
-                e.stopPropagation();
-              }} 
-            />
-            ) : (
-              <DocumentDuplicateIcon 
-                className="h-5 w-5" 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleCopy(displayName);
-                }} 
-              />
-            )}
-            {!isRaw && (
-              <span className="text-xs font-medium text-gray-500 px-2 py-1 bg-gray-100 rounded-full">
-                ID: {dataset.dataset_id}
-              </span>
-            )}
           </div>
 
           {dataset.description && (
@@ -113,7 +97,14 @@ const FileCard = ({ dataset, isRaw, onDelete, onClick, onEditSuccess }) => {
         </div>
 
         {!isProcessing && (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col items-center justify-between gap-2">
+            <ClipboardDocumentListIcon
+              className="h-5 w-5 box-content hover:bg-zinc-200 p-2 rounded-full"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleCopy(displayName);
+              }}
+            />
             <button
               className="p-1.5 text-blue-400 hover:text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
               onClick={(e) => {

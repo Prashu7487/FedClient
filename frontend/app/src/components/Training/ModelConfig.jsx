@@ -53,7 +53,7 @@ const ModelConfig = ({ data }) => (
               key={metric}
               className="px-2 py-1 bg-green-50 text-green-700 rounded-full text-xs"
             >
-              {metric.toUpperCase()}
+              {metric[0].toUpperCase() + metric.slice(1)}
             </span>
           ))}
         </div>

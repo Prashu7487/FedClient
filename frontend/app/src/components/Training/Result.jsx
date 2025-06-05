@@ -68,6 +68,10 @@ const Result = ({ sessionId }) => {
     return typeof value === 'number' ? value.toFixed(4) : value;
   };
 
+  const capitalize = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   // Prepare data for charts for the selected metric
   const prepareChartData = () => {
     if (!selectedMetric || !results.server_results[selectedMetric]) return [];
@@ -266,7 +270,7 @@ const Result = ({ sessionId }) => {
                       <Tooltip formatter={(value) => [formatMetricValue(value)]} />
                       <Legend />
                       <Line
-                        name={`Server ${selectedMetric.toUpperCase().replace(/_/g, ' ')}`}
+                        name={`Server ${capitalize(selectedMetric).replace(/_/g, ' ')}`}
                         type="monotone"
                         dataKey={`server_${selectedMetric}`}
                         stroke="#3b82f6"
@@ -274,7 +278,7 @@ const Result = ({ sessionId }) => {
                       />
                       {results.client_results[selectedMetric] && (
                         <Line
-                          name={`Your ${selectedMetric.toUpperCase().replace(/_/g, ' ')}`}
+                          name={`Your ${capitalize(selectedMetric).replace(/_/g, ' ')}`}
                           type="monotone"
                           dataKey={`client_${selectedMetric}`}
                           stroke="#10b981"
